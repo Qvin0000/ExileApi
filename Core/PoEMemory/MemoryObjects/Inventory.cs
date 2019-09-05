@@ -1,0 +1,231 @@
+using System.Collections.Generic;
+using Exile.PoEMemory.MemoryObjects;
+using PoEMemory.InventoryElements;
+using Shared.Enums;
+using Shared.Helpers;
+using GameOffsets;
+using Shared.Interfaces;
+
+namespace PoEMemory
+{
+    public class Inventory : Element
+    {
+        private static int ItemCountOff = Extensions.GetOffset<InventoryOffsets>(nameof(InventoryOffsets.ItemCount));
+
+        private static int TotalBoxesInInventoryRowOff =
+            Extensions.GetOffset<InventoryOffsets>(nameof(InventoryOffsets.TotalBoxesInInventoryRow));
+
+        public long ItemCount => InventoryStruct.ItemCount;// M.Read<long>(Address + ItemCountOff); //This one is correct
+        public long TotalBoxesInInventoryRow => InventoryStruct.TotalBoxesInInventoryRow;// M.Read<int>(Address + TotalBoxesInInventoryRowOff);
+
+        private InventoryOffsets InventoryStruct => _cachedValue.Value;
+        private CachedValue<InventoryOffsets> _cachedValue;
+        public Inventory() {
+            _cachedValue = new FrameCache<InventoryOffsets>(() => M.Read<InventoryOffsets>(Address));
+        }
+
+        private InventoryType _cacheInventoryType;
+
+
+        public NormalInventoryItem HoverItem => InventoryStruct.HoverItem==0? null: GetObject<NormalInventoryItem>(InventoryStruct.HoverItem);
+
+        public int X => InventoryStruct.XReal;
+        public int Y => InventoryStruct.YReal;
+        public int XFake => InventoryStruct.XFake;
+        public int YFake => InventoryStruct.YFake;
+        public bool CursorHoverInventory => InventoryStruct.CursorInInventory == 1;
+        
+        private InventoryType GetInvType() {
+            if (_cacheInventoryType != InventoryType.InvalidInventory) return _cacheInventoryType;
+
+            if (Address == 0) return InventoryType.InvalidInventory;
+            // For Poe MemoryLeak bug where ChildCount of PlayerInventory keep
+            // Increasing on Area/Map Change. Ref:
+            // http://www.ownedcore.com/forums/mmo/path-of-exile/poe-bots-programs/511580-poehud-overlay-updated-362.html#post3718876
+            // Orriginal Value of ChildCount should be 0x18
+            for (var j = 1; j < InventoryList.InventoryCount; j++)
+                if (TheGame.IngameState.IngameUi.InventoryPanel[(InventoryIndex) j].Address == Address)
+                {
+                    _cacheInventoryType = InventoryType.PlayerInventory;
+                    return _cacheInventoryType;
+                }
+
+            switch (AsObject<Element>().Parent.ChildCount)
+            {
+                case 0x6f:
+                    _cacheInventoryType = InventoryType.EssenceStash;
+                    break;
+                case 0x38:
+                    _cacheInventoryType = InventoryType.CurrencyStash;
+                    break;
+                case 0x40:
+                    _cacheInventoryType = InventoryType.FragmentStash;
+                    break;
+                case 0x5:
+                    _cacheInventoryType = InventoryType.DivinationStash;
+                    break;
+                case 0x6:
+                    if (AsObject<Element>().Parent.Children[0].ChildCount == 9)
+                    {
+                        _cacheInventoryType = InventoryType.MapStash;
+                        break;
+                    }
+
+                    _cacheInventoryType = InventoryType.InvalidInventory;
+                    break;
+                case 0x01:
+                    // Normal Stash and Quad Stash is same.
+                    if (TotalBoxesInInventoryRow == 24) _cacheInventoryType = InventoryType.QuadStash;
+                    _cacheInventoryType = InventoryType.NormalStash;
+                    break;
+                default:
+                    _cacheInventoryType = InventoryType.InvalidInventory;
+                    break;
+            }
+
+            return _cacheInventoryType;
+        }
+
+        public InventoryType InvType => GetInvType();
+
+        private Element getInventoryElement() {
+            switch (InvType)
+            {
+                case InventoryType.PlayerInventory:
+                case InventoryType.NormalStash:
+                case InventoryType.QuadStash:
+                    return AsObject<Element>();
+                case InventoryType.CurrencyStash:
+                case InventoryType.EssenceStash:
+                case InventoryType.FragmentStash:
+                    return AsObject<Element>().Parent;
+                case InventoryType.DivinationStash:
+                    return GetObject<Element>(M.Read<long>(Address + Element.OffsetBuffers + 0x24, 0x08));
+                case InventoryType.MapStash:
+                    return AsObject<Element>().Parent.AsObject<MapStashTabElement>();
+                default:
+                    return null;
+            }
+        }
+
+        public Element InventoryUIElement => getInventoryElement();
+
+        // Shows Item details of visible inventory/stashes
+        public IList<NormalInventoryItem> VisibleInventoryItems
+        {
+            get
+            {
+                var InvRoot = InventoryUIElement;
+                if (InvRoot == null || InvRoot.Address == 0x00)
+                    return null;
+                /*else if (!InvRoot.IsVisible)
+                    return null;*/
+
+                var list = new List<NormalInventoryItem>();
+                switch (InvType)
+                {
+                    case InventoryType.PlayerInventory:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount == 0) continue; //3.3 fix, Can cause problems but filter out first incorrect item
+                            var normalItem = item.AsObject<NormalInventoryItem>();
+                            // if (normalItem.InventPosX > 11 || normalItem.InventPosY > 4) continue;//Sometimes it gives big wrong values. Fix from macaddict (#plugin-help)
+                            list.Add(normalItem);
+                        }
+
+                        break;
+                    case InventoryType.NormalStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount == 0) continue; //3.3 fix, Can cause problems but filter out first incorrect item
+                            var normalItem = item.AsObject<NormalInventoryItem>();
+                            //if (normalItem.InventPosX > 11 || normalItem.InventPosY > 11) continue;
+                            list.Add(normalItem);
+                        }
+
+                        break;
+                    case InventoryType.QuadStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount == 0) continue; //3.3 fix, Can cause problems but filter out first incorrect item
+                            var normalItem = item.AsObject<NormalInventoryItem>();
+                            //if (normalItem.InventPosX > 23 || normalItem.InventPosY > 23) continue;
+                            list.Add(normalItem);
+                        }
+
+                        break;
+
+                    //For 3.3 child count is 3, not 2 as earlier, so we using the second one
+                    case InventoryType.CurrencyStash:
+                        foreach (var item in InvRoot.Children)
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<CurrencyInventoryItem>());
+                        break;
+                    case InventoryType.EssenceStash:
+                        foreach (var item in InvRoot.Children)
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<EssenceInventoryItem>());
+                        break;
+                    case InventoryType.FragmentStash:
+                        foreach (var item in InvRoot.Children)
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<FragmentInventoryItem>());
+                        break;
+                    case InventoryType.DivinationStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            // Divination Stash tab isn't loaded.
+                            if (item.ChildCount < 2)
+                                return null;
+
+                            if (item.Children[1].ChildCount > 1)
+                                list.Add(item[1][1].AsObject<DivinationInventoryItem>());
+                        }
+
+                        break;
+                    case InventoryType.MapStash:
+                        foreach (var subInventories in InvRoot.Children[3].Children)
+                        {
+                            // VisibleInventoryItems would only be found in Visible Sub Inventory :p
+                            if (!subInventories.IsVisible)
+                                continue;
+
+                            // All empty sub Inventories have full ChildCount (72) but all childcount have 0 items.
+                            if (subInventories.ChildCount == 72 &&
+                                subInventories.Children[0].AsObject<NormalInventoryItem>().Item.Address == 0x00)
+                                continue;
+
+                            foreach (var item in subInventories.Children)
+                            {
+                                if (item.ChildCount == 0) continue; //3.3 fix
+                                list.Add(item.AsObject<NormalInventoryItem>());
+                            }
+                        }
+
+                        break;
+                }
+
+                return list;
+            }
+        }
+
+        // Works even if inventory is currently not in view.
+        // As long as game have fetched inventory data from Server.
+        // Will return the item based on x,y format.
+        // Give more controll to user what to do with
+        // dublicate items (items taking more than 1 slot)
+        // or slots where items doesn't exists (return null).
+        public Entity this[int x, int y, int xLength]
+        {
+            get
+            {
+                var invAddr = M.Read<long>(Address + 0x410, 0x640, 0x38);
+                y = y * xLength;
+                var itmAddr = M.Read<long>(invAddr + (x + y) * 8);
+                if (itmAddr <= 0)
+                    return null;
+                return ReadObject<Entity>(itmAddr);
+            }
+        }
+    }
+}

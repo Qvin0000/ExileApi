@@ -1,0 +1,475 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.3.2.0-beta3-final\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.3.2.0-beta3-final\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\InlineIL.Fody.1.1.2\build\InlineIL.Fody.props" Condition="Exists('..\packages\InlineIL.Fody.1.1.2\build\InlineIL.Fody.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5539D732-34A7-44AB-9E28-116C3429B12A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>8</LangVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\PoeHelper\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\PoeHelper\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GameOffsets, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\PoeHelper\GameOffsets.dll</HintPath>
+    </Reference>
+    <Reference Include="ImGui.NET, Version=1.71.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\PoeHelper\ImGui.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="InlineIL, Version=1.1.2.0, Culture=neutral, PublicKeyToken=1058fa0ac76b4b05">
+      <HintPath>..\packages\InlineIL.Fody.1.1.2\lib\net452\InlineIL.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="JM.LinqFaster, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\LinqFaster.1.0.0\lib\net461\JM.LinqFaster.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MoreLinq, Version=3.1.1.0, Culture=neutral, PublicKeyToken=384d532d7e88985d">
+      <HintPath>..\packages\morelinq.3.1.1\lib\net451\MoreLinq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ProcessMemoryUtilities, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\ProcessMemoryUtilities.Net.1.2.0\lib\net48\ProcessMemoryUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\packages\Serilog.2.9.0-dev-01102\lib\net46\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\packages\Serilog.Sinks.File.4.1.0-dev-00838\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
+      <HintPath>..\packages\Serilog.Sinks.RollingFile.3.3.1-dev-00771\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.XAudio2, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
+      <HintPath>..\packages\SharpDX.XAudio2.4.2.0\lib\net45\SharpDX.XAudio2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.0-preview5.19224.8\lib\net46\System.Numerics.Vectors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0-preview6.19303.8\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices" />
+    <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <HintPath>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Runtime.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.0-preview.18571.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Thread" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AreaController.cs" />
+    <Compile Include="AreaInstance.cs" />
+    <Compile Include="BaseSettingsPlugin.cs" />
+    <Compile Include="DebugWindow.cs" />
+    <Compile Include="EntityListWrapper.cs" />
+    <Compile Include="MultiThreadManager.cs" />
+    <Compile Include="PoEMemory\Component.cs" />
+    <Compile Include="PoEMemory\Components\Actor.cs" />
+    <Compile Include="PoEMemory\Components\Animated.cs" />
+    <Compile Include="PoEMemory\Components\AreaTransition.cs" />
+    <Compile Include="PoEMemory\Components\Armour.cs" />
+    <Compile Include="PoEMemory\Components\AttributeRequirements.cs" />
+    <Compile Include="PoEMemory\Components\Base.cs" />
+    <Compile Include="PoEMemory\Components\Buff.cs" />
+    <Compile Include="PoEMemory\Components\Charges.cs" />
+    <Compile Include="PoEMemory\Components\Chest.cs" />
+    <Compile Include="PoEMemory\Components\ClientAnimationController.cs" />
+    <Compile Include="PoEMemory\Components\ClientBetrayalChoice.cs" />
+    <Compile Include="PoEMemory\Components\CurrencyInfo.cs" />
+    <Compile Include="PoEMemory\Components\DelveLight.cs" />
+    <Compile Include="PoEMemory\Components\DeployedObject.cs" />
+    <Compile Include="PoEMemory\Components\DiesAfterTime.cs" />
+    <Compile Include="PoEMemory\Components\Flask.cs" />
+    <Compile Include="PoEMemory\Components\HideoutDoodad.cs" />
+    <Compile Include="PoEMemory\Components\Inventories.cs" />
+    <Compile Include="PoEMemory\Components\InventoryVisual.cs" />
+    <Compile Include="PoEMemory\Components\Life.cs" />
+    <Compile Include="PoEMemory\Components\Magnetic.cs" />
+    <Compile Include="PoEMemory\Components\Map.cs" />
+    <Compile Include="PoEMemory\Components\MinimapIcon.cs" />
+    <Compile Include="PoEMemory\Components\Mods.cs" />
+    <Compile Include="PoEMemory\Components\Monolith.cs" />
+    <Compile Include="PoEMemory\Components\Monster.cs" />
+    <Compile Include="PoEMemory\Components\NPC.cs" />
+    <Compile Include="PoEMemory\Components\ObjectMagicProperties.cs" />
+    <Compile Include="PoEMemory\Components\Pathfinding.cs" />
+    <Compile Include="PoEMemory\Components\Player.cs" />
+    <Compile Include="PoEMemory\Components\Portal.cs" />
+    <Compile Include="PoEMemory\Components\Positioned.cs" />
+    <Compile Include="PoEMemory\Components\Preload.cs" />
+    <Compile Include="PoEMemory\Components\Prophecy.cs" />
+    <Compile Include="PoEMemory\Components\Quality.cs" />
+    <Compile Include="PoEMemory\Components\Render.cs" />
+    <Compile Include="PoEMemory\Components\RenderItem.cs" />
+    <Compile Include="PoEMemory\Components\Sector.cs" />
+    <Compile Include="PoEMemory\Components\Shrine.cs" />
+    <Compile Include="PoEMemory\Components\SkillGem.cs" />
+    <Compile Include="PoEMemory\Components\Sockets.cs" />
+    <Compile Include="PoEMemory\Components\Stack.cs" />
+    <Compile Include="PoEMemory\Components\StateMachine.cs" />
+    <Compile Include="PoEMemory\Components\Stats.cs" />
+    <Compile Include="PoEMemory\Components\Targetable.cs" />
+    <Compile Include="PoEMemory\Components\TimerComponent.cs" />
+    <Compile Include="PoEMemory\Components\Transitionable.cs" />
+    <Compile Include="PoEMemory\Components\TriggerableBlockage.cs" />
+    <Compile Include="PoEMemory\Components\Weapon.cs" />
+    <Compile Include="PoEMemory\Components\WorldDescription.cs" />
+    <Compile Include="PoEMemory\Components\WorldItem.cs" />
+    <Compile Include="PoEMemory\Element.cs" />
+    <Compile Include="PoEMemory\Elements\DelveElement.cs" />
+    <Compile Include="PoEMemory\Elements\EntityLabel.cs" />
+    <Compile Include="PoEMemory\Elements\HoverItemIcon.cs" />
+    <Compile Include="PoEMemory\Elements\HPbarElement.cs" />
+    <Compile Include="PoEMemory\Elements\IncursionWindow.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElement.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\CurrencyInventoryItem.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\DivinationInventoryItem.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\EssenceInventoryItem.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\FragmentInventoryItem.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\MapStashTabElement.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\NormalInventoryItem.cs" />
+    <Compile Include="PoEMemory\Elements\ItemOnGroundTooltip.cs" />
+    <Compile Include="PoEMemory\Elements\LabelOnGround.cs" />
+    <Compile Include="PoEMemory\Elements\ItemsOnGroundLabelElement.cs" />
+    <Compile Include="PoEMemory\Elements\Map.cs" />
+    <Compile Include="PoEMemory\Elements\MapStashTabElementQ.cs" />
+    <Compile Include="PoEMemory\Elements\PoeChatElement.cs" />
+    <Compile Include="PoEMemory\Elements\SkillBarElement.cs" />
+    <Compile Include="PoEMemory\Elements\SkillElement.cs" />
+    <Compile Include="PoEMemory\Elements\StashElement.cs" />
+    <Compile Include="PoEMemory\Elements\SubterraneanChart.cs" />
+    <Compile Include="PoEMemory\Elements\WindowState.cs" />
+    <Compile Include="PoEMemory\Elements\WorldMapElement.cs" />
+    <Compile Include="PoEMemory\FileInMemory.cs" />
+    <Compile Include="PoEMemory\FilesContainer.cs" />
+    <Compile Include="PoEMemory\FilesFromMemory.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\AtlasNodes.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BaseItemTypes.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BestiaryCapturableMonsters.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BetrayalChoice.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BetrayalJob.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BetrayalRank.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BetrayalReward.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\BetrayalTarget.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\LabyrinthTrial.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\LabyrinthTrials.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\ModsDat.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\MonsterVarieties.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\PassiveSkill.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\PassiveSkills.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\PropheciesDat.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Quests.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\QuestStates.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\StatsDat.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\TagsDat.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\UniversalFileWrapper.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\WorldAreas.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ActiveSkillWrapper.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ActorSkill.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ActorVaalSkill.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\AreaTemplate.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\AtlasNode.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BestiaryCapturableMonster.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BestiaryFamily.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BestiaryGenus.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BestiaryGroup.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BestiaryRecipe.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BestiaryRecipeComponent.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BetrayalChoiceAction.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BetrayalData.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BetrayalDialogue.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\BetrayalSyndicateState.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\Camera.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\Cursor.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\DeployedObject.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\DiagnosticElement.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\EntityList.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\GameStateContoller.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\GrantedEffectsPerLevel.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\HideoutWrapper.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\IngameData.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\IngameState.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\IngameUIElements.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\Inventory.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\InventoryHolder.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\InventoryList.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ItemMod.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\LabyrinthData.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\MapStashTabElement.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\MonsterVariety.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\NativeStringReader.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\Entity.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ProphecyDat.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\Quest.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\QuestState.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\SellWindow.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ServerData.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ServerInventory.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\ServerStashTab.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\SkillGemWrapper.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\WorldArea.cs" />
+    <Compile Include="PoEMemory\Models\BaseItemType.cs" />
+    <Compile Include="PoEMemory\Models\ItemStats.cs" />
+    <Compile Include="PoEMemory\Models\StatTranslator.cs" />
+    <Compile Include="PoEMemory\Offsets.cs" />
+    <Compile Include="PoEMemory\Pattern.cs" />
+    <Compile Include="PoEMemory\RemoteMemoryObject.cs" />
+    <Compile Include="Shared\Cache\ValidCache.cs" />
+    <Compile Include="Shared\CoroutineTask.cs" />
+    <Compile Include="Shared\Enums\League.cs" />
+    <Compile Include="Shared\Enums\MapIconsIndex.cs" />
+    <Compile Include="Shared\Enums\MyMapIconsIndex.cs" />
+    <Compile Include="Shared\Helpers\IntPtrExtensions.cs" />
+    <Compile Include="Shared\MultiThreadProp.cs" />
+    <Compile Include="PluginPanel.cs" />
+    <Compile Include="Core.cs" />
+    <Compile Include="CoreSettings.cs" />
+    <Compile Include="GameController.cs" />
+    <Compile Include="GameWIndow.cs" />
+    <Compile Include="Graphics.cs" />
+    <Compile Include="Input.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Memory.cs" />
+    <Compile Include="MenuWindow.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderQ\DX11.cs" />
+    <Compile Include="RenderQ\FontContainer.cs" />
+    <Compile Include="RenderQ\ImGuiRender.cs" />
+    <Compile Include="RenderQ\SpritesRender.cs" />
+    <Compile Include="RenderQ\TextureLoader.cs" />
+    <Compile Include="RenderQ\ThemeEditor.cs" />
+    <Compile Include="SettingsContainer.cs" />
+    <Compile Include="SettingsParser.cs" />
+    <Compile Include="Shared\Abstract\BaseIcon.cs" />
+    <Compile Include="Shared\Attributes\HideInReflectionAttribute.cs" />
+    <Compile Include="Shared\Attributes\MenuAttribute.cs" />
+    <Compile Include="Shared\Cache\AreaCache.cs" />
+    <Compile Include="Shared\Cache\Cache.cs" />
+    <Compile Include="Shared\Cache\CachedValue.cs" />
+    <Compile Include="Shared\Cache\ConditionalCache.cs" />
+    <Compile Include="Shared\Cache\FrameCache.cs" />
+    <Compile Include="Shared\Cache\FramesCache.cs" />
+    <Compile Include="Shared\Interfaces\IStaticCache.cs" />
+    <Compile Include="Shared\Cache\LatancyCache.cs" />
+    <Compile Include="Shared\Cache\StaticCache.cs" />
+    <Compile Include="Shared\Cache\StaticStringCache.cs" />
+    <Compile Include="Shared\Cache\StaticValueCache.cs" />
+    <Compile Include="Shared\Cache\TimeCache.cs" />
+    <Compile Include="Shared\CircularBuffer.cs" />
+    <Compile Include="Shared\Constants.cs" />
+    <Compile Include="Shared\Coroutine.cs" />
+    <Compile Include="Shared\DebugInformation.cs" />
+    <Compile Include="Shared\Enums\ActionFlags.cs" />
+    <Compile Include="Shared\Enums\AreaTransitionType.cs" />
+    <Compile Include="Shared\Enums\BuffEnums.cs" />
+    <Compile Include="Shared\Enums\CharacterClass.cs" />
+    <Compile Include="Shared\Enums\ChestType.cs" />
+    <Compile Include="Shared\Enums\CoroutinePriority.cs" />
+    <Compile Include="Shared\Enums\CreatureType.cs" />
+    <Compile Include="Shared\Enums\DamageType.cs" />
+    <Compile Include="Shared\Enums\DiagnosticInfoType.cs" />
+    <Compile Include="Shared\Enums\Direction.cs" />
+    <Compile Include="Shared\Enums\EntityType.cs" />
+    <Compile Include="Shared\Enums\EnumerationsMagic.cs" />
+    <Compile Include="Shared\Enums\FontAlign.cs" />
+    <Compile Include="Shared\Enums\IconPriority.cs" />
+    <Compile Include="Shared\Enums\InventoryEnums.cs" />
+    <Compile Include="Shared\Enums\InventoryIndex.cs" />
+    <Compile Include="Shared\Enums\InventorySlotE.cs" />
+    <Compile Include="Shared\Enums\InventoryTabMapSeries.cs" />
+    <Compile Include="Shared\Enums\InventoryType.cs" />
+    <Compile Include="Shared\Enums\InventoryTypeE.cs" />
+    <Compile Include="Shared\Enums\ItemRarity.cs" />
+    <Compile Include="Shared\Enums\ItemStatEnum.cs" />
+    <Compile Include="Shared\Enums\ItemType.cs" />
+    <Compile Include="Shared\Enums\MapType.cs" />
+    <Compile Include="Shared\Enums\ModDomain.cs" />
+    <Compile Include="Shared\Enums\ModType.cs" />
+    <Compile Include="Shared\Enums\MonsterRarity.cs" />
+    <Compile Include="Shared\Enums\MouseActionType.cs" />
+    <Compile Include="Shared\Enums\NetworkStateE.cs" />
+    <Compile Include="Shared\Enums\OffsetsName.cs" />
+    <Compile Include="Shared\Enums\PantheonGod.cs" />
+    <Compile Include="Shared\Enums\PartyAllocation.cs" />
+    <Compile Include="Shared\Enums\PartyStatus.cs" />
+    <Compile Include="Shared\Enums\GameStat.cs" />
+    <Compile Include="Shared\Enums\StatType.cs" />
+    <Compile Include="Shared\Enums\ToolTipType.cs" />
+    <Compile Include="Shared\Helpers\ConvertHelper.cs" />
+    <Compile Include="Shared\Helpers\DictionaryExtensions.cs" />
+    <Compile Include="Shared\Helpers\Extensions.cs" />
+    <Compile Include="Shared\Helpers\MathHepler.cs" />
+    <Compile Include="Shared\Helpers\MiscHelpers.cs" />
+    <Compile Include="Shared\Helpers\PerformanceTimer.cs" />
+    <Compile Include="Shared\Helpers\PoeMapExtension.cs" />
+    <Compile Include="Shared\Helpers\SpriteHelper.cs" />
+    <Compile Include="Shared\HudTexture.cs" />
+    <Compile Include="Shared\Interfaces\IMemory.cs" />
+    <Compile Include="Shared\Interfaces\INativePtrArray.cs" />
+    <Compile Include="Shared\Interfaces\IPattern.cs" />
+    <Compile Include="Shared\Interfaces\IPlugin.cs" />
+    <Compile Include="Shared\Interfaces\ISettings.cs" />
+    <Compile Include="Shared\Interfaces\ISettingsHolder.cs" />
+    <Compile Include="Shared\Interfaces\IYieldBase.cs" />
+    <Compile Include="Shared\IntRange.cs" />
+    <Compile Include="Shared\Nodes\ButtonNode.cs" />
+    <Compile Include="Shared\Nodes\ColorNode.cs" />
+    <Compile Include="Shared\Nodes\ColorNodeConverter.cs" />
+    <Compile Include="Shared\Nodes\EmptyNode.cs" />
+    <Compile Include="Shared\Nodes\FileNode.cs" />
+    <Compile Include="Shared\Nodes\FileNodeConverter.cs" />
+    <Compile Include="Shared\Nodes\HotkeyNode.cs" />
+    <Compile Include="Shared\Nodes\ListNode.cs" />
+    <Compile Include="Shared\Nodes\RangeNode.cs" />
+    <Compile Include="Shared\Nodes\SortContractResolver.cs" />
+    <Compile Include="Shared\Nodes\StashTabNode.cs" />
+    <Compile Include="Shared\Nodes\TextNode.cs" />
+    <Compile Include="Shared\Nodes\ToggleNode.cs" />
+    <Compile Include="Shared\Nodes\ToggleNodeConverter.cs" />
+    <Compile Include="Shared\PInvoke\ClientID.cs" />
+    <Compile Include="Shared\PInvoke\DynamicImport.cs" />
+    <Compile Include="Shared\PInvoke\ObjectAttributes.cs" />
+    <Compile Include="Shared\PluginManager.cs" />
+    <Compile Include="Shared\PluginWrapper.cs" />
+    <Compile Include="Shared\Runner.cs" />
+    <Compile Include="Shared\SomeMagic\Imports.cs" />
+    <Compile Include="Shared\SomeMagic\LocalAllocation.cs" />
+    <Compile Include="Shared\SomeMagic\MarshalType.cs" />
+    <Compile Include="Shared\SomeMagic\MemoryBasicInformation.cs" />
+    <Compile Include="Shared\SomeMagic\MemoryLiterate.cs" />
+    <Compile Include="Shared\SomeMagic\MemoryProtection.cs" />
+    <Compile Include="Shared\SomeMagic\NativeMethods.cs" />
+    <Compile Include="Shared\SomeMagic\Pointer.cs" />
+    <Compile Include="Shared\SomeMagic\SafeMemoryHandle.cs" />
+    <Compile Include="Shared\SomeMagic\TypeConverter.cs" />
+    <Compile Include="Shared\Static\HudSkin.cs" />
+    <Compile Include="Shared\Static\ItemClasses.cs" />
+    <Compile Include="Shared\Structs\Vector2i.cs" />
+    <Compile Include="Shared\WinApi.cs" />
+    <Compile Include="SoundController.cs" />
+    <Compile Include="Time.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Shared\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PoEMemory\Wrappers" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\InlineIL.Fody.1.1.2\build\InlineIL.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\InlineIL.Fody.1.1.2\build\InlineIL.Fody.props'))" />
+    <Error Condition="!Exists('..\packages\Fody.5.1.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.5.1.1\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.3.2.0-beta3-final\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.3.2.0-beta3-final\build\Microsoft.Net.Compilers.props'))" />
+  </Target>
+  <Import Project="..\packages\Fody.5.1.1\build\Fody.targets" Condition="Exists('..\packages\Fody.5.1.1\build\Fody.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>
