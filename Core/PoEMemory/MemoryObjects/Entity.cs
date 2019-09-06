@@ -443,13 +443,13 @@ namespace Exile.PoEMemory.MemoryObjects
             {
                 if (_componentLookup != null)
                     return _componentLookup.Value;
-                return (long) (_componentLookup = M.Read<long>(Address, 0x40, 0x30));
+                return (long) (_componentLookup = M.Read<long>(Address+0x8, 0x40, 0x30));
             }
         }
 
-        public uint Id => (uint) (_id ??= M.Read<uint>(Address + 0x40));
+        public uint Id => (uint) (_id ??= M.Read<uint>(Address + 0x50));
 
-        public uint InventoryId => (uint) (_inventoryId ??= M.Read<uint>(Address + 0x58));
+        public uint InventoryId => (uint) (_inventoryId ??= M.Read<uint>(Address + 0x68));
 
         //public bool IsValid => M.Read<int>(EntityOffsets.Head.MainObject+0x18,0) == 0x65004D;
         public Dictionary<string, long> CacheComp => _cacheComponents2 ?? (_cacheComponents2 = GetComponents());
@@ -638,7 +638,7 @@ namespace Exile.PoEMemory.MemoryObjects
 
         private EntityType ParseType() {
 
-            if (EntityOffsets.Head.ComponentList.Size <= 0) return EntityType.Error;
+           // if (EntityOffsets.ComponentList <= 0) return EntityType.Error;
 
             if (string.IsNullOrEmpty(Path)) return EntityType.Error;
 

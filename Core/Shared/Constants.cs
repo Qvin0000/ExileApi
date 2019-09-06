@@ -4,7 +4,7 @@ namespace Shared
 {
     public static class Constants
     {
-        public static readonly Size2F MapIconsSize = new Size2F(14, 15);
+        public static readonly Size2F MapIconsSize = new Size2F(14, 16);
         public static readonly Size2F MyMapIcons = new Size2F(7, 8);
 
         public static readonly uint[] PlayerXpLevels =
