@@ -253,7 +253,7 @@ namespace PoEMemory
       
         private uint ParseEntity(long addrEntity, Dictionary<uint, Entity> entityCache, uint entitiesVersion, Stack<Entity> result,
                                  bool parseServerEntities) {
-            var entityId = M.Read<uint>(addrEntity + 0x40);
+            var entityId = M.Read<uint>(addrEntity + 0x50);
             if (entityId <= 0) return 0;
             if (entityId >= Int32.MaxValue && !parseServerEntities)
                 return 0;

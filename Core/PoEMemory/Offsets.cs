@@ -41,8 +41,11 @@ namespace PoEMemory
         //    48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? 48 8B 1F
 
         private static readonly Pattern fileRootPattern =
-            new Pattern(new byte[] {0x48, 0x8D, 0x35, 0x00, 0x00, 0x00, 0x00, 0x8B, 0x04, 0x0A, 0x39, 0x05}, "xxx????xxxxx", "File Root",
-                        13000000);
+            new Pattern(new byte[]
+                {
+                    0x65, 0x48, 0x8b, 0x04, 0x25, 0x58, 0x00, 0x00, 0x00, 0x48, 0x8b, 0x08, 0x48, 0x8d, 0x35, 0x09, 0x9b, 0x25, 0x01
+                }, "xxxxx????xxxxxx????", "File Root",
+                13930000);
 
         /* Area Change
         00007FF63317CE40 | 48 83 EC 58                    | sub rsp,58                                      |
@@ -66,9 +69,8 @@ namespace PoEMemory
             new Pattern(
                 new byte[]
                 {
-                    0x41, 0x8B, 0xC2, 0xF0, 0x41, 0x0F, 0xC1, 0x40, 0x4C, 0x8B, 0x05, 0x00, 0x00, 0x00, 0x00, 0x41, 0x89, 0x40, 0x48,
-                    0x48, 0x8B, 0x49, 0x10
-                }, "xxxxxxxxxxx????xxxxxxxx", "Area change", 9800000);
+                    0x0f, 0xc1 , 0x43, 0x4c, 0x48, 0x8b, 0x5d, 0xd8, 0x8b, 0x05, 0x1e, 0x3f, 0x45, 0x01, 0x89, 0x43, 0x48, 0x49, 0x8b, 0xfe, 0x4c, 0x89, 0x75, 0x20, 0x41, 0x83, 0xcf, 0x20
+                }, "xxx?xx??xx????xxxxxxxxx?xxx?", "Area change", 9430000);
 
         /*
         PathOfExile_x64.exe+853E28 - 48 89 05 E9ABC400     - mov [PathOfExile_x64.exe+149EA18],rax { [00000000] }
@@ -88,9 +90,8 @@ namespace PoEMemory
         private static readonly Pattern GameStatePattern = new Pattern(
             new byte[]
             {
-                0x48, 0x39, 0x2D, 0x3F, 0xA2, 0x52, 0x01, 0x0F, 0x85, 0xF9, 0x00, 0x00, 0x00, 0xB9, 0x80, 0x00, 0x00, 0x00, 0xE8, 0x00,
-                0x00, 0x00, 0x00, 0x48, 0x8B, 0xF8, 0x48, 0x89, 0x44, 0x24, 0x70
-            }, "xxx????xxxxxxxxxxxx????xxx?????", "Game State", 900000);
+                0x48, 0x83, 0xec, 0x50, 0x48, 0xc7, 0x44, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x89, 0x9c, 0x24, 0x00, 0x00, 0x00, 0x00, 0x48, 0x8b, 0xf9, 0x33, 0xed, 0x48, 0x39, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0f, 0x85, 0x00, 0x00, 0x00, 0x00,
+            }, "xxxxxxxx?????xxxx????xxxxxxx????xxx????", "Game State", 1240000);
 
         /*
         PathOfExile_x64.exe+118FD9 - 4C 8B 35 48255B01     - mov r14,[PathOfExile_x64.exe+16CB528] { [C6151734A0] }<<here
@@ -125,11 +126,11 @@ namespace PoEMemory
             //  long InGameState = m.Read<long>(Base + BaseAddress, 0x8, 0xF8, 0x38);
             //  System.Console.WriteLine("InGameState: " + InGameState.ToString("x8"));
 
-            FileRoot = m.Read<int>(baseAddress + array[index] + 0x3) + array[index] + 0x7;
+            FileRoot = m.Read<int>(baseAddress + array[index] + 15) + array[index] + 19;
             index++;
             //   System.Console.WriteLine("FileRoot Pointer: " + (FileRoot + m.AddressOfProcess).ToString("x8"));
 
-            AreaChangeCount = m.Read<int>(baseAddress + array[index] + 0xB) + array[index] + 0xF;
+            AreaChangeCount = m.Read<int>(baseAddress + array[index] + 10) + array[index] + 14;
             index++;
             // System.Console.WriteLine("AreaChangeCount: " + m.ReadInt(AreaChangeCount + m.AddressOfProcess).ToString());
 
@@ -137,7 +138,7 @@ namespace PoEMemory
             //index++;
             // System.Console.WriteLine("Is Loading Screen Offset:" + (isLoadingScreenOffset + m.AddressOfProcess).ToString("x8"));
 
-            GameStateOffset = m.Read<int>(baseAddress + array[index] + 0x03) + array[index] + 0x07;
+            GameStateOffset = m.Read<int>(baseAddress + array[index] + 29) + array[index] + 33;
             //  System.Console.WriteLine("Game State Offset:" + (GameStateOffset + m.AddressOfProcess).ToString("x8"));
 
             //  result.Add(OffsetsName.Base,Base);
