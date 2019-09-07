@@ -50,15 +50,16 @@ namespace PoEMemory
                     return _cacheInventoryType;
                 }
 
-            switch (AsObject<Element>().Parent.ChildCount)
+            var parentChildCount = AsObject<Element>().Parent.ChildCount;
+            switch (parentChildCount)
             {
                 case 0x6f:
                     _cacheInventoryType = InventoryType.EssenceStash;
                     break;
-                case 0x38:
+                case 0x3c:
                     _cacheInventoryType = InventoryType.CurrencyStash;
                     break;
-                case 0x40:
+                case 0x4D:
                     _cacheInventoryType = InventoryType.FragmentStash;
                     break;
                 case 0x5:
