@@ -308,6 +308,7 @@
     <Compile Include="PoEMemory\RemoteMemoryObject.cs" />
     <Compile Include="Shared\Cache\ValidCache.cs" />
     <Compile Include="Shared\CoroutineTask.cs" />
+    <Compile Include="Shared\Enums\AnimationE.cs" />
     <Compile Include="Shared\Enums\League.cs" />
     <Compile Include="Shared\Enums\MapIconsIndex.cs" />
     <Compile Include="Shared\Enums\MyMapIconsIndex.cs" />

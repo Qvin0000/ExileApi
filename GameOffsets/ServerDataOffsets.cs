@@ -21,7 +21,7 @@ namespace GameOffsets
   [StructLayout(LayoutKind.Explicit, Pack = 1)]
   public struct ServerDataOffsets
   {
-    public const int Skip = 20480;
+    public const int Skip = 0x5000;
     [FieldOffset(0x63E8-Skip)]public NativeStringU League2;
     [FieldOffset(0x6340-Skip)]public NativePtrArray PassiveSkillIds;
     [FieldOffset(0x63B0-Skip)]public byte PlayerClass;
@@ -31,7 +31,7 @@ namespace GameOffsets
     [FieldOffset(0x63D0-Skip)]public int FreePassiveSkillPointsLeft;
     [FieldOffset(0x63A4-Skip)]public int TotalAscendencyPoints;
     [FieldOffset(0x63A8-Skip)]public int SpentAscendencyPoints;
-    [FieldOffset(0x63D0-Skip)]public byte NetworkState;
+    [FieldOffset(0x6B80-Skip)]public byte NetworkState;
     [FieldOffset(0x65C8-Skip)]public byte PartyAllocationType;
     [FieldOffset(0x6468-Skip)]public float TimeInGame;
     [FieldOffset(0x6470-Skip)]public int Latency;
