@@ -38,7 +38,7 @@ namespace Exile.RenderQ
             }
 
             LoadThemeFilesList();
-            SelectedThemeName = coreSettings.Theme.Values.FirstOrDefault() ?? coreSettings.Theme.Value;
+            SelectedThemeName = coreSettings.Theme.Value ?? coreSettings.Theme.Values.FirstOrDefault();
             ApplyTheme(SelectedThemeName);
             coreSettings.Theme.OnValueSelected += ApplyTheme;
         }
