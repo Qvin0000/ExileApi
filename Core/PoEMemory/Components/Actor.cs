@@ -14,22 +14,24 @@ namespace PoEMemory.Components
         public Actor() => cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
 
         /// <summary>
+        ///     It's short ( 2byte ) in memory but in HUD we use it as int for backward compatibility
         ///     Standing still = 2048 =bit 11 set
         ///     running = 2178 = bit 11 & 7
         ///     Maybe Bit-field : Bit 7 set = running
         /// </summary>
-        public int ActionId => Address != 0 ? cacheValue.Value.ActionId : 1;
+        public int ActionId => Address != 0 ? cacheValue.Value.ActionId : 0;
 
         public ActionFlags Action => Address != 0 ? (ActionFlags) cacheValue.Value.ActionId : ActionFlags.None;
         public bool isMoving => (Action & ActionFlags.Moving) > 0;
         public bool isAttacking => (Action & ActionFlags.UsingAbility) > 0;
 
+        public int AnimationId => Address != 0 ? cacheValue.Value.AnimationId : 0;
+        public AnimationE Animation => Address != 0 ? (AnimationE)cacheValue.Value.AnimationId : AnimationE.Idle;
+
         public bool HasMinion(Entity entity) {
             if (Address == 0) return false;
 
             var num = Struct.HasMinionArray.First;
-            // long num = M.Read<long>(Address + 0x328);
-            //  long num2 = M.Read<long>(Address + 0x330);
             var num2 = Struct.HasMinionArray.Last;
             for (var i = num; i < num2; i += 8)
             {
