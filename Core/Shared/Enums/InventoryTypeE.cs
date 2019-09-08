@@ -2,35 +2,39 @@ using System;
 
 namespace Shared.Enums
 {
+    /// <summary>
+    /// Copied from GGPK -> InventoryType.dat file
+    /// Possible improvement -> read it from the in memory dad file
+    /// </summary>
     public enum InventoryTypeE
     {
-        MainInventory = 0,
-        BodyArmour = 1,
-        Weapon = 2,
-        Offhand = 3,
-        Helm = 4,
-        Amulet = 5,
-        Ring = 6,
-        Gloves = 7,
-        Boots = 8,
-        Belt = 9,
-        Flask = 10,
-        Cursor = 11,
-        Map = 12,
-        PassiveJewels = 13,
-        AnimatedArmour = 14,
-        Crafting = 15,
-        Leaguestone = 16,
-        Unused = 17,
-        Currency = 18,
-        Offer = 19,
-        Divination = 20,
-        Essence = 21,
-        Fragment = 22,
-        MapStashInv = 23,
-        UniqueStashInv = 24,
-        CraftingSpreeCurrency = 25,
-        CraftingSpreeItem = 26,
-        NormalTab = 27
+        MainInventory = 0x00,
+        BodyArmour,
+        Weapon,
+        Offhand,
+        Helm,
+        Amulet,
+        Ring,
+        Gloves,
+        Boots,
+        Belt,
+        Flask,
+        Cursor,
+        Map,
+        PassiveJewels,
+        AnimatedArmour,
+        Crafting,
+        Leaguestone,
+        Unused,
+        Currency,
+        Offer,
+        Divination,
+        Essence,
+        Fragment,
+        MapStashInv,
+        UniqueStashInv,
+        CraftingSpreeCurrency,
+        CraftingSpreeItem,
+        NormalOrQuad
     }
 }
