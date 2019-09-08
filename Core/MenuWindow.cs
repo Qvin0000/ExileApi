@@ -70,6 +70,34 @@ namespace Exile
             {
                 Input.RegisterKey(_CoreSettings.MainMenuKeyToggle);
             };
+            _CoreSettings.Enable.OnValueChanged += (sender, b) =>
+            {
+                if (!_CoreSettings.Enable)
+                {
+                    try
+                    {
+                        _settingsContainer.SaveCoreSettings();
+                        foreach (var plugin in core.pluginManager.Plugins)
+                        {
+                            try
+                            {
+                                _settingsContainer.SaveSettings(plugin.Plugin);
+
+                            }
+                            catch (Exception e)
+                            {
+                                DebugWindow.LogError($"SaveSettings for plugin error: {e}");
+                            }
+                   
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        DebugWindow.LogError($"SaveSettings error: {e}");
+                    }
+                }
+              
+            };
         }
 
         private bool firstTime = true;
