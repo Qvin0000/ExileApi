@@ -415,7 +415,7 @@ namespace Exile.RenderQ
 
         private unsafe ShaderResourceView BuildFontTexture()
         {
-            io.Fonts.GetTexDataAsRGBA32(out var pixelData, out var width, out var height, out var bytesPerPixel);
+            io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out var width, out var height, out var bytesPerPixel);
             var rect = new DataRectangle(new IntPtr(pixelData), width * bytesPerPixel);
             var tex2D = new Texture2D(Dx11.D11Device,
                 new Texture2DDescription
