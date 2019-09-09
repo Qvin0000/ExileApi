@@ -23,15 +23,12 @@ namespace PoEMemory.FilesInMemory
             return AreasIndexDictionary.First(area => area.Value.Id == id).Value;
         }
 
-        private int IndexCounter;
+        public int IndexCounter;
 
-        protected void EntryAdded(long addr, WorldArea entry) {
+        protected override void EntryAdded(long addr, WorldArea entry)
+        {
             entry.Index = IndexCounter++;
             AreasIndexDictionary.Add(entry.Index, entry);
         }
-
-        public IList<WorldArea> EntriesList => base.EntriesList.ToList();
-
-        public WorldArea GetByAddress(long address) => base.GetByAddress(address);
     }
 }
