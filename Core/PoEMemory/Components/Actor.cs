@@ -14,21 +14,20 @@ namespace PoEMemory.Components
         public Actor() => cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
 
         /// <summary>
-        ///     It's short ( 2byte ) in memory but in HUD we use it as int for backward compatibility
         ///     Standing still = 2048 =bit 11 set
         ///     running = 2178 = bit 11 & 7
         ///     Maybe Bit-field : Bit 7 set = running
         /// </summary>
-        public int ActionId => Address != 0 ? cacheValue.Value.ActionId : 0;
+        public short ActionId => Address != 0 ? Struct.ActionId : (short) 0;
+        public ActionFlags Action => Address != 0 ? (ActionFlags) Struct.ActionId : ActionFlags.None;
 
-        public ActionFlags Action => Address != 0 ? (ActionFlags) cacheValue.Value.ActionId : ActionFlags.None;
         public bool isMoving => (Action & ActionFlags.Moving) > 0;
         public bool isAttacking => (Action & ActionFlags.UsingAbility) > 0;
 
-        public int AnimationId => Address != 0 ? cacheValue.Value.AnimationId : 0;
-        public AnimationE Animation => Address != 0 ? (AnimationE)cacheValue.Value.AnimationId : AnimationE.Idle;
+        public int AnimationId => Address != 0 ? Struct.AnimationId : 0;
+        public AnimationE Animation => Address != 0 ? (AnimationE) Struct.AnimationId : AnimationE.Idle;
 
-        public bool HasMinion(Entity entity) {
+        /*public bool HasMinion(Entity entity) {
             if (Address == 0) return false;
 
             var num = Struct.HasMinionArray.First;
@@ -40,28 +39,22 @@ namespace PoEMemory.Components
             }
 
             return false;
-        }
+        }*/
 
+        //public float TimeSinseLastMove => -M.Read<float>(Address + 0x110);
+        //public float TimeSinseLastAction => -M.Read<float>(Address + 0x114);
 
-        public float TimeSinseLastMove => -M.Read<float>(Address + 0x110);
-        public float TimeSinseLastAction => -M.Read<float>(Address + 0x114);
-
-        public ActionWrapper CurrentAction => (Action & ActionFlags.UsingAbility) > 0 ? ReadObject<ActionWrapper>(Address + 0x98) : null;
+        public ActionWrapper CurrentAction => Struct.ActionPtr > 0 ? GetObject<ActionWrapper>(Struct.ActionPtr) : null;
 
         // e.g minions, mines
-        private long DeployedObjectStart => Struct.DeployedObjectArray.First;
-
-        // private long DeployedObjectStart => M.Read<long>(Address + 0x328);
-        //private long DeployedObjectEnd => M.Read<long>(Address + 0x330);
-        private long DeployedObjectEnd => Struct.DeployedObjectArray.Last;
-        public long DeployedObjectsCount => (DeployedObjectEnd - DeployedObjectStart) / 8;
+        public long DeployedObjectsCount => Struct.DeployedObjectArray.Size / 8;
 
         public List<DeployedObject> DeployedObjects
         {
             get
             {
                 var result = new List<DeployedObject>();
-                for (var addr = DeployedObjectStart; addr < DeployedObjectEnd; addr += 8)
+                for (var addr = Struct.DeployedObjectArray.First; addr < Struct.DeployedObjectArray.Last; addr += 8)
                 {
                     var objectId = M.Read<uint>(addr);
                     var objectKey = M.Read<ushort>(addr + 4); //in list of entities
@@ -96,10 +89,8 @@ namespace PoEMemory.Components
             get
             {
                 const int ACTOR_VAAL_SKILLS_SIZE = 0x20;
-                //	var skillsStartPointer = M.Read<long>(Address + 0x2F0);
                 var skillsStartPointer = Struct.ActorVaalSkills.First;
                 var skillsEndPointer = Struct.ActorVaalSkills.Last;
-                //	var skillsEndPointer = M.Read<long>(Address + 0x2F8);
 
                 var stuckCounter = 0;
                 var result = new List<ActorVaalSkill>();
@@ -120,16 +111,14 @@ namespace PoEMemory.Components
             private ActionWrapperOffsets Struct => cacheValue.Value;
             public ActionWrapper() => cacheValue = new FrameCache<ActionWrapperOffsets>(() => M.Read<ActionWrapperOffsets>(Address));
 
-            public float DestinationX => cacheValue.Value.Destination.X; //M.Read<int>(Address + 0x48);
-            public float DestinationY => cacheValue.Value.Destination.Y; // M.Read<int>(Address + 0x4C);
+            public float DestinationX => Struct.Destination.X;
+            public float DestinationY => Struct.Destination.Y;
 
             public Vector2 Destination => Struct.Destination;
 
-            //  public Entity Target => ReadObject<Entity>(Address + 0x38);
             public Entity Target => ReadObject<Entity>(Struct.Target);
             public Vector2 CastDestination => new Vector2(DestinationX, DestinationY);
 
-            // public ActorSkill Skill => ReadObject<ActorSkill>(Address + 0x18);
             public ActorSkill Skill => ReadObject<ActorSkill>(Struct.Skill);
         }
     }
