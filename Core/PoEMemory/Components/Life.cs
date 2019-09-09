@@ -16,8 +16,6 @@ namespace PoEMemory.Components
         private readonly CachedValue<List<Buff>> _cachedValueBuffs;
         private readonly CachedValue<LifeComponentOffsets> _life;
 
-        private List<Buff> cacheBuff = new List<Buff>();
-
         public Life() {
             _life = new FrameCache<LifeComponentOffsets>(() => Address == 0 ? default : M.Read<LifeComponentOffsets>(Address));
             _cachedValueBuffs = new FrameCache<List<Buff>>(ParseBuffs);
@@ -57,7 +55,7 @@ namespace PoEMemory.Components
                 var length = BuffLast - BuffStart;
                 var numBuffs = (int) length / 8;
                 if (length <= 0 || numBuffs >= MaxBuffCount || numBuffs <= 0 || BuffEnd <= 0) // * 8 as we buff pointer takes 8 bytes.
-                    return cacheBuff;
+                    return new List<Buff>();
                 var buffer = new long[numBuffs];
                 ProcessMemory.ReadProcessMemoryArray(M.OpenProcessHandle, (IntPtr) BuffStart, buffer, 0, numBuffs);
 
@@ -73,7 +71,6 @@ namespace PoEMemory.Components
                     if (!string.IsNullOrEmpty(buff.Name)) result.Add(buff);
                 }
 
-                cacheBuff = result;
                 return result;
             }
             catch (Exception e)
