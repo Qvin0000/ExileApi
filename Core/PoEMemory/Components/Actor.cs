@@ -89,7 +89,7 @@ namespace PoEMemory.Components
             }
         }
 
-        public List<ActorVaalSkill> ActorVaalSkills
+        /*public List<ActorVaalSkill> ActorVaalSkills
         {
             get
             {
@@ -108,7 +108,7 @@ namespace PoEMemory.Components
 
                 return result;
             }
-        }
+        }*/
 
         public class ActionWrapper : RemoteMemoryObject
         {
