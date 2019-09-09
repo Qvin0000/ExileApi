@@ -44,6 +44,11 @@ namespace PoEMemory.Components
         //public float TimeSinseLastMove => -M.Read<float>(Address + 0x110);
         //public float TimeSinseLastAction => -M.Read<float>(Address + 0x114);
 
+        /// <summary>
+        /// Currently performed action information.
+        /// WARNING: This memory location changes a lot,
+        /// put try catch if you are accessing this variable and the fields in it.
+        /// </summary>
         public ActionWrapper CurrentAction => Struct.ActionPtr > 0 ? GetObject<ActionWrapper>(Struct.ActionPtr) : null;
 
         // e.g minions, mines
