@@ -35,8 +35,8 @@ namespace GameOffsets
     [FieldOffset(0x65C8-Skip)]public byte PartyAllocationType;
     [FieldOffset(0x6468-Skip)]public float TimeInGame;
     [FieldOffset(0x6470-Skip)]public int Latency;
-    [FieldOffset(0x6480-Skip)]public NativePtrArray PlayerStashTabs;
-    [FieldOffset(0x6498-Skip)]public NativePtrArray GuildStashTabs;
+    [FieldOffset(0x6C30-Skip)]public NativePtrArray PlayerStashTabs;
+    [FieldOffset(0x6C48-Skip)]public NativePtrArray GuildStashTabs;
     [FieldOffset(0x6690-Skip)]public NativePtrArray NearestPlayers;
     [FieldOffset(0x6F30-Skip)]public NativePtrArray PlayerInventories;
     [FieldOffset(0x6828-Skip)]public NativePtrArray NPCInventories;
