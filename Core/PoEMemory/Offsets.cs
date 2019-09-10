@@ -9,6 +9,7 @@ namespace PoEMemory
     public class Offsets
     {
         public static Offsets Regular = new Offsets {IgsOffset = 0, IgsDelta = 0, ExeName = "PathOfExile_x64"};
+        public static Offsets Korean = new Offsets { IgsOffset = 0, IgsDelta = 0, ExeName = "Pathofexile_x64_KG" };
         public static Offsets Steam = new Offsets {IgsOffset = 0x28, IgsDelta = 0, ExeName = "PathOfExile_x64Steam"};
 
         /*

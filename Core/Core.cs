@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Exile.RenderQ;
+using ImGuiNET;
 using JM.LinqFaster;
 using PoEMemory;
 using Serilog;
@@ -159,7 +160,7 @@ namespace Exile
             }
             catch (Exception e)
             {
-                DebugWindow.LogError($"Core constructor -> {e}");
+                Logger.Error($"Core constructor -> {e}");
             }
         }
 
@@ -182,13 +183,15 @@ namespace Exile
         public GameController GameController { get; private set; }
         public bool GameStarted { get; private set; }
         public Graphics Graphics { get; }
+        
+        public bool IsForeground { get; private set; }
 
         public void Dispose()
         {
             _memory?.Dispose();
             _mainMenu?.Dispose();
             GameController?.Dispose();
-            _dx11.Dispose();
+            _dx11?.Dispose();
         }
 
         private IEnumerator MainControl()
@@ -229,8 +232,10 @@ namespace Exile
                 }
                 else
                 {
-                    GameController.IsForeGroundCache = WinApi.IsForegroundWindow(_memory.Process.MainWindowHandle) ||
-                                                       WinApi.IsForegroundWindow(FormHandle);
+                    var gameControllerIsForeGroundCache = WinApi.IsForegroundWindow(_memory.Process.MainWindowHandle) ||
+                                                          WinApi.IsForegroundWindow(FormHandle);
+                    IsForeground = gameControllerIsForeGroundCache;
+                    GameController.IsForeGroundCache = gameControllerIsForeGroundCache;
                 }
 
                 yield return _mainControl2;
@@ -284,26 +289,35 @@ namespace Exile
                 Input.Update(FormHandle);
                 _tickStartCore = _sw.Elapsed.TotalMilliseconds;
                 FramesCount++;
-                try
+                if (!IsForeground)
+                    ForeGroundTime += _deltaTimeDebugInformation.Tick;
+                else
+                    ForeGroundTime = 0;
+
+                if (ForeGroundTime <= 100)
                 {
-                    _debugWindow.Render();
-                }
-                catch (Exception e)
-                {
-                    DebugWindow.LogError($"DebugWindow Tick -> {e}");
+                    try
+                    {
+                        _debugWindow.Render();
+                    }
+                    catch (Exception e)
+                    {
+                        DebugWindow.LogError($"DebugWindow Tick -> {e}");
+                    }
+
+                    try
+                    {
+                        _mainMenu.Render(GameController);
+                    }
+                    catch (Exception e)
+                    {
+                        DebugWindow.LogError($"Core Tick Menu -> {e}");
+                    }
+
+                    _tickEnd = _sw.Elapsed.TotalMilliseconds;
+                    _menuDebugInformation.Tick = _tickEnd - _tickStartCore;
                 }
 
-                try
-                {
-                    _mainMenu.Render(GameController);
-                }
-                catch (Exception e)
-                {
-                    DebugWindow.LogError($"Core Tick Menu -> {e}");
-                }
-
-                _tickEnd = _sw.Elapsed.TotalMilliseconds;
-                _menuDebugInformation.Tick = _tickEnd - _tickStartCore;
                 if (GameController == null || pluginManager == null || !pluginManager.AllPluginsLoaded)
                 {
                     _coreDebugInformation.Tick = (float) (_sw.Elapsed.TotalMilliseconds - _tickStart);
@@ -330,10 +344,6 @@ namespace Exile
 
 
                 _tickStart = _sw.Elapsed.TotalMilliseconds;
-                if (!GameController.IsForeGroundCache)
-                    ForeGroundTime += _deltaTimeDebugInformation.Tick;
-                else
-                    ForeGroundTime = 0;
 
                 if (ForeGroundTime <= 150 && pluginManager != null)
                 {
@@ -387,7 +397,7 @@ namespace Exile
                             {
                                 waitingJob.plugin.TickDebugInformation.CorrectAfterTick(
                                     (float) waitingJob.job.ElapsedMs);
-                                if (waitingJob.job.IsFailed || !waitingJob.job.IsCompleted)
+                                if (waitingJob.job.IsFailed && waitingJob.job.IsCompleted)
                                 {
                                     waitingJob.plugin.CanRender = false;
                                     DebugWindow.LogMsg(
@@ -443,6 +453,7 @@ namespace Exile
         {
             var clients = Process.GetProcessesByName(Offsets.Regular.ExeName).Select(x => (x, Offsets.Regular))
                 .ToList();
+            clients.AddRange(Process.GetProcessesByName(Offsets.Korean.ExeName).Select(p => (p, Offsets.Korean)));
             var ixChosen = clients.Count > 1 ? ChooseSingleProcess(clients) : 0;
             if (clients.Count > 0)
                 return clients[ixChosen];
@@ -539,6 +550,13 @@ namespace Exile
             }
 
             var elTime = Time.TotalMilliseconds - startTime;
+        }
+
+        public void FixImGui()
+        {
+            WinApi.SetNoTransparent(_form.Handle);
+            ImGui.CaptureMouseFromApp();
+            ImGui.CaptureKeyboardFromApp();
         }
     }
 }

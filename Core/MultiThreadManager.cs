@@ -47,6 +47,7 @@ namespace Exile
         ConcurrentQueue<Job> Jobs = new ConcurrentQueue<Job>();
         Queue<Job> processJobs = new Queue<Job>();
         ConcurrentQueue<ThreadUnit> FreeThreads = new ConcurrentQueue<ThreadUnit>();
+        List<ThreadUnit> BrokenThreads = new List<ThreadUnit>();
         public int ThreadsCount { get; private set; }
 
         public void ChangeNumberThreads(int countThreads)
@@ -92,10 +93,13 @@ namespace Exile
             if (!FreeThreads.IsEmpty)
             {
                 FreeThreads.TryDequeue(out var threadUnit);
-                jobAbsorbed = threadUnit.AddJob(job);
-                if (threadUnit.Free)
+                if (threadUnit != null)
                 {
-                    FreeThreads.Enqueue(threadUnit);
+                    jobAbsorbed = threadUnit.AddJob(job);
+                    if (threadUnit.Free)
+                    {
+                        FreeThreads.Enqueue(threadUnit);
+                    }   
                 }
             }
 
@@ -189,6 +193,7 @@ namespace Exile
                                         $"Repair thread #{th.Number} with Job1: {th.Job.Name} (C: {th.Job.IsCompleted} F: {th.Job.IsFailed}) && Job2:{th.SecondJob.Name} (C: {th.SecondJob.IsCompleted} F: {th.SecondJob.IsFailed}) Time: {thWorkingTime} > {thWorkingTime >= CriticalWorkTimeMs}",
                                         5);
                                     th.Abort();
+                                    BrokenThreads.Add(th);
                                     var newThread = new ThreadUnit($"Repair critical time {th.Number}", th.Number);
                                     threads[th.Number] = newThread;
                                     FreeThreads.Enqueue(newThread);
@@ -214,10 +219,41 @@ namespace Exile
                     else
                     {
                         spinWait.SpinOnce();
+                        var threadUnitWorkingTime = threadUnit.WorkingTime;
+                        if (threadUnitWorkingTime > CriticalWorkTimeMs)
+                        {
+                            DebugWindow.LogMsg(
+                                $"Repair thread #{threadUnit.Number} withreadUnit Job1: {threadUnit.Job.Name} (C: {threadUnit.Job.IsCompleted} F: {threadUnit.Job.IsFailed}) && Job2:{threadUnit.SecondJob.Name} (C: {threadUnit.SecondJob.IsCompleted} F: {threadUnit.SecondJob.IsFailed}) Time: {threadUnitWorkingTime} > {threadUnitWorkingTime >= CriticalWorkTimeMs}",
+                                5);
+                            threadUnit.Abort();
+                            BrokenThreads.Add(threadUnit);
+                            threadUnit = new ThreadUnit($"Repair critical time {threadUnit.Number}", threadUnit.Number);
+                            Thread.Sleep(5);
+                            FailedThreadsCount++;
+                        }
                     }
                 }
             }
 
+            if (BrokenThreads.Count > 0)
+            {
+                var criticalWorkTimeMs = CriticalWorkTimeMs * 2;
+                for (var index = 0; index < BrokenThreads.Count; index++)
+                {
+                    var brokenThread = BrokenThreads[index];
+                    if(brokenThread==null) continue;
+                    if (brokenThread.WorkingTime > criticalWorkTimeMs)
+                    {
+                        brokenThread.ForceAbort();
+                        BrokenThreads[index] = null;
+                    }
+                }
+
+                if (BrokenThreads.AllF(x => x == null))
+                {
+                    BrokenThreads.Clear();
+                }
+            }
 
             Interlocked.CompareExchange(ref _lock, 0, 1);
             ProcessWorking = false;
@@ -334,7 +370,7 @@ namespace Exile
                     {
                         Job.ElapsedMs = sw.Elapsed.TotalMilliseconds;
                         Job.IsCompleted = true;
-                        sw.Stop();
+                        sw.Restart();
                     }
                 }
 
@@ -354,7 +390,7 @@ namespace Exile
                     {
                         SecondJob.ElapsedMs = sw.Elapsed.TotalMilliseconds;
                         SecondJob.IsCompleted = true;
-                        sw.Stop();
+                        sw.Restart();
                     }
                 }
             }
@@ -398,6 +434,12 @@ namespace Exile
             }
             running = false;
             //thread.Abort();
+        }
+
+        public void ForceAbort()
+        {
+            abort = true;
+            thread.Abort();
         }
     }
 }
