@@ -168,7 +168,7 @@ namespace Exile.RenderQ
             var texture = TextureLoader.CreateTexture2DFromBitmap(_dx11.D11Device,
                 TextureLoader.LoadBitmap(imagingFactory2, fileName));
             Texture = new ShaderResourceView(_dx11.D11Device, texture);
-            _dx11.AddOrUpdateTexture(fileName.Split('/').Last(), Texture);
+            _dx11.AddOrUpdateTexture(fileName.Split('/').Last().Split('\\').Last(), Texture);
             texture.Dispose();
             return texture;
         }
