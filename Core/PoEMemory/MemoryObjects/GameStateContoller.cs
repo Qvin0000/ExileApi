@@ -40,11 +40,8 @@ namespace PoEMemory
                                                  IngameState.ServerData.IsInGame*/);
 
             Files = new FilesContainer(m);
-
-            var IngameStateOffsetsNameOf = new IngameStateOffsets();
-            var IngameDataOffsetsNameOf = new IngameDataOffsets();
-            DataOff = Extensions.GetOffset<IngameStateOffsets>(nameof(IngameStateOffsetsNameOf.Data));
-            CurrentAreaHashOff = Extensions.GetOffset<IngameDataOffsets>(nameof(IngameDataOffsetsNameOf.CurrentAreaHash));
+            DataOff = Extensions.GetOffset<IngameStateOffsets>(nameof(IngameStateOffsets.Data));
+            CurrentAreaHashOff = Extensions.GetOffset<IngameDataOffsets>(nameof(IngameDataOffsets.CurrentAreaHash));
         }
 
         private bool initialized = false;

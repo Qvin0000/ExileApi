@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 using SharpDX;
-using Shared.Structs;
+using GameOffsets.Native;
 
 namespace GameOffsets
 {

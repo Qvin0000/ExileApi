@@ -14,7 +14,7 @@ namespace PoEMemory
 {
     public class Element : RemoteMemoryObject
     {
-        public const int OffsetBuffers = 0x6EC;
+        public const int OffsetBuffers = 0;
 
         // dd id
         // dd (something zero)

@@ -1,5 +1,5 @@
-using Shared.Structs;
 using GameOffsets;
+using GameOffsets.Native;
 using Shared.Interfaces;
 using SharpDX;
 
