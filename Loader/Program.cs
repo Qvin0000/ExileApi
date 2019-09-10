@@ -127,7 +127,7 @@ namespace Loader
         {
             var dllName = "GameOffsets.dll";
             var dllInfo = new FileInfo(dllName);
-            var dirInfo = new DirectoryInfo("GameOffsets");
+            var dirInfo = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"GameOffsets"));
             if (!dirInfo.Exists)
                 MessageBox.Show("Offsets folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
