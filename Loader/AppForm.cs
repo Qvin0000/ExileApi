@@ -1,11 +1,6 @@
 using System;
-using System.ComponentModel;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
-using Exile;
-using ImGuiNET;
-using Shared;
 using SharpDX.Windows;
 
 namespace Loader
@@ -35,8 +30,7 @@ namespace Loader
             menuItem2.Click += (sender, args) =>
             {
                 BringToFront();
-                ImGui.CaptureMouseFromApp();
-                ImGui.CaptureKeyboardFromApp();
+                FixImguiCapture?.Invoke();
             };
             Icon = Icon.ExtractAssociatedIcon("textures\\poehud.ico");
             notifyIcon.Icon = Icon;
@@ -53,11 +47,10 @@ namespace Loader
             BackColor = Color.Black;
 
             ResumeLayout(false);
-
-
             BringToFront();
         }
 
+        public Action FixImguiCapture;
         protected override void Dispose(bool disposing) {
             if (notifyIcon != null)
             {

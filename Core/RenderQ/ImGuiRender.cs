@@ -477,11 +477,10 @@ namespace Exile.RenderQ
             get => _lastFontContainer;
             set
             {
-                if (_lastFontContainer.Name != value.Name)
+                /*if (_lastFontContainer.Name != value.Name)
                 {
                     DebugWindow.LogMsg($"Change font from {_lastFontContainer.Name} to {value.Name}", 13);
-                }
-
+                }*/
                 _lastFontContainer = value;
             }
         }
