@@ -104,7 +104,14 @@ namespace Exile
                     _dx11 = new DX11(form, _coreSettings);
                 }
 
-                _soundController = new SoundController("Sounds");
+                if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
+                {
+                }
+                else
+                {
+                    _soundController = new SoundController("Sounds");
+                    Logger.Information($"SoundController init skipped because win7 issue.");
+                }
                 _coreSettings.Volume.OnValueChanged += (sender, i) => { _soundController.SetVolume(i / 100f); };
                 _coreSettings.VSync.OnValueChanged += (obj, b) => { _dx11.VSync = _coreSettings.VSync.Value; };
                 Graphics = new Graphics(_dx11, _coreSettings);
