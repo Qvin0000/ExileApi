@@ -1,18 +1,20 @@
+using ExileCore.Shared.Cache;
 using GameOffsets;
 using GameOffsets.Native;
-using Shared.Interfaces;
 using SharpDX;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Positioned : Component
     {
-        private CachedValue<PositionedComponentOffsets> _cachedValue;
+        private readonly CachedValue<PositionedComponentOffsets> _cachedValue;
+
+        public Positioned()
+        {
+            _cachedValue = new FrameCache<PositionedComponentOffsets>(() => M.Read<PositionedComponentOffsets>(Address));
+        }
+
         public PositionedComponentOffsets PositionedStruct => _cachedValue.Value;
-
-        public Positioned() => _cachedValue = new FrameCache<PositionedComponentOffsets>(() => M.Read<PositionedComponentOffsets>(Address));
-
-
         public long OwnerAddress => PositionedStruct.OwnerAddress;
         public int GridX => PositionedStruct.GridX;
         public int GridY => PositionedStruct.GridY;

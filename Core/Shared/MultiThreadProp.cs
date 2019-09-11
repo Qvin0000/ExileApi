@@ -1,22 +1,25 @@
-namespace Shared
+namespace ExileCore.Shared
 {
     public class MultiThreadProp<T> where T : class, new()
     {
+        private T freeProp;
+        private readonly object locker = new object();
         private T Prop1;
         private T Prop2;
-        private T freeProp;
-        private object locker = new object();
-        public bool CanUpdate => write - read < 3;
-        public bool CanRead => write > read;
         private int read;
         private int write;
 
-        public MultiThreadProp() {
+        public MultiThreadProp()
+        {
             Prop1 = new T();
             Prop2 = new T();
         }
 
-        public T Read() {
+        public bool CanUpdate => write - read < 3;
+        public bool CanRead => write > read;
+
+        public T Read()
+        {
             lock (locker)
             {
                 read++;
@@ -24,7 +27,8 @@ namespace Shared
             }
         }
 
-        public T Write() {
+        public T Write()
+        {
             lock (locker)
             {
                 Swap();
@@ -33,7 +37,8 @@ namespace Shared
             }
         }
 
-        private void Swap() {
+        private void Swap()
+        {
             lock (locker)
             {
                 freeProp = Prop1;

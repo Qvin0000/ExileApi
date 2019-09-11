@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.MemoryObjects;
 
-
-namespace PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class HPbarElement : Element
     {

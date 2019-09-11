@@ -1,23 +1,31 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class QuestStates : UniversalFileWrapper<QuestState>
     {
-        public QuestStates(IMemory m, Func<long> address) : base(m, address) { }
-
         private Dictionary<string, Dictionary<int, QuestState>> QuestStatesDictionary;
 
-        public QuestState GetQuestState(string questId, int stateId) {
+        public QuestStates(IMemory m, Func<long> address) : base(m, address)
+        {
+        }
+
+        public IList<QuestState> EntriesList => base.EntriesList.ToList();
+
+        public QuestState GetQuestState(string questId, int stateId)
+        {
             Dictionary<int, QuestState> dictionary;
+
             if (QuestStatesDictionary == null)
             {
                 CheckCache();
                 var qStates = EntriesList;
                 QuestStatesDictionary = new Dictionary<string, Dictionary<int, QuestState>>();
+
                 try
                 {
                     foreach (var item in qStates)
@@ -40,10 +48,13 @@ namespace PoEMemory.FilesInMemory
 
             if (QuestStatesDictionary.TryGetValue(questId.ToLowerInvariant(), out dictionary) &&
                 dictionary.TryGetValue(stateId, out var result)) return result;
+
             return null;
         }
 
-        public IList<QuestState> EntriesList => base.EntriesList.ToList();
-        public QuestState GetByAddress(long address) => base.GetByAddress(address);
+        public QuestState GetByAddress(long address)
+        {
+            return base.GetByAddress(address);
+        }
     }
 }

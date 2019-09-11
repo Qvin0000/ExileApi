@@ -1,19 +1,20 @@
+using ExileCore.Shared.Cache;
 using GameOffsets;
-using Shared.Interfaces;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class SkillGem : Component
     {
-        private CachedValue<SkillGemOffsets> _cachedValue;
-        private FrameCache<GemInformation> _cachedValue2;
+        private readonly CachedValue<SkillGemOffsets> _cachedValue;
+        private readonly FrameCache<GemInformation> _cachedValue2;
 
-        public SkillGem() {
+        public SkillGem()
+        {
             _cachedValue = new FrameCache<SkillGemOffsets>(() => M.Read<SkillGemOffsets>(Address));
             _cachedValue2 = new FrameCache<GemInformation>(() => M.Read<GemInformation>(_cachedValue.Value.AdvanceInformation));
         }
 
-        public uint Level => _cachedValue.Value.Level;
+        public int Level => (int)_cachedValue.Value.Level;//TODO: fixme, remove cast
         public uint TotalExpGained => _cachedValue.Value.TotalExpGained;
         public uint ExperiencePrevLevel => _cachedValue.Value.TotalExpGained;
         public uint ExperienceMaxLevel => _cachedValue.Value.ExperienceMaxLevel;

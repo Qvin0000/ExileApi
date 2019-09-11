@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class AtlasNodes : UniversalFileWrapper<AtlasNode>
     {
-        public AtlasNodes(IMemory mem, Func<long> address) : base(mem, address) { }
+        public AtlasNodes(IMemory mem, Func<long> address) : base(mem, address)
+        {
+        }
 
         public IList<AtlasNode> EntriesList
         {
@@ -18,6 +21,9 @@ namespace PoEMemory.FilesInMemory
             }
         }
 
-        public AtlasNode GetByAddress(long address) => base.GetByAddress(address);
+        public AtlasNode GetByAddress(long address)
+        {
+            return base.GetByAddress(address);
+        }
     }
 }

@@ -1,33 +1,44 @@
-namespace Shared
+namespace ExileCore.Shared
 {
     public class IntRange
     {
-        public int Min { get; private set; }
-        public int Max { get; private set; }
-
-        public void Include(int value) {
-            if (value < Min) Min = value;
-            if (value > Max) Max = value;
-        }
-
-        public IntRange(int min, int max) {
+        public IntRange(int min, int max)
+        {
             Min = min;
             Max = max;
         }
 
-        public IntRange() {
+        public IntRange()
+        {
             Min = int.MaxValue;
             Max = int.MinValue;
         }
 
-        public override string ToString() => $"{Min} - {Max}";
+        public int Min { get; private set; }
+        public int Max { get; private set; }
 
-        public float GetPercentage(int val) {
+        public void Include(int value)
+        {
+            if (value < Min) Min = value;
+            if (value > Max) Max = value;
+        }
+
+        public override string ToString()
+        {
+            return $"{Min} - {Max}";
+        }
+
+        public float GetPercentage(int val)
+        {
             if (Min == Max)
                 return 1;
+
             return (float) (val - Min) / (Max - Min);
         }
 
-        public bool HasSpread() => Max != Min;
+        public bool HasSpread()
+        {
+            return Max != Min;
+        }
     }
 }

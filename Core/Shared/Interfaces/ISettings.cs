@@ -1,6 +1,6 @@
-using Shared.Nodes;
+using ExileCore.Shared.Nodes;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface ISettings
     {

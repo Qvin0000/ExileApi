@@ -1,15 +1,19 @@
-using Shared.Helpers;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
-using Shared.Interfaces;
-using Shared.Enums;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class Cursor : Element
     {
-        private CachedValue<CursorOffsets> _cachevalue;
+        private readonly CachedValue<CursorOffsets> _cachevalue;
 
-        public Cursor() => _cachevalue = new FrameCache<CursorOffsets>(() => M.Read<CursorOffsets>(Address));
+        public Cursor()
+        {
+            _cachevalue = new FrameCache<CursorOffsets>(() => M.Read<CursorOffsets>(Address));
+        }
+
         public MouseActionType Action => (MouseActionType) M.Read<int>(Address + 0x238);
         public MouseActionType ActionCached => (MouseActionType) _cachevalue.Value.Action;
         public int ClicksCached => _cachevalue.Value.Clicks;

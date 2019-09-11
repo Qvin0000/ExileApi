@@ -1,33 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Caching;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Exile;
-using Shared.Interfaces;
-using SharpDX;
+using ExileCore.Shared.Interfaces;
 
-namespace Shared.Cache
+namespace ExileCore.Shared.Cache
 {
     public class StaticCache<T> : IStaticCache<T>
     {
+        private static readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
         private readonly int _lifeTimeForCache;
         private readonly int _limit;
         private readonly string name;
-        private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
-
+        private readonly CacheItemPolicy _policy;
+        private readonly MemoryCache cache;
         private bool IsEmpty = true;
-        public StaticCache(int lifeTimeForCache = 120, int limit = 30, string name = null) {
+
+        public StaticCache(int lifeTimeForCache = 120, int limit = 30, string name = null)
+        {
             _lifeTimeForCache = lifeTimeForCache;
             _limit = limit;
             this.name = name ?? typeof(T).Name;
             cache = new MemoryCache(this.name);
-            _policy = new CacheItemPolicy()
+
+            _policy = new CacheItemPolicy
             {
-                SlidingExpiration = TimeSpan.FromSeconds(lifeTimeForCache), RemovedCallback = arguments => { _DeletedCache++; }
+                SlidingExpiration = TimeSpan.FromSeconds(lifeTimeForCache), RemovedCallback = arguments => { DeletedCache++; }
             };
         }
 
@@ -40,29 +37,25 @@ namespace Shared.Cache
             }
         }
 
-        public int Count => FuncCache - _DeletedCache;
-        public int DeletedCache => _DeletedCache;
-
-        private int SavedCache;
-        private int FuncCache;
-        private int _DeletedCache;
-        public int ReadCache => SavedCache;
-        public int ReadMemory => FuncCache;
+        public int Count => ReadMemory - DeletedCache;
+        public int DeletedCache { get; private set; }
+        public int ReadCache { get; private set; }
+        public int ReadMemory { get; private set; }
         public string CoeffString => $"{Coeff:0.000}% Read from memory";
         public float Coeff => ReadMemory / (float) (ReadCache + ReadMemory) * 100;
 
-        private MemoryCache cache;
-        private CacheItemPolicy _policy;
-
-        public T Read(string addr, Func<T> func) {
+        public T Read(string addr, Func<T> func)
+        {
             cacheLock.EnterReadLock();
+
             try
             {
                 IsEmpty = false;
                 var o = cache[addr];
+
                 if (o != null)
                 {
-                    SavedCache++;
+                    ReadCache++;
                     return (T) o;
                 }
             }
@@ -76,9 +69,10 @@ namespace Shared.Cache
             try
             {
                 var ob = cache.Get(addr);
+
                 if (ob != null)
                 {
-                    SavedCache++;
+                    ReadCache++;
                     return (T) ob;
                 }
 
@@ -86,7 +80,7 @@ namespace Shared.Cache
                 {
                     cacheLock.EnterWriteLock();
                     var tt = func();
-                    FuncCache++;
+                    ReadMemory++;
                     cache.Add(addr, tt, _policy);
                     return tt;
                 }
@@ -101,11 +95,13 @@ namespace Shared.Cache
             }
         }
 
-
-        public bool Remove(string key) {
+        public bool Remove(string key)
+        {
             var remove = cache.Remove(key);
+
             if (remove != null)
                 return true;
+
             return false;
         }
     }

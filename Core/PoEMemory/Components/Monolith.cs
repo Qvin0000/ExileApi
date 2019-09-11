@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PoEMemory;
-
-namespace PoEMemory.Components
+﻿namespace ExileCore.PoEMemory.Components
 {
     public class Monolith : Component
     {

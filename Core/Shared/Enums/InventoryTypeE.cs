@@ -1,6 +1,4 @@
-using System;
-
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     /// <summary>
     /// Copied from GGPK -> InventoryType.dat file

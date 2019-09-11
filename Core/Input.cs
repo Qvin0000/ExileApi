@@ -2,37 +2,67 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Shared;
-using Shared.Helpers;
+using ExileCore.Shared;
+using ExileCore.Shared.Helpers;
 using MoreLinq.Extensions;
 using SharpDX;
 
-namespace Exile
+namespace ExileCore
 {
     public class Input
     {
-        static Input() {
-            foreach (Keys key in Enum.GetValues(typeof(Keys))) KeysPressed[key] = false;
+        private const int KEYEVENTF_EXTENDEDKEY = 0x0001;
+        private const int KEYEVENTF_KEYUP = 0x0002;
+        private const int ACTION_DELAY = 1;
+        private const int MOVEMENT_DELAY = 7;
+        private const int CLICK_DELAY = 5;
+        private const int KEY_PRESS_DELAY = 10;
+        public const int MOUSEEVENTF_MOVE = 0x0001;
+        public const int MOUSEEVENTF_LEFTDOWN = 0x02;
+        public const int MOUSEEVENTF_LEFTUP = 0x04;
+        public const int MOUSEEVENTF_MIDDOWN = 0x0020;
+        public const int MOUSEEVENTF_MIDUP = 0x0040;
+        public const int MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        public const int MOUSEEVENTF_RIGHTUP = 0x0010;
+        public const int MOUSE_EVENT_WHEEL = 0x800;
+        private static readonly Dictionary<Keys, bool> Keys = new Dictionary<Keys, bool>();
+        private static readonly HashSet<Keys> RegisteredKeys = new HashSet<Keys>();
+        private static readonly object locker = new object();
+        private static readonly WaitTime cursorPositionSmooth = new WaitTime(1);
+        private static readonly WaitTime keyPress = new WaitTime(ACTION_DELAY);
+        private static readonly Dictionary<Keys, bool> KeysPressed = new Dictionary<Keys, bool>();
+        private static readonly Stopwatch sw = Stopwatch.StartNew();
+
+        static Input()
+        {
+            foreach (Keys key in Enum.GetValues(typeof(Keys)))
+            {
+                KeysPressed[key] = false;
+            }
         }
 
         public static Vector2 ForceMousePosition => WinApi.GetCursorPositionPoint();
         public static Vector2 MousePosition { get; private set; }
         public static System.Numerics.Vector2 MousePositionNum => MousePosition.ToVector2Num();
 
-        public static bool IsKeyDown(int nVirtKey) => IsKeyDown((Keys) nVirtKey);
+        public static bool IsKeyDown(int nVirtKey)
+        {
+            return IsKeyDown((Keys) nVirtKey);
+        }
 
-        public static bool IsKeyDown(Keys nVirtKey) => Keys[nVirtKey];
-        public static bool GetKeyState(Keys key) => WinApi.GetKeyState(key) < 0;
-        private static readonly Dictionary<Keys, bool> Keys = new Dictionary<Keys, bool>();
+        public static bool IsKeyDown(Keys nVirtKey)
+        {
+            return Keys[nVirtKey];
+        }
 
-        private static HashSet<Keys> RegisteredKeys = new HashSet<Keys>();
+        public static bool GetKeyState(Keys key)
+        {
+            return WinApi.GetKeyState(key) < 0;
+        }
 
-
-        private static readonly object locker = new object();
-
-        public static void RegisterKey(Keys key) {
+        public static void RegisterKey(Keys key)
+        {
             if (!Keys.TryGetValue(key, out _))
             {
                 lock (locker)
@@ -45,8 +75,10 @@ namespace Exile
 
         public static event EventHandler<Keys> ReleaseKey;
 
-        public static void Update(IntPtr windowPtr) {
+        public static void Update(IntPtr windowPtr)
+        {
             MousePosition = WinApi.GetCursorPosition(windowPtr);
+
             try
             {
                 RegisteredKeys.ForEach(key =>
@@ -63,9 +95,8 @@ namespace Exile
             }
         }
 
-        private static WaitTime cursorPositionSmooth = new WaitTime(1);
-
-        public static IEnumerator SetCursorPositionSmooth(Vector2 vec) {
+        public static IEnumerator SetCursorPositionSmooth(Vector2 vec)
+        {
             var step = Math.Max(vec.Distance(ForceMousePosition) / 100, 4);
 
             if (step > 6)
@@ -82,20 +113,22 @@ namespace Exile
                 SetCursorPos(vec);
         }
 
-        public static void VerticalScroll(bool forward, int clicks) {
+        public static void VerticalScroll(bool forward, int clicks)
+        {
             if (forward)
                 WinApi.mouse_event(MOUSE_EVENT_WHEEL, 0, 0, clicks * 120, 0);
             else
                 WinApi.mouse_event(MOUSE_EVENT_WHEEL, 0, 0, -(clicks * 120), 0);
         }
 
-        public static void SetCursorPos(Vector2 vec) {
+        public static void SetCursorPos(Vector2 vec)
+        {
             WinApi.SetCursorPos((int) vec.X, (int) vec.Y);
             MouseMove();
         }
 
-
-        public static void Click(MouseButtons buttons) {
+        public static void Click(MouseButtons buttons)
+        {
             switch (buttons)
             {
                 case MouseButtons.Left:
@@ -108,7 +141,7 @@ namespace Exile
                     break;
             }
         }
-        
+
         public static void LeftDown()
         {
             WinApi.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
@@ -118,7 +151,6 @@ namespace Exile
         {
             WinApi.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
         }
-
 
         /*public static IEnumerator LeftClick()
         {
@@ -148,33 +180,44 @@ namespace Exile
             MouseMove();
             yield return null;
         }*/
-        public static void MouseMove() => WinApi.mouse_event(MOUSEEVENTF_MOVE, 0, 0, 0, 0);
+        public static void MouseMove()
+        {
+            WinApi.mouse_event(MOUSEEVENTF_MOVE, 0, 0, 0, 0);
+        }
 
-        private static WaitTime keyPress = new WaitTime(ACTION_DELAY);
-
-        public static IEnumerator KeyPress(Keys key) {
+        public static IEnumerator KeyPress(Keys key)
+        {
             KeyDown(key);
             yield return keyPress;
             KeyUp(key);
         }
 
+        public static void KeyDown(Keys key)
+        {
+            WinApi.keybd_event((byte) key, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+        }
 
-        public static void KeyDown(Keys key) => WinApi.keybd_event((byte) key, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+        public static void KeyUp(Keys key)
+        {
+            WinApi.keybd_event((byte) key, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+        }
 
-        public static void KeyUp(Keys key) => WinApi.keybd_event((byte) key, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+        public static void KeyDown(Keys key, IntPtr handle)
+        {
+            WinApi.SendMessage(handle, 0x100, (int) key, 0);
+        }
 
+        public static void KeyUp(Keys key, IntPtr handle)
+        {
+            WinApi.SendMessage(handle, 0x101, (int) key, 0);
+        }
 
-        public static void KeyDown(Keys key, IntPtr handle) => WinApi.SendMessage(handle, 0x100, (int) key, 0);
-
-        public static void KeyUp(Keys key, IntPtr handle) => WinApi.SendMessage(handle, 0x101, (int) key, 0);
-
-        private static Dictionary<Keys, bool> KeysPressed = new Dictionary<Keys, bool>();
-        private static Stopwatch sw = Stopwatch.StartNew();
-
-        public static void KeyPressRelease(Keys key, IntPtr handle) {
+        public static void KeyPressRelease(Keys key, IntPtr handle)
+        {
             if (sw.ElapsedMilliseconds >= KEY_PRESS_DELAY && KeysPressed[key])
             {
                 KeyUp(key, handle);
+
                 lock (locker)
                 {
                     KeysPressed[key] = false;
@@ -185,6 +228,7 @@ namespace Exile
             else if (!KeysPressed[key])
             {
                 KeyDown(key, handle);
+
                 lock (locker)
                 {
                     KeysPressed[key] = true;
@@ -194,10 +238,12 @@ namespace Exile
             }
         }
 
-        public static void KeyPressRelease(Keys key) {
+        public static void KeyPressRelease(Keys key)
+        {
             if (sw.ElapsedMilliseconds >= KEY_PRESS_DELAY && KeysPressed[key])
             {
                 KeyUp(key);
+
                 lock (locker)
                 {
                     KeysPressed[key] = false;
@@ -208,6 +254,7 @@ namespace Exile
             else if (!KeysPressed[key])
             {
                 KeyDown(key);
+
                 lock (locker)
                 {
                     KeysPressed[key] = true;
@@ -216,20 +263,5 @@ namespace Exile
                 sw.Restart();
             }
         }
-
-        private const int KEYEVENTF_EXTENDEDKEY = 0x0001;
-        private const int KEYEVENTF_KEYUP = 0x0002;
-        private const int ACTION_DELAY = 1;
-        private const int MOVEMENT_DELAY = 7;
-        private const int CLICK_DELAY = 5;
-        private const int KEY_PRESS_DELAY = 10;
-        public const int MOUSEEVENTF_MOVE = 0x0001;
-        public const int MOUSEEVENTF_LEFTDOWN = 0x02;
-        public const int MOUSEEVENTF_LEFTUP = 0x04;
-        public const int MOUSEEVENTF_MIDDOWN = 0x0020;
-        public const int MOUSEEVENTF_MIDUP = 0x0040;
-        public const int MOUSEEVENTF_RIGHTDOWN = 0x0008;
-        public const int MOUSEEVENTF_RIGHTUP = 0x0010;
-        public const int MOUSE_EVENT_WHEEL = 0x800;
     }
 }

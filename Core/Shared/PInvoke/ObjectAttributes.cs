@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Exile.Shared.PInvoke
+namespace ExileCore.Shared.PInvoke
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct ObjectAttributes

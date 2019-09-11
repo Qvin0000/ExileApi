@@ -1,4 +1,4 @@
-namespace PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class SkillElement : Element
     {

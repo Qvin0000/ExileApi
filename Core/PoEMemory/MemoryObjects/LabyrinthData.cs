@@ -1,16 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using Exile;
-using Shared.Interfaces;
-using Shared.Static;
-using PoEMemory.FilesInMemory;
+using ExileCore.PoEMemory.FilesInMemory;
+using ExileCore.Shared.Interfaces;
 using SharpDX;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class LabyrinthData : RemoteMemoryObject
     {
+        //we gonna use this to have identical references to rooms
+        internal static Dictionary<long, LabyrinthRoom> CachedRoomsDictionary;
+
         public IList<LabyrinthRoom> Rooms
         {
             get
@@ -22,6 +22,7 @@ namespace PoEMemory
                 CachedRoomsDictionary = new Dictionary<long, LabyrinthRoom>();
 
                 var roomIndex = 0;
+
                 for (var addr = firstPtr; addr < lastPtr; addr += 0x60)
                 {
                     DebugWindow.LogMsg($"Room {roomIndex} Addr: {addr.ToString("x")}", 0, Color.White);
@@ -35,29 +36,20 @@ namespace PoEMemory
             }
         }
 
-        //we gonna use this to have identical references to rooms
-        internal static Dictionary<long, LabyrinthRoom> CachedRoomsDictionary;
-
-        internal static LabyrinthRoom GetRoomById(long roomId) {
+        internal static LabyrinthRoom GetRoomById(long roomId)
+        {
             CachedRoomsDictionary.TryGetValue(roomId, out var room);
             return room;
         }
     }
 
-
     public class LabyrinthRoom
     {
-        public WorldAreas FilesWorldAreas { get; }
         private readonly long Address;
-        public int Id { get; internal set; }
-        private IMemory M;
-        public LabyrinthSecret Secret1 { get; internal set; }
-        public LabyrinthSecret Secret2 { get; internal set; }
-        public LabyrinthRoom[] Connections { get; internal set; } // Length is always 5
-        public LabyrinthSection Section { get; internal set; }
+        private readonly IMemory M;
 
-
-        internal LabyrinthRoom(IMemory m, long address, WorldAreas filesWorldAreas) {
+        internal LabyrinthRoom(IMemory m, long address, WorldAreas filesWorldAreas)
+        {
             FilesWorldAreas = filesWorldAreas;
             M = m;
             Address = address;
@@ -69,15 +61,23 @@ namespace PoEMemory
             Connections = roomsPointers.Select(x => x == 0 ? null : LabyrinthData.GetRoomById(x)).ToArray();
         }
 
-        internal LabyrinthSection ReadSection(long addr) {
+        public WorldAreas FilesWorldAreas { get; }
+        public int Id { get; internal set; }
+        public LabyrinthSecret Secret1 { get; internal set; }
+        public LabyrinthSecret Secret2 { get; internal set; }
+        public LabyrinthRoom[] Connections { get; internal set; } // Length is always 5
+        public LabyrinthSection Section { get; internal set; }
+
+        internal LabyrinthSection ReadSection(long addr)
+        {
             if (addr == 0) return null; //Should never happens
             var section = new LabyrinthSection(M, addr, FilesWorldAreas);
-
 
             return section;
         }
 
-        private LabyrinthSecret ReadSecret(long addr) {
+        private LabyrinthSecret ReadSecret(long addr)
+        {
             var secretAddress = M.Read<long>(addr);
             if (addr == 0) return null;
 
@@ -89,10 +89,12 @@ namespace PoEMemory
             return result;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             var linked = "";
 
             var realConnections = Connections.Where(r => r != null).ToList();
+
             if (realConnections.Count > 0)
                 linked = $"LinkedWith: {string.Join(", ", realConnections.Select(x => x.Id.ToString()).ToArray())}";
 
@@ -100,24 +102,21 @@ namespace PoEMemory
                    $"Secret1: {(Secret1 == null ? "None" : Secret1.SecretName)}, Secret2: {(Secret2 == null ? "None" : Secret2.SecretName)}, {linked}, Section: {Section}";
         }
 
-
         public class LabyrinthSecret
         {
             public string SecretName { get; internal set; }
             public string Name { get; internal set; }
 
-            public override string ToString() => SecretName;
+            public override string ToString()
+            {
+                return SecretName;
+            }
         }
-
 
         public class LabyrinthSection
         {
-            public WorldAreas FilesWorldAreas { get; }
-            public string SectionType { get; internal set; }
-            public IList<LabyrinthSectionOverrides> Overrides { get; internal set; } = new List<LabyrinthSectionOverrides>();
-            public LabyrinthSectionAreas SectionAreas { get; internal set; }
-
-            internal LabyrinthSection(IMemory M, long addr, WorldAreas filesWorldAreas) {
+            internal LabyrinthSection(IMemory M, long addr, WorldAreas filesWorldAreas)
+            {
                 FilesWorldAreas = filesWorldAreas;
                 SectionType = M.ReadStringU(M.Read<long>(addr + 0x8, 0));
 
@@ -156,8 +155,13 @@ namespace PoEMemory
                 SectionAreas.EndgameAreasPtrs = M.ReadSecondPointerArray_Count(endgameArrayPtr, endgameCount);
             }
 
+            public WorldAreas FilesWorldAreas { get; }
+            public string SectionType { get; internal set; }
+            public IList<LabyrinthSectionOverrides> Overrides { get; internal set; } = new List<LabyrinthSectionOverrides>();
+            public LabyrinthSectionAreas SectionAreas { get; internal set; }
 
-            public override string ToString() {
+            public override string ToString()
+            {
                 var overrides = "";
 
                 if (Overrides.Count > 0)
@@ -170,6 +174,20 @@ namespace PoEMemory
 
     public class LabyrinthSectionAreas
     {
+        private List<WorldArea> cruelAreas;
+        private List<WorldArea> endgameAreas;
+        private List<WorldArea> mercilesAreas;
+        private List<WorldArea> normalAreas;
+
+        public LabyrinthSectionAreas(WorldAreas filesWorldAreas)
+        {
+            FilesWorldAreas = filesWorldAreas;
+            NormalAreasPtrs = new List<long>();
+            CruelAreasPtrs = new List<long>();
+            MercilesAreasPtrs = new List<long>();
+            EndgameAreasPtrs = new List<long>();
+        }
+
         public WorldAreas FilesWorldAreas { get; }
         public string Name { get; set; }
         public IList<long> NormalAreasPtrs { get; set; }
@@ -177,19 +195,16 @@ namespace PoEMemory
         public IList<long> MercilesAreasPtrs { get; set; }
         public IList<long> EndgameAreasPtrs { get; set; }
 
-        private List<WorldArea> normalAreas;
-
         public IList<WorldArea> NormalAreas
         {
             get
             {
                 if (normalAreas == null)
                     normalAreas = NormalAreasPtrs.Select(x => FilesWorldAreas.GetByAddress(x)).ToList();
+
                 return normalAreas;
             }
         }
-
-        private List<WorldArea> cruelAreas;
 
         public IList<WorldArea> CruelAreas
         {
@@ -197,11 +212,10 @@ namespace PoEMemory
             {
                 if (cruelAreas == null)
                     cruelAreas = CruelAreasPtrs.Select(x => FilesWorldAreas.GetByAddress(x)).ToList();
+
                 return cruelAreas;
             }
         }
-
-        private List<WorldArea> mercilesAreas;
 
         public IList<WorldArea> MercilesAreas
         {
@@ -209,18 +223,9 @@ namespace PoEMemory
             {
                 if (mercilesAreas == null)
                     mercilesAreas = MercilesAreasPtrs.Select(x => FilesWorldAreas.GetByAddress(x)).ToList();
+
                 return mercilesAreas;
             }
-        }
-
-        private List<WorldArea> endgameAreas;
-
-        public LabyrinthSectionAreas(WorldAreas filesWorldAreas) {
-            FilesWorldAreas = filesWorldAreas;
-            NormalAreasPtrs = new List<long>();
-            CruelAreasPtrs = new List<long>();
-            MercilesAreasPtrs = new List<long>();
-            EndgameAreasPtrs = new List<long>();
         }
 
         public IList<WorldArea> EndgameAreas
@@ -229,17 +234,20 @@ namespace PoEMemory
             {
                 if (endgameAreas == null)
                     endgameAreas = EndgameAreasPtrs.Select(x => FilesWorldAreas.GetByAddress(x)).ToList();
+
                 return endgameAreas;
             }
         }
     }
-
 
     public class LabyrinthSectionOverrides
     {
         public string Name { get; internal set; }
         public string OverrideName { get; internal set; }
 
-        public override string ToString() => OverrideName;
+        public override string ToString()
+        {
+            return OverrideName;
+        }
     }
 }

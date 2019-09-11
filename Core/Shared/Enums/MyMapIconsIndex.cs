@@ -1,4 +1,4 @@
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     public enum MyMapIconsIndex
     {

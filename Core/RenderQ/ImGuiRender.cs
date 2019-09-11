@@ -2,20 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Exile.Shared.Cache;
-using Shared;
-using Shared.Helpers;
-using Shared.Static;
+using ExileCore.Shared;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
 using ImGuiNET;
-using Shared.Enums;
 using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
@@ -24,67 +19,38 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using SharpDX.Windows;
 using Buffer = SharpDX.Direct3D11.Buffer;
-using Color = SharpDX.Color;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Rectangle = System.Drawing.Rectangle;
-using RectangleF = SharpDX.RectangleF;
-using Vector2 = SharpDX.Vector2;
 using Vector2N = System.Numerics.Vector2;
-using Vector4 = System.Numerics.Vector4;
 
-namespace Exile.RenderQ
+namespace ExileCore.RenderQ
 {
     public class ImGuiRender
     {
+        public delegate void UserCallbackDel(ImDrawListPtr list, ImDrawCmdPtr cmd);
+
         public static readonly ImGuiWindowFlags InvisibleWindow =
             ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoSavedSettings |
             ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoScrollbar |
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoBackground;
 
         private readonly RenderForm _form;
-        public DX11 Dx11 { get; set; }
-        public CoreSettings CoreSettings { get; }
-        public Rectangle FormBounds { get; set; }
-
-        public delegate void UserCallbackDel(ImDrawListPtr list, ImDrawCmdPtr cmd);
-
-        public VertexShader VertexShader { get; set; }
-        public PixelShader PixelShader { get; set; }
-        private Buffer ConstantBuffer { get; }
-        private Buffer VertexBuffer { get; set; }
-        private Buffer IndexBuffer { get; set; }
-        private VertexBufferBinding vertexBuffer;
-        public InputLayout Layout { get; set; }
-        public ImGuiIOPtr io { get; private set; }
-        public ShaderResourceView FontTexture { get; private set; }
-        private Matrix4x4 mvp2;
-        private int _vertexBufferSize;
+        public readonly int sizeOfImDrawIdx = 2;
+        public readonly int sizeOfImDrawVert = 20;
+        private ImDrawListPtr _backGroundTextWindowPtr;
+        private ImDrawListPtr _backGroundWindowPtr;
         private int _indexBufferSize;
+        private bool _transparentState1 = true;
+        private int _vertexBufferSize;
+        private BlendState blendState;
+        private DepthStencilState depthStencilState;
+        private readonly string LastFontName = "";
+        private Matrix4x4 mvp2;
+        private RawColor4 outputMergerBlendFactor;
+        private SamplerState samplerState;
         private RasterizerState SolidState;
-
-        private int VertexBufferSize
-        {
-            get => _vertexBufferSize;
-            set
-            {
-                VertexBufferSizeBytes = value * sizeOfImDrawVert;
-                _vertexBufferSize = value;
-            }
-        }
-
-        public int VertexBufferSizeBytes { get; set; }
-
-        private int IndexBufferSize
-        {
-            get => _indexBufferSize;
-            set
-            {
-                IndexBufferSizeBytes = value * sizeOfImDrawIdx;
-                _indexBufferSize = value;
-            }
-        }
-
-        public int IndexBufferSizeBytes { get; set; }
+        private VertexBufferBinding vertexBuffer;
+        private Viewport Viewport;
 
         public ImGuiRender(DX11 dx11, RenderForm form, CoreSettings coreSettings)
         {
@@ -102,6 +68,7 @@ namespace Exile.RenderQ
             sizeOfImDrawIdx = Utilities.SizeOf<ushort>();
             VertexBufferSize = 10000;
             IndexBufferSize = 30000;
+
             // Compile the vertex shader code.
             var vertexShaderByteCode =
                 ShaderBytecode.CompileFromFile("Shaders\\ImGuiVertexShader.hlsl", "VS", "vs_4_0");
@@ -110,7 +77,6 @@ namespace Exile.RenderQ
             var pixelShaderByteCode = ShaderBytecode.CompileFromFile("Shaders\\ImGuiPixelShader.hlsl", "PS", "ps_4_0");
             VertexShader = new VertexShader(Dx11.D11Device, vertexShaderByteCode);
             PixelShader = new PixelShader(Dx11.D11Device, pixelShaderByteCode);
-
 
             VertexBuffer = new Buffer(Dx11.D11Device,
                 new BufferDescription
@@ -121,6 +87,7 @@ namespace Exile.RenderQ
                     CpuAccessFlags = CpuAccessFlags.Write,
                     SizeInBytes = VertexBufferSizeBytes
                 });
+
             IndexBuffer = new Buffer(Dx11.D11Device,
                 new BufferDescription
                 {
@@ -130,6 +97,7 @@ namespace Exile.RenderQ
                     CpuAccessFlags = CpuAccessFlags.Write,
                     SizeInBytes = IndexBufferSizeBytes
                 });
+
             ConstantBuffer = new Buffer(Dx11.D11Device,
                 new BufferDescription
                 {
@@ -139,6 +107,7 @@ namespace Exile.RenderQ
                     CpuAccessFlags = CpuAccessFlags.Write,
                     SizeInBytes = Utilities.SizeOf<Matrix4x4>()
                 });
+
             var inputElements = new[]
             {
                 new InputElement
@@ -175,11 +144,67 @@ namespace Exile.RenderQ
 
             Layout = new InputLayout(Dx11.D11Device, ShaderSignature.GetInputSignature(vertexShaderByteCode),
                 inputElements);
+
             CreateStates();
             UpdateConstantBuffer();
             vertexShaderByteCode.Dispose();
             pixelShaderByteCode.Dispose();
         }
+
+        public DX11 Dx11 { get; set; }
+        public CoreSettings CoreSettings { get; }
+        public Rectangle FormBounds { get; set; }
+        public VertexShader VertexShader { get; set; }
+        public PixelShader PixelShader { get; set; }
+        private Buffer ConstantBuffer { get; }
+        private Buffer VertexBuffer { get; set; }
+        private Buffer IndexBuffer { get; set; }
+        public InputLayout Layout { get; set; }
+        public ImGuiIOPtr io { get; private set; }
+        public ShaderResourceView FontTexture { get; private set; }
+
+        private int VertexBufferSize
+        {
+            get => _vertexBufferSize;
+            set
+            {
+                VertexBufferSizeBytes = value * sizeOfImDrawVert;
+                _vertexBufferSize = value;
+            }
+        }
+
+        public int VertexBufferSizeBytes { get; set; }
+
+        private int IndexBufferSize
+        {
+            get => _indexBufferSize;
+            set
+            {
+                IndexBufferSizeBytes = value * sizeOfImDrawIdx;
+                _indexBufferSize = value;
+            }
+        }
+
+        public int IndexBufferSizeBytes { get; set; }
+
+        public bool TransparentState
+        {
+            get => _transparentState1;
+            set
+            {
+                _transparentState1 = value;
+
+                if (value)
+                    WinApi.SetTransparent(_form.Handle);
+                else
+                    WinApi.SetNoTransparent(_form.Handle);
+            }
+        }
+
+        public Dictionary<string, FontContainer> fonts { get; } = new Dictionary<string, FontContainer>();
+        public ImDrawListPtr LowLevelApi => _backGroundWindowPtr;
+        private FontContainer lastFontContainer { get; set; }
+        public FontContainer CurrentFont => lastFontContainer;
 
         private void InitializeInputSystem()
         {
@@ -187,6 +212,7 @@ namespace Exile.RenderQ
             _form.MouseDown += (sender, args) =>
             {
                 io.MousePos = Input.MousePositionNum;
+
                 switch (args.Button)
                 {
                     case MouseButtons.Left:
@@ -210,9 +236,11 @@ namespace Exile.RenderQ
                         throw new ArgumentOutOfRangeException();
                 }
             };
+
             _form.MouseUp += (sender, args) =>
             {
                 io.MousePos = Input.MousePositionNum;
+
                 switch (args.Button)
                 {
                     case MouseButtons.Left:
@@ -237,6 +265,7 @@ namespace Exile.RenderQ
                         throw new ArgumentOutOfRangeException();
                 }
             };
+
             io.KeyMap[(int) ImGuiKey.Tab] = (int) Keys.Tab;
             io.KeyMap[(int) ImGuiKey.LeftArrow] = (int) Keys.Left;
             io.KeyMap[(int) ImGuiKey.RightArrow] = (int) Keys.Right;
@@ -256,6 +285,7 @@ namespace Exile.RenderQ
             io.KeyMap[(int) ImGuiKey.X] = (int) Keys.X;
             io.KeyMap[(int) ImGuiKey.Y] = (int) Keys.Y;
             io.KeyMap[(int) ImGuiKey.Z] = (int) Keys.Z;
+
             _form.KeyDown += (sender, args) =>
             {
                 io.KeyAlt = args.Alt;
@@ -264,13 +294,14 @@ namespace Exile.RenderQ
                 io.KeysDown[args.KeyValue] = true;
             };
 
-
             _form.KeyPress += (sender, args) => { io.AddInputCharacter(args.KeyChar); };
+
             _form.MouseWheel += (sender, args) =>
             {
                 var scrollDelta = args.Delta;
                 io.MouseWheel = scrollDelta > 0 ? 1 : scrollDelta < 0 ? -1 : 0;
             };
+
             _form.KeyUp += (sender, args) =>
             {
                 io.KeyAlt = args.Alt;
@@ -278,19 +309,6 @@ namespace Exile.RenderQ
                 io.KeyCtrl = args.Control;
                 io.KeysDown[args.KeyValue] = false;
             };
-        }
-
-        public bool TransparentState
-        {
-            get => _transparentState1;
-            set
-            {
-                _transparentState1 = value;
-                if (value)
-                    WinApi.SetTransparent(_form.Handle);
-                else
-                    WinApi.SetNoTransparent(_form.Handle);
-            }
         }
 
         public event EventHandler GetFocus;
@@ -301,6 +319,7 @@ namespace Exile.RenderQ
             io.MousePos = Input.MousePositionNum;
             var ioWantCaptureMouse = io.WantCaptureMouse;
             var ioWantCaptureKeyboard = io.WantCaptureKeyboard;
+
             if ((ioWantCaptureMouse || ioWantCaptureKeyboard) && TransparentState)
             {
                 GetFocus?.Invoke(this, EventArgs.Empty);
@@ -323,8 +342,10 @@ namespace Exile.RenderQ
                 var context = ImGui.CreateContext();
                 ImGui.SetCurrentContext(context);
                 io = ImGui.GetIO();
+
                 // io.ConfigFlags = ImGuiConfigFlags.NavEnableKeyboard;
                 SetSize(FormBounds);
+
                 using (new PerformanceTimer("Load manual fonts"))
                 {
                     try
@@ -352,19 +373,20 @@ namespace Exile.RenderQ
             }
         }
 
-        public Dictionary<string, FontContainer> fonts { get; } = new Dictionary<string, FontContainer>();
-
-
         private unsafe void SetManualFont()
         {
             var folder = "fonts";
             var files = Directory.GetFiles(folder);
+
             if (!(Directory.Exists(folder) && files.Length > 0))
                 return;
+
             var fontsForLoad = new List<(string, int)>();
+
             if (files.Contains($"{folder}\\config.ini"))
             {
                 var lines = File.ReadAllLines($"{folder}\\config.ini");
+
                 foreach (var line in lines)
                 {
                     var split = line.Split(':');
@@ -376,9 +398,11 @@ namespace Exile.RenderQ
 
             fonts["Default:13"] = new FontContainer(ImGuiNative.ImFontAtlas_AddFontDefault(io.Fonts.NativePtr, null),
                 "Default", 13);
+
             foreach (var tuple in fontsForLoad)
             {
                 var bytes = Encoding.UTF8.GetBytes(tuple.Item1);
+
                 fixed (byte* f = &bytes[0])
                 {
                     fonts[$"{tuple.Item1.Replace(".ttf", "").Replace("fonts\\", "")}:{tuple.Item2}"] =
@@ -399,11 +423,10 @@ namespace Exile.RenderQ
             io.Fonts.ClearTexData();
         }
 
-        public readonly int sizeOfImDrawIdx = 2;
-        public readonly int sizeOfImDrawVert = 20;
-
-        private void SetSize(Rectangle formBounds) =>
+        private void SetSize(Rectangle formBounds)
+        {
             io.DisplaySize = new Vector2N(Dx11.BackBuffer.Description.Width, Dx11.BackBuffer.Description.Height);
+        }
 
         public void UpdateConstantBuffer()
         {
@@ -417,6 +440,7 @@ namespace Exile.RenderQ
         {
             io.Fonts.GetTexDataAsRGBA32(out byte* pixelData, out var width, out var height, out var bytesPerPixel);
             var rect = new DataRectangle(new IntPtr(pixelData), width * bytesPerPixel);
+
             var tex2D = new Texture2D(Dx11.D11Device,
                 new Texture2DDescription
                 {
@@ -431,16 +455,11 @@ namespace Exile.RenderQ
                     CpuAccessFlags = CpuAccessFlags.None,
                     OptionFlags = ResourceOptionFlags.None
                 }, rect);
+
             var shaderResourceView = new ShaderResourceView(Dx11.D11Device, tex2D);
             tex2D.Dispose();
             return shaderResourceView;
         }
-
-        private ImDrawListPtr _backGroundWindowPtr;
-        private ImDrawListPtr _backGroundTextWindowPtr;
-
-
-        public ImDrawListPtr LowLevelApi => _backGroundWindowPtr;
 
         public void BeginBackGroundWindow()
         {
@@ -448,6 +467,7 @@ namespace Exile.RenderQ
             //BackGroundWindowPtr = ImGui.GetOverlayDrawList(); 
             ImGui.SetNextWindowContentSize(io.DisplaySize);
             ImGui.SetNextWindowPos(new Vector2N(0, 0));
+
             ImGui.Begin("Background Window",
                 ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
                 ImGuiWindowFlags.NoScrollbar |
@@ -455,39 +475,32 @@ namespace Exile.RenderQ
                 ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing |
                 ImGuiWindowFlags.NoBringToFrontOnFocus |
                 ImGuiWindowFlags.NoBackground);
+
             _backGroundWindowPtr = ImGui.GetWindowDrawList();
             ImGui.End();
 
-
             ImGui.SetNextWindowContentSize(io.DisplaySize);
             ImGui.SetNextWindowPos(new Vector2N(0, 0));
+
             ImGui.Begin("Background Text Window",
                 ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
                 ImGuiWindowFlags.NoScrollbar |
                 ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoSavedSettings |
                 ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.NoFocusOnAppearing | ImGuiWindowFlags.NoBackground);
+
             _backGroundTextWindowPtr = ImGui.GetWindowDrawList();
             ImGui.End();
         }
 
-        private string LastFontName = "";
-
-        private FontContainer lastFontContainer
+        public Vector2N MeasureText(string text)
         {
-            get => _lastFontContainer;
-            set
-            {
-                /*if (_lastFontContainer.Name != value.Name)
-                {
-                    DebugWindow.LogMsg($"Change font from {_lastFontContainer.Name} to {value.Name}", 13);
-                }*/
-                _lastFontContainer = value;
-            }
+            return ImGui.CalcTextSize(text);
         }
 
-        public FontContainer CurrentFont => lastFontContainer;
-        public Vector2N MeasureText(string text) => ImGui.CalcTextSize(text);
-        public Vector2N MeasureText(string text, int height) => ImGui.CalcTextSize(text);
+        public Vector2N MeasureText(string text, int height)
+        {
+            return ImGui.CalcTextSize(text);
+        }
 
         public unsafe Vector2N DrawText(string text, Vector2N position, Color color, int height, string fontName,
             FontAlign align)
@@ -516,9 +529,11 @@ namespace Exile.RenderQ
                 else
                 {
                     fontName = $"{fontName}";
+
                     if (!fonts.TryGetValue(fontName, out fontContainer))
                     {
                         fontContainer = fonts.First().Value;
+
                         DebugWindow.LogError(
                             $"Font: {fontName} not found. Using: {fontContainer.Name}:{fontContainer.Size}");
                     }
@@ -530,6 +545,7 @@ namespace Exile.RenderQ
 
                 if (height == -1) height = lastFontContainer.Size;
                 var size = MeasureText(text, height);
+
                 switch (align)
                 {
                     case FontAlign.Left:
@@ -556,20 +572,22 @@ namespace Exile.RenderQ
             }
         }
 
-        public void DrawImage(string fileName, RectangleF rectangle, RectangleF uv) =>
+        public void DrawImage(string fileName, RectangleF rectangle, RectangleF uv)
+        {
             _backGroundTextWindowPtr.AddImage(Dx11.GetTexture(fileName).NativePointer, rectangle.TopLeft.ToVector2Num(),
                 rectangle.BottomRight.ToVector2Num(), uv.TopLeft.ToVector2Num(),
                 uv.BottomRight.ToVector2Num());
+        }
 
         public void DrawImage(string filename, Vector2N TopLeft, Vector2N BottomRight, Vector2N TopLeft_UV,
-            Vector2N BottomRight_UV) =>
+            Vector2N BottomRight_UV)
+        {
             _backGroundTextWindowPtr.AddImage(Dx11.GetTexture(filename).NativePointer, TopLeft, BottomRight, TopLeft_UV,
                 BottomRight_UV);
-
-     
+        }
 
         [Description("Count Colors means how many colors used in text, if you use a lot colors need put number more than colors you have." +
-            "This used for optimization.")]
+                     "This used for optimization.")]
         public Vector2N DrawMultiColoredText(string text, Vector2N position, FontAlign align = FontAlign.Left,
             int countColors = 10)
         {
@@ -581,9 +599,11 @@ namespace Exile.RenderQ
             var indexColors = 0;
 
             for (var i = 0; i < text.Length; i++)
+            {
                 if (text[i] == '#' && i + 10 < text.Length && text[i + 9] == '#')
                 {
                     colors[indexColors++] = readOnlySpan.Slice(i + 1, 8).HexToUInt();
+
                     if (i != 0 && lastIndex == 0)
                     {
                         coloredText[indexColoredText++] = lastIndex;
@@ -601,23 +621,25 @@ namespace Exile.RenderQ
                         coloredText[indexColoredText++] = lastIndex;
                     }
                 }
+            }
 
             coloredText[indexColoredText++] = text.Length - lastIndex;
             var listIndexSpanCount = (int) Math.Ceiling(indexColoredText / (float) indexColors);
+
             unsafe
             {
                 ImGui.PushFont(lastFontContainer.Atlas);
             }
 
             if (align == FontAlign.Center)
-            {
                 position.X -= MeasureText(text, lastFontContainer.Size).X / 4f;
-            }
 
             var xStart = position.X;
+
             if (listIndexSpanCount == 2)
             {
                 var colorIndex = 0;
+
                 for (var index = 0; index < indexColoredText; index += 2)
                 {
                     var i = coloredText[index];
@@ -629,10 +651,12 @@ namespace Exile.RenderQ
             else if (listIndexSpanCount >= 3)
             {
                 var colorIndex = 0;
+
                 for (var index = 0; index < indexColoredText; index += 2)
                 {
                     var i = coloredText[index];
                     var i2 = coloredText[index + 1];
+
                     if (index == 0)
                     {
                         DrawClrText2(ref readOnlySpan, ref position, xStart, align, i, i2, Color.White.ToImgui(), index,
@@ -641,6 +665,7 @@ namespace Exile.RenderQ
                     else
                     {
                         var clr = colors[colorIndex++];
+
                         DrawClrText2(ref readOnlySpan, ref position, xStart, align, i, i2, clr, index,
                             indexColoredText);
                     }
@@ -653,18 +678,20 @@ namespace Exile.RenderQ
             return position;
         }
 
-        unsafe Vector2N DrawClrText2(ref ReadOnlySpan<char> span, ref Vector2N position, float xStart, FontAlign align,
+        private unsafe Vector2N DrawClrText2(ref ReadOnlySpan<char> span, ref Vector2N position, float xStart, FontAlign align,
             int start, int len,
             uint clr, int index, int spanIndex, bool noColor = false)
         {
             var onlySpan = span.Slice(start, len);
             var textBegin = onlySpan.ToString();
             var size = MeasureText(textBegin, lastFontContainer.Size);
+
             switch (align)
             {
                 case FontAlign.Left:
                     _backGroundWindowPtr.AddText(lastFontContainer.Atlas, lastFontContainer.Size, position, clr,
                         textBegin);
+
                     position.X += size.X;
                     break;
                 case FontAlign.Center:
@@ -675,8 +702,10 @@ namespace Exile.RenderQ
                     break;
                 case FontAlign.Right:
                     position.X -= size.X;
+
                     _backGroundWindowPtr.AddText(lastFontContainer.Atlas, lastFontContainer.Size, position, clr,
                         textBegin);
+
                     break;
             }
 
@@ -702,9 +731,11 @@ namespace Exile.RenderQ
             var indexColors = 0;
 
             for (var i = 0; i < text.Length; i++)
+            {
                 if (text[i] == '#' && i + 10 < text.Length && text[i + 9] == '#')
                 {
                     colors[indexColors++] = readOnlySpan.Slice(i + 1, 8).HexToUInt();
+
                     if (i != 0 && lastIndex == 0)
                     {
                         coloredText[indexColoredText++] = lastIndex;
@@ -722,12 +753,15 @@ namespace Exile.RenderQ
                         coloredText[indexColoredText++] = lastIndex;
                     }
                 }
+            }
 
             coloredText[indexColoredText++] = text.Length - lastIndex;
             var listIndexSpanCount = (int) Math.Ceiling(indexColoredText / (float) indexColors);
+
             if (listIndexSpanCount == 2)
             {
                 var colorIndex = 0;
+
                 for (var index = 0; index < indexColoredText; index += 2)
                 {
                     var i = coloredText[index];
@@ -739,10 +773,12 @@ namespace Exile.RenderQ
             else if (listIndexSpanCount == 3)
             {
                 var colorIndex = 0;
+
                 for (var index = 0; index < indexColoredText; index += 2)
                 {
                     var i = coloredText[index];
                     var i2 = coloredText[index + 1];
+
                     if (index == 0)
                         DrawClrText(ref readOnlySpan, i, i2, Color.Transparent, index, indexColoredText, true);
                     else
@@ -756,36 +792,30 @@ namespace Exile.RenderQ
                 throw new Exception("Something wrong");
         }
 
-
-        unsafe void DrawClrText(ref ReadOnlySpan<char> span, int start, int len, Color clr, int index, int spanIndex,
+        private unsafe void DrawClrText(ref ReadOnlySpan<char> span, int start, int len, Color clr, int index, int spanIndex,
             bool noColor = false)
         {
             var onlySpan = span.Slice(start, len);
+
             fixed (char* ch = onlySpan)
             {
                 var b = stackalloc byte[onlySpan.Length];
                 Encoding.UTF8.GetBytes(ch, onlySpan.Length, b, onlySpan.Length);
+
                 if (noColor)
-                {
                     ImGuiNative.igText(b);
-                }
                 else
-                {
                     ImGuiNative.igTextColored(clr.ToImguiVec4(), b);
-                }
 
                 if (index + 2 < spanIndex)
                 {
                     if (ch[len - 1] == '\n')
-                    {
                         return;
-                    }
 
                     ImGuiNative.igSameLine(0, 0);
                 }
             }
         }
-
 
         public unsafe void TestDraws()
         {
@@ -795,14 +825,17 @@ namespace Exile.RenderQ
             {
                 ImGui.PushFont(imFontPtr.Value.Atlas);
                 var fontPtr = ImGui.GetFont();
+
                 var textBegin =
                     $"{fontPtr.Ascent} {imFontPtr.Key.Split('\\').Last()} =>1234567890-qwertyuiop[asdfghjklzxcvbnm,йцукенгшщзхъфывапролджэячсмитьбю. ";
+
                 var sw = Stopwatch.StartNew();
                 var calcTextSize = ImGui.CalcTextSize(textBegin);
                 var w = sw.ElapsedTicks;
 
                 _backGroundWindowPtr.AddText(new Vector2N(50, 15 + i), Color.White.ToImgui(),
                     $"{textBegin} -> {calcTextSize} ({w} )");
+
                 i += (int) calcTextSize.Y;
                 ImGui.PopFont();
             }
@@ -823,14 +856,18 @@ namespace Exile.RenderQ
         {
             ImGui.Render();
             var data = ImGui.GetDrawData();
+
             if (io.DisplaySize.X <= 0.0f || io.DisplaySize.Y <= 0.0f)
                 return;
+
             if (data.TotalVtxCount == 0)
                 return;
+
             if (data.TotalVtxCount > VertexBufferSize)
             {
                 VertexBuffer.Dispose();
                 VertexBufferSize = (int) (data.TotalVtxCount * 1.5f);
+
                 VertexBuffer = new Buffer(Dx11.D11Device,
                     new BufferDescription
                     {
@@ -846,6 +883,7 @@ namespace Exile.RenderQ
             {
                 IndexBuffer.Dispose();
                 IndexBufferSize = (int) (data.TotalIdxCount * 1.5f);
+
                 IndexBuffer = new Buffer(Dx11.D11Device,
                     new BufferDescription
                     {
@@ -865,6 +903,7 @@ namespace Exile.RenderQ
             var indexMap = Dx11.DeviceContext.MapSubresource(IndexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             vtxOffset = vertexMap.DataPointer;
             idxOffset = indexMap.DataPointer;
+
             for (var i = 0; i < data.CmdListsCount; i++)
             {
                 var cmdList = data.CmdListsRange[i];
@@ -880,9 +919,11 @@ namespace Exile.RenderQ
             var indexOffset = 0;
             var pos = data.DisplayPos;
             SetRenderState();
+
             for (var i = 0; i < data.CmdListsCount; i++)
             {
                 var cmdList = data.CmdListsRange[i];
+
                 for (var n = 0; n < cmdList.CmdBuffer.Size; n++)
                 {
                     var drawCmd = cmdList.CmdBuffer[n];
@@ -906,7 +947,6 @@ namespace Exile.RenderQ
                         (int) (drawCmd.ClipRect.Z - pos.X),
                         (int) (drawCmd.ClipRect.W - pos.Y));
 
-
                     Dx11.DeviceContext.PixelShader.SetShaderResource(0, Dx11.GetTexture(drawCmd.TextureId));
                     var drawCmdElemCount = (int) drawCmd.ElemCount;
                     Dx11.DeviceContext.DrawIndexed(drawCmdElemCount, indexOffset, vertexOffset);
@@ -917,15 +957,10 @@ namespace Exile.RenderQ
             }
         }
 
-        public void Resize(Rectangle formBounds) => SetSize(formBounds);
-        private Viewport Viewport;
-        private SamplerState samplerState;
-        private BlendState blendState;
-        private RawColor4 outputMergerBlendFactor;
-        private DepthStencilState depthStencilState;
-        private bool _transparentState1 = true;
-        private FontContainer _lastFontContainer;
-
+        public void Resize(Rectangle formBounds)
+        {
+            SetSize(formBounds);
+        }
 
         public void CreateStates()
         {
@@ -951,6 +986,7 @@ namespace Exile.RenderQ
                     MinimumLod = 0.0f,
                     MaximumLod = 0.0f
                 });
+
             //Blend
             var blendStateDescription = new BlendStateDescription {AlphaToCoverageEnable = false};
             blendStateDescription.RenderTarget[0].IsBlendEnabled = true;
@@ -962,6 +998,7 @@ namespace Exile.RenderQ
             blendStateDescription.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
             blendStateDescription.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
             blendState = new BlendState(Dx11.D11Device, blendStateDescription);
+
             // outputMergerBlendFactor = new RawColor4(0, 0f, 0, 0f);
             //Depth
             var depthStencilStateDescription = new DepthStencilStateDescription
@@ -978,8 +1015,10 @@ namespace Exile.RenderQ
                     Comparison = Comparison.Always
                 }
             };
+
             depthStencilStateDescription.BackFace = depthStencilStateDescription.FrontFace;
             depthStencilState = new DepthStencilState(Dx11.D11Device, depthStencilStateDescription);
+
             SolidState = new RasterizerState(Dx11.D11Device,
                 new RasterizerStateDescription
                 {
@@ -993,6 +1032,7 @@ namespace Exile.RenderQ
         public void SetRenderState()
         {
             Dx11.DeviceContext.Rasterizer.State = SolidState;
+
             //  Dx11.DeviceContext.Rasterizer.SetViewport(Viewport);
 
             Dx11.DeviceContext.InputAssembler.InputLayout = Layout;
@@ -1004,6 +1044,7 @@ namespace Exile.RenderQ
             Dx11.DeviceContext.VertexShader.SetConstantBuffer(0, ConstantBuffer);
             Dx11.DeviceContext.PixelShader.Set(PixelShader);
             Dx11.DeviceContext.PixelShader.SetSampler(0, samplerState);
+
             //Dx11.DeviceContext.OutputMerger.BlendFactor = outputMergerBlendFactor;
             //Dx11.DeviceContext.OutputMerger.BlendSampleMask = Int32.MaxValue; 
             Dx11.DeviceContext.OutputMerger.SetBlendState(blendState);

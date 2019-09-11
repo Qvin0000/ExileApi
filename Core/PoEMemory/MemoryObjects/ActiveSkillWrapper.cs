@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
-
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class ActiveSkillWrapper : RemoteMemoryObject
     {

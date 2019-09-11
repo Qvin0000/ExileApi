@@ -1,6 +1,6 @@
 using ImGuiNET;
 
-namespace Exile.RenderQ
+namespace ExileCore.RenderQ
 {
     public unsafe struct FontContainer
     {
@@ -8,7 +8,8 @@ namespace Exile.RenderQ
         public string Name { get; }
         public int Size { get; }
 
-        public FontContainer(ImFont* atlas, string Name, int Size) {
+        public FontContainer(ImFont* atlas, string Name, int Size)
+        {
             Atlas = atlas;
             this.Name = Name;
             this.Size = Size;

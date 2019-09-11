@@ -1,38 +1,140 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Runtime.InteropServices;
-using MoreLinq;
 using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using SharpDX.Windows;
 using SharpDX.WIC;
+using SharpDX.Windows;
 using Bitmap = System.Drawing.Bitmap;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
-using Vector2 = SharpDX.Vector2;
 
-namespace Exile.RenderQ
+namespace ExileCore.RenderQ
 {
     public class SpritesRender
     {
         private static int MaxElements = 2000;
         private readonly RenderForm _form;
-        private DX11 _dx11 { get; set; }
+        private DrawCmd _currentDrawCmd;
+        private int _indexBufferSize;
+        private int _vertexBufferSize;
+        private BlendState blendState;
+        private DepthStencilState depthStencilState;
+        private readonly List<DrawCmd> drawList = new List<DrawCmd>();
+        private readonly ImagingFactory2 imagingFactory2;
+        public int[] Indices = new int[MaxElements * 6];
+        private string PrevTexture = "";
+        private SamplerState samplerState;
+        private SamplerStateDescription samplerStateDescription;
+        private RasterizerState SolidState;
+        private ShaderResourceView Texture;
+        private VertexBufferBinding vertexBuffer;
+        public Vertex[] Vertices = new Vertex[MaxElements * 4];
+        private Viewport Viewport;
 
-        private VertexShader VertexShader { get; set; }
-        private PixelShader PixelShader { get; set; }
-        private Buffer ConstantBuffer { get; set; }
+        public SpritesRender(DX11 dx11, RenderForm form, CoreSettings setCoreSettings)
+        {
+            _form = form;
+            _dx11 = dx11;
+            VertexBufferSize = MaxElements * Utilities.SizeOf<Vertex>() * 4;
+            IndexBufferSize = MaxElements * Utilities.SizeOf<uint>() * 6;
+
+            // Compile the vertex shader code.
+            ShaderBytecode vertexShaderByteCode =
+                ShaderBytecode.CompileFromFile("Shaders\\VertexShader.hlsl", "VS", "vs_4_0");
+
+            // Compile the pixel shader code.
+            ShaderBytecode pixelShaderByteCode =
+                ShaderBytecode.CompileFromFile("Shaders\\PixelShader.hlsl", "PS", "ps_4_0");
+
+            VertexShader = new VertexShader(_dx11.D11Device, vertexShaderByteCode);
+            PixelShader = new PixelShader(_dx11.D11Device, pixelShaderByteCode);
+
+            VertexBuffer = new Buffer(_dx11.D11Device,
+                new BufferDescription
+                {
+                    Usage = ResourceUsage.Dynamic,
+                    BindFlags = BindFlags.VertexBuffer,
+                    OptionFlags = ResourceOptionFlags.None,
+                    CpuAccessFlags = CpuAccessFlags.Write,
+                    SizeInBytes = VertexBufferSizeBytes
+                });
+
+            IndexBuffer = new Buffer(_dx11.D11Device,
+                new BufferDescription
+                {
+                    Usage = ResourceUsage.Dynamic,
+                    BindFlags = BindFlags.IndexBuffer,
+                    OptionFlags = ResourceOptionFlags.None,
+                    CpuAccessFlags = CpuAccessFlags.Write,
+                    SizeInBytes = IndexBufferSizeBytes
+                });
+
+            ConstantBuffer = new Buffer(_dx11.D11Device,
+                new BufferDescription
+                {
+                    BindFlags = BindFlags.ConstantBuffer,
+                    Usage = ResourceUsage.Dynamic,
+                    OptionFlags = ResourceOptionFlags.None,
+                    CpuAccessFlags = CpuAccessFlags.Write,
+                    SizeInBytes = Utilities.SizeOf<Vector2>() * 2
+                });
+
+            var inputElements = new[]
+            {
+                new InputElement
+                {
+                    SemanticName = "POSITION",
+                    SemanticIndex = 0,
+                    Format = Format.R32G32_Float,
+                    Slot = 0,
+                    AlignedByteOffset = 0,
+                    Classification = InputClassification.PerVertexData,
+                    InstanceDataStepRate = 0
+                },
+                new InputElement
+                {
+                    SemanticName = "TEXCOORD",
+                    SemanticIndex = 0,
+                    Format = Format.R32G32_Float,
+                    Slot = 0,
+                    AlignedByteOffset = InputElement.AppendAligned,
+                    Classification = InputClassification.PerVertexData,
+                    InstanceDataStepRate = 0
+                },
+                new InputElement
+                {
+                    SemanticName = "COLOR",
+                    SemanticIndex = 0,
+
+                    // Format = Format.R32G32B32A32_Float,
+                    Format = Format.R8G8B8A8_UNorm,
+                    Slot = 0,
+                    AlignedByteOffset = InputElement.AppendAligned,
+                    Classification = InputClassification.PerVertexData,
+                    InstanceDataStepRate = 0
+                }
+            };
+
+            Layout = new InputLayout(_dx11.D11Device, ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                inputElements);
+
+            vertexShaderByteCode.Dispose();
+            pixelShaderByteCode.Dispose();
+            CreateStates();
+            imagingFactory2 = new ImagingFactory2();
+        }
+
+        private DX11 _dx11 { get; }
+        private VertexShader VertexShader { get; }
+        private PixelShader PixelShader { get; }
+        private Buffer ConstantBuffer { get; }
         private Buffer VertexBuffer { get; set; }
         private Buffer IndexBuffer { get; set; }
-        private VertexBufferBinding vertexBuffer;
         public InputLayout Layout { get; set; }
-
-        private int _vertexBufferSize;
-        private int _indexBufferSize;
 
         private int VertexBufferSize
         {
@@ -57,116 +159,27 @@ namespace Exile.RenderQ
         }
 
         public int IndexBufferSizeBytes { get; set; }
-
-        public SpritesRender(DX11 dx11, RenderForm form, CoreSettings setCoreSettings)
-        {
-            _form = form;
-            _dx11 = dx11;
-            VertexBufferSize = MaxElements * Utilities.SizeOf<Vertex>() * 4;
-            IndexBufferSize = MaxElements * Utilities.SizeOf<uint>() * 6;
-            // Compile the vertex shader code.
-            ShaderBytecode vertexShaderByteCode =
-                ShaderBytecode.CompileFromFile("Shaders\\VertexShader.hlsl", "VS", "vs_4_0");
-
-            // Compile the pixel shader code.
-            ShaderBytecode pixelShaderByteCode =
-                ShaderBytecode.CompileFromFile("Shaders\\PixelShader.hlsl", "PS", "ps_4_0");
-
-            VertexShader = new VertexShader(_dx11.D11Device, vertexShaderByteCode);
-            PixelShader = new PixelShader(_dx11.D11Device, pixelShaderByteCode);
-            VertexBuffer = new Buffer(_dx11.D11Device,
-                new BufferDescription
-                {
-                    Usage = ResourceUsage.Dynamic,
-                    BindFlags = BindFlags.VertexBuffer,
-                    OptionFlags = ResourceOptionFlags.None,
-                    CpuAccessFlags = CpuAccessFlags.Write,
-                    SizeInBytes = VertexBufferSizeBytes,
-                });
-            IndexBuffer = new Buffer(_dx11.D11Device,
-                new BufferDescription
-                {
-                    Usage = ResourceUsage.Dynamic,
-                    BindFlags = BindFlags.IndexBuffer,
-                    OptionFlags = ResourceOptionFlags.None,
-                    CpuAccessFlags = CpuAccessFlags.Write,
-                    SizeInBytes = IndexBufferSizeBytes
-                });
-
-            ConstantBuffer = new Buffer(_dx11.D11Device,
-                new BufferDescription
-                {
-                    BindFlags = BindFlags.ConstantBuffer,
-                    Usage = ResourceUsage.Dynamic,
-                    OptionFlags = ResourceOptionFlags.None,
-                    CpuAccessFlags = CpuAccessFlags.Write,
-                    SizeInBytes = Utilities.SizeOf<Vector2>() * 2,
-                });
-            var inputElements = new InputElement[]
-            {
-                new InputElement()
-                {
-                    SemanticName = "POSITION",
-                    SemanticIndex = 0,
-                    Format = Format.R32G32_Float,
-                    Slot = 0,
-                    AlignedByteOffset = 0,
-                    Classification = InputClassification.PerVertexData,
-                    InstanceDataStepRate = 0
-                },
-                new InputElement()
-                {
-                    SemanticName = "TEXCOORD",
-                    SemanticIndex = 0,
-                    Format = Format.R32G32_Float,
-                    Slot = 0,
-                    AlignedByteOffset = InputElement.AppendAligned,
-                    Classification = InputClassification.PerVertexData,
-                    InstanceDataStepRate = 0
-                },
-                new InputElement()
-                {
-                    SemanticName = "COLOR",
-                    SemanticIndex = 0,
-                    // Format = Format.R32G32B32A32_Float,
-                    Format = Format.R8G8B8A8_UNorm,
-                    Slot = 0,
-                    AlignedByteOffset = InputElement.AppendAligned,
-                    Classification = InputClassification.PerVertexData,
-                    InstanceDataStepRate = 0
-                }
-            };
-
-            Layout = new InputLayout(_dx11.D11Device, ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                inputElements);
-            vertexShaderByteCode.Dispose();
-            pixelShaderByteCode.Dispose();
-            CreateStates();
-            imagingFactory2 = new ImagingFactory2();
-        }
-
-        private BlendState blendState;
-        private DepthStencilState depthStencilState;
-        private Viewport Viewport;
-
+        public int ElementsCount { get; private set; }
+        public int VertexCounter { get; private set; }
+        public int IndexCounter { get; private set; }
 
         public Texture2D LoadBitmap(string name, Bitmap bitmap, ResourceUsage resourceUsage = ResourceUsage.Immutable,
             CpuAccessFlags cpuAccessFlags = CpuAccessFlags.None)
         {
             var texture =
                 TextureLoader.CreateTexture2DFromBitmap(_dx11.D11Device, bitmap, resourceUsage, cpuAccessFlags);
+
             Texture = new ShaderResourceView(_dx11.D11Device, texture);
             _dx11.AddOrUpdateTexture(name, Texture);
             if (resourceUsage != ResourceUsage.Dynamic) texture.Dispose();
             return texture;
         }
 
-        private ImagingFactory2 imagingFactory2;
-
         public Texture2D LoadPng(string fileName)
         {
             var texture = TextureLoader.CreateTexture2DFromBitmap(_dx11.D11Device,
                 TextureLoader.LoadBitmap(imagingFactory2, fileName));
+
             Texture = new ShaderResourceView(_dx11.D11Device, texture);
             _dx11.AddOrUpdateTexture(fileName.Split('/').Last().Split('\\').Last(), Texture);
             texture.Dispose();
@@ -178,6 +191,7 @@ namespace Exile.RenderQ
             //Debug if texture broken
             var DeviceContext = _dx11.DeviceContext;
             var D11Device = _dx11.D11Device;
+
             //Blend
             var blendStateDescription = new BlendStateDescription();
             blendStateDescription.RenderTarget[0].IsBlendEnabled = true;
@@ -189,8 +203,8 @@ namespace Exile.RenderQ
             blendStateDescription.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
             blendStateDescription.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
             blendState = new BlendState(D11Device, blendStateDescription);
-            //  DeviceContext.OutputMerger.BlendFactor = Color.White;
 
+            //  DeviceContext.OutputMerger.BlendFactor = Color.White;
 
             //Depth
             var depthStencilStateDescription = new DepthStencilStateDescription
@@ -205,10 +219,12 @@ namespace Exile.RenderQ
                     DepthFailOperation = StencilOperation.Keep,
                     PassOperation = StencilOperation.Keep,
                     Comparison = Comparison.Always
-                },
+                }
             };
+
             depthStencilStateDescription.BackFace = depthStencilStateDescription.FrontFace;
             depthStencilState = new DepthStencilState(D11Device, depthStencilStateDescription);
+
             Viewport = new Viewport
             {
                 Height = _form.ClientSize.Height,
@@ -218,26 +234,26 @@ namespace Exile.RenderQ
                 MaxDepth = 1,
                 MinDepth = 0
             };
+
             ResizeConstBuffer(_dx11.BackBuffer.Description);
+
             SolidState = new RasterizerState(_dx11.D11Device,
-                new RasterizerStateDescription()
+                new RasterizerStateDescription
                 {
                     FillMode = FillMode.Solid,
                     CullMode = CullMode.None,
                     IsScissorEnabled = false,
-                    IsDepthClipEnabled = false,
+                    IsDepthClipEnabled = false
                 });
-            samplerStateDescription = new SamplerStateDescription()
+
+            samplerStateDescription = new SamplerStateDescription
             {
                 AddressU = TextureAddressMode.Clamp, AddressV = TextureAddressMode.Clamp,
                 AddressW = TextureAddressMode.Wrap
             };
+
             samplerState = new SamplerState(_dx11.D11Device, samplerStateDescription);
         }
-
-        private RasterizerState SolidState;
-        private SamplerStateDescription samplerStateDescription;
-        private SamplerState samplerState;
 
         public void ResizeConstBuffer(Texture2DDescription bufferDescription)
         {
@@ -250,18 +266,18 @@ namespace Exile.RenderQ
         {
             var dx11DeviceContext = _dx11.DeviceContext;
             dx11DeviceContext.OutputMerger.SetBlendState(blendState);
-            dx11DeviceContext.OutputMerger.SetDepthStencilState(depthStencilState, 0);
+            dx11DeviceContext.OutputMerger.SetDepthStencilState(depthStencilState);
+
             // Setup and create the viewport for rendering.
             dx11DeviceContext.Rasterizer.State = SolidState;
+
             // dx11DeviceContext.Rasterizer.SetViewport(Viewport);
             // dx11DeviceContext.OutputMerger.SetRenderTargets(_dx11.RenderTargetView);
 
             //
 
-
             vertexBuffer = new VertexBufferBinding
                 {Buffer = VertexBuffer, Stride = Utilities.SizeOf<Vertex>(), Offset = 0};
-
 
             dx11DeviceContext.InputAssembler.InputLayout = Layout;
             dx11DeviceContext.InputAssembler.SetVertexBuffers(0, vertexBuffer);
@@ -272,19 +288,6 @@ namespace Exile.RenderQ
 
             dx11DeviceContext.PixelShader.SetSampler(0, samplerState);
         }
-
-        private ShaderResourceView Texture;
-
-        private string PrevTexture = "";
-        private List<DrawCmd> drawList = new List<DrawCmd>();
-        private DrawCmd _currentDrawCmd;
-
-        public Vertex[] Vertices = new Vertex[MaxElements * 4];
-        public int[] Indices = new int[MaxElements * 6];
-        public int ElementsCount { get; private set; }
-        public int VertexCounter { get; private set; }
-
-        public int IndexCounter { get; private set; }
 
         public void DrawImage(string fileName, RectangleF rect, RectangleF uv, Color color)
         {
@@ -306,7 +309,6 @@ namespace Exile.RenderQ
                     VertexBufferSize = MaxElements * Utilities.SizeOf<Vertex>() * 4;
                     IndexBufferSize = MaxElements * Utilities.SizeOf<uint>() * 6;
 
-
                     VertexBuffer = new Buffer(_dx11.D11Device,
                         new BufferDescription
                         {
@@ -314,8 +316,9 @@ namespace Exile.RenderQ
                             BindFlags = BindFlags.VertexBuffer,
                             OptionFlags = ResourceOptionFlags.None,
                             CpuAccessFlags = CpuAccessFlags.Write,
-                            SizeInBytes = VertexBufferSizeBytes,
+                            SizeInBytes = VertexBufferSizeBytes
                         });
+
                     IndexBuffer = new Buffer(_dx11.D11Device,
                         new BufferDescription
                         {
@@ -361,6 +364,7 @@ namespace Exile.RenderQ
             drawList.Clear();
             Array.Clear(Vertices, 0, Vertices.Length);
             Array.Clear(Indices, 0, Indices.Length);
+
             // drawList = new List<DrawCmd>(drawList.Count);
             //Vertices = new Vertex[Vertices.Length];
             //Indices  = new int[Indices.Length];
@@ -370,21 +374,26 @@ namespace Exile.RenderQ
         {
             if (drawList.Count <= 0)
                 return;
+
             SetStates();
 
             var vertexBufferDataBox =
                 _dx11.DeviceContext.MapSubresource(VertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+
             var indexBufferDataBox =
                 _dx11.DeviceContext.MapSubresource(IndexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+
             Utilities.Write(vertexBufferDataBox.DataPointer, Vertices, 0, ElementsCount * 4);
             Utilities.Write(indexBufferDataBox.DataPointer, Indices, 0, ElementsCount * 6);
             _dx11.DeviceContext.UnmapSubresource(VertexBuffer, 0);
             _dx11.DeviceContext.UnmapSubresource(IndexBuffer, 0);
             var vtxOffsets = 0;
             var idxOffsets = 0;
+
             for (var index = 0; index < drawList.Count; index++)
             {
                 var cmd = drawList[index];
+
                 // cmd.CallBack?.Invoke();
                 _dx11.DeviceContext.PixelShader.SetShaderResource(0, cmd.Texture);
                 _dx11.DeviceContext.DrawIndexed(cmd.ElementsCount, idxOffsets, vtxOffsets);
@@ -395,24 +404,26 @@ namespace Exile.RenderQ
         }
     }
 
-
     internal class DrawCmd
     {
-        public ShaderResourceView Texture { get; }
-
-        public int ElementsCount { get; private set; }
         // public Action CallBack { get; set; }
 
         public DrawCmd(ShaderResourceView texture)
         {
             Texture = texture;
+
             //  CallBack = null;
             ElementsCount = 0;
         }
 
-        public void IncreaseElementsCount() => ElementsCount += 6;
-    }
+        public ShaderResourceView Texture { get; }
+        public int ElementsCount { get; private set; }
 
+        public void IncreaseElementsCount()
+        {
+            ElementsCount += 6;
+        }
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct Vertex
@@ -420,7 +431,6 @@ namespace Exile.RenderQ
         public Vector2 Position { get; }
         public Vector2 TexC { get; }
         public Color Color { get; }
-
 
         public Vertex(Vector2 pos, Vector2 uv, Color color) : this()
         {

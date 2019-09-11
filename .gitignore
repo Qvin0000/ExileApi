@@ -7,7 +7,7 @@
 *.suo
 *.user
 *.sln.docstates
-
+Plugins/
 # Build results
 [Dd]ebug/
 [Rr]elease/

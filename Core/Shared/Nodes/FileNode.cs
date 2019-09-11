@@ -1,18 +1,19 @@
 using System;
 
-namespace Shared.Nodes
+namespace ExileCore.Shared.Nodes
 {
     public sealed class FileNode
     {
-        public FileNode() { }
-
-        public FileNode(string value) => Value = value;
-
-        //[JsonIgnore]
-        public event EventHandler<string> OnFileChanged;
-
         private string value;
 
+        public FileNode()
+        {
+        }
+
+        public FileNode(string value)
+        {
+            Value = value;
+        }
 
         public string Value
         {
@@ -24,8 +25,17 @@ namespace Shared.Nodes
             }
         }
 
-        public static implicit operator string(FileNode node) => node.Value;
+        //[JsonIgnore]
+        public event EventHandler<string> OnFileChanged;
 
-        public static implicit operator FileNode(string value) => new FileNode(value);
+        public static implicit operator string(FileNode node)
+        {
+            return node.Value;
+        }
+
+        public static implicit operator FileNode(string value)
+        {
+            return new FileNode(value);
+        }
     }
 }

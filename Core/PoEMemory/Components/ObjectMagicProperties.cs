@@ -1,21 +1,23 @@
-using System;
 using System.Collections.Generic;
-using Exile;
-using Shared.Static;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
 using GameOffsets;
-using Shared.Interfaces;
-using Shared.Enums;
 using SharpDX;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class ObjectMagicProperties : Component
     {
-        private CachedValue<ObjectMagicPropertiesOffsets> _cachedValue;
-        public ObjectMagicPropertiesOffsets ObjectMagicPropertiesOffsets => _cachedValue.Value;
+        private readonly CachedValue<ObjectMagicPropertiesOffsets> _cachedValue;
+        private long _modsHash;
+        private readonly List<string> modsList = new List<string>();
 
-        public ObjectMagicProperties() =>
+        public ObjectMagicProperties()
+        {
             _cachedValue = new FrameCache<ObjectMagicPropertiesOffsets>(() => M.Read<ObjectMagicPropertiesOffsets>(Address));
+        }
+
+        public ObjectMagicPropertiesOffsets ObjectMagicPropertiesOffsets => _cachedValue.Value;
 
         public MonsterRarity Rarity
         {
@@ -31,9 +33,7 @@ namespace PoEMemory.Components
             }
         }
 
-        private long _modsHash;
         public long ModsHash => ObjectMagicPropertiesOffsets.Mods.GetHashCode();
-        private List<string> modsList = new List<string>();
 
         public List<string> Mods
         {
@@ -47,12 +47,14 @@ namespace PoEMemory.Components
                 var end = ObjectMagicPropertiesOffsets.Mods.Last;
                 if (begin == 0 || end == 0) return new List<string>();
                 var j = 0;
+
                 for (var i = begin; i < end; i += 0x28)
                 {
                     var read = M.Read<long>(i + 0x20, 0);
                     var mod = Cache.StringCache.Read($"{nameof(ObjectMagicProperties)}{read}", () => M.ReadStringU(read));
                     modsList.Add(mod);
                     j++;
+
                     if (j > 256)
                     {
                         DebugWindow.LogMsg($"{nameof(ObjectMagicProperties)} read mods error address", 2, Color.OrangeRed);

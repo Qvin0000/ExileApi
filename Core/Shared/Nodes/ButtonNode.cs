@@ -1,12 +1,10 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Shared.Nodes
+namespace ExileCore.Shared.Nodes
 {
     public class ButtonNode
     {
         [JsonIgnore] public Action OnPressed = delegate { };
-
-        public ButtonNode() { }
     }
 }

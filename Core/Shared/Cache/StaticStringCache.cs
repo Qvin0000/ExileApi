@@ -1,41 +1,47 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Exile;
-using Shared.Static;
 using SharpDX;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Cache
 {
     public class StaticStringCache
     {
+        private readonly ConcurrentDictionary<IntPtr, DateTime> _lastAccess = new ConcurrentDictionary<IntPtr, DateTime>();
         private readonly int _lifeTimeForCache;
-
-        private Dictionary<IntPtr, string> cache = new Dictionary<IntPtr, string>();
-        public Dictionary<IntPtr, string> Debug => cache;
-        public int Count => cache.Count;
         private DateTime lastClear;
+        private readonly object locker = new object();
 
-        public StaticStringCache(int LifeTimeForCache = 300) => _lifeTimeForCache = LifeTimeForCache;
+        public StaticStringCache(int LifeTimeForCache = 300)
+        {
+            _lifeTimeForCache = LifeTimeForCache;
+        }
 
-        public int ClearByTime() {
+        public Dictionary<IntPtr, string> Debug { get; } = new Dictionary<IntPtr, string>();
+        public int Count => Debug.Count;
+
+        public int ClearByTime()
+        {
             var counter = 0;
             if ((DateTime.UtcNow - lastClear).TotalSeconds < 60) return counter;
+
             foreach (var ptr in _lastAccess)
+            {
                 if ((DateTime.UtcNow - ptr.Value).TotalSeconds > _lifeTimeForCache)
                 {
-                    if (cache.Remove(ptr.Key))
+                    if (Debug.Remove(ptr.Key))
                     {
                         counter++;
                         _lastAccess.TryRemove(ptr.Key, out _);
                     }
                 }
+            }
 
             if (_lastAccess.Count > 30000)
             {
                 _lastAccess.Clear();
-                cache.Clear();
-                DebugWindow.LogMsg($"Clear CACHE because so big (>30k)", 7, Color.GreenYellow);
+                Debug.Clear();
+                DebugWindow.LogMsg("Clear CACHE because so big (>30k)", 7, Color.GreenYellow);
             }
 
             lastClear = DateTime.UtcNow;
@@ -44,19 +50,19 @@ namespace Shared.Interfaces
             return counter;
         }
 
-        private object locker = new object();
-
-        public string Read(IntPtr addr, Func<string> func) {
-            if (cache.TryGetValue(addr, out var result))
+        public string Read(IntPtr addr, Func<string> func)
+        {
+            if (Debug.TryGetValue(addr, out var result))
             {
                 _lastAccess[addr] = DateTime.UtcNow;
                 return result;
             }
 
             result = func();
+
             lock (locker)
             {
-                cache[addr] = result;
+                Debug[addr] = result;
                 /*if (cache.Count > 1500)
                 {
                     ClearByTime();
@@ -66,7 +72,5 @@ namespace Shared.Interfaces
             _lastAccess[addr] = DateTime.UtcNow;
             return result;
         }
-
-        private readonly ConcurrentDictionary<IntPtr, DateTime> _lastAccess = new ConcurrentDictionary<IntPtr, DateTime>();
     }
 }

@@ -1,7 +1,7 @@
-using System.Runtime.Serialization;
-using Shared.Enums;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Enums;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class AreaTransition : Component
     {

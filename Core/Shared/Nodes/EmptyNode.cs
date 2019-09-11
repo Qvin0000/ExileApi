@@ -1,7 +1,6 @@
-namespace Shared.Nodes
+namespace ExileCore.Shared.Nodes
 {
     public class EmptyNode
     {
-        public EmptyNode() { }
     }
 }

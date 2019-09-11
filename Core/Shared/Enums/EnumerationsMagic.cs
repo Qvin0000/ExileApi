@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     [Flags]
     public enum ProcessAccessRights
@@ -23,7 +23,7 @@ namespace Shared.Enums
         PROCESS_QUERY_INFORMATION = 0x0400,
         PROCESS_SUSPEND_RESUME = 0x0800,
         PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
-        PROCESS_ALL_ACCESS = STANDARD_RIGHTS_ALL | SYNCHRONIZE | 0xFFF,
+        PROCESS_ALL_ACCESS = STANDARD_RIGHTS_ALL | SYNCHRONIZE | 0xFFF
     }
 
     [Flags]
@@ -44,7 +44,7 @@ namespace Shared.Enums
         THREAD_SET_THREAD_TOKEN = 0x0080,
         THREAD_IMPERSONATE = 0x0100,
         THREAD_DIRECT_IMPERSONATION = 0x0200,
-        THREAD_ALL_ACCESS = STANDARD_RIGHTS_ALL | SYNCHRONIZE | 0x3FF,
+        THREAD_ALL_ACCESS = STANDARD_RIGHTS_ALL | SYNCHRONIZE | 0x3FF
     }
 
     public enum MemoryProtectionType
@@ -59,7 +59,7 @@ namespace Shared.Enums
         PAGE_EXECUTE_WRITECOPY = 0x80,
         PAGE_GUARD = 0x100,
         PAGE_NOCACHE = 0x200,
-        PAGE_WRITECOMBINE = 0x400,
+        PAGE_WRITECOMBINE = 0x400
     }
 
     public enum MemoryAllocationState
@@ -69,20 +69,20 @@ namespace Shared.Enums
         MEM_RESET = 0x00080000,
         MEM_PHYSICAL = 0x00400000,
         MEM_TOP_DOWN = 0x00100000,
-        MEM_LARGE_PAGES = 0x20000000,
+        MEM_LARGE_PAGES = 0x20000000
     }
 
     public enum MemoryAllocationType
     {
         MEM_PRIVATE = 0x0020000,
         MEM_MAPPED = 0x0040000,
-        MEM_IMAGE = 0x1000000,
+        MEM_IMAGE = 0x1000000
     }
 
     [Flags]
     public enum MemoryFreeType
     {
         MEM_DECOMMIT = 0x4000,
-        MEM_RELEASE = 0x8000,
+        MEM_RELEASE = 0x8000
     }
 }

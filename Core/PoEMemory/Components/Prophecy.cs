@@ -1,4 +1,6 @@
-namespace PoEMemory.Components
+using ExileCore.PoEMemory.MemoryObjects;
+
+namespace ExileCore.PoEMemory.Components
 {
     public class Prophecy : Component
     {

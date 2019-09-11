@@ -1,38 +1,40 @@
 using System;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
-using Shared.Interfaces;
-using Shared.Enums;
-using Shared.Helpers;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class IngameState : RemoteMemoryObject
     {
-        private CachedValue<Camera> _camera;
-        private CachedValue<IngameUIElements> _ingameUi;
-        private CachedValue<ServerData> _serverData;
-        private CachedValue<IngameData> _ingameData;
-        private CachedValue<Element> _UIRoot;
-        private CachedValue<Element> _UIHover;
-        private CachedValue<float> _UIHoverX;
-        private CachedValue<float> _UIHoverY;
-        private CachedValue<Element> _UIHoverTooltip;
-        private CachedValue<float> _CurrentUElementPosX;
-        private CachedValue<float> _CurrentUElementPosY;
-        private CachedValue<DiagnosticElement> _LatencyRectangle;
-        private CachedValue<DiagnosticElement> _FPSRectangle;
-        private CachedValue<DiagnosticElement> _FrameTimeRectangle;
-        private CachedValue<float> _TimeInGameF;
-        private CachedValue<DiagnosticInfoType> _DiagnosticInfoType;
-        private CachedValue<IngameStateOffsets> _ingameState;
-        private CachedValue<EntityLabelMapOffsets> _EntityLabelMap;
+        private readonly CachedValue<Camera> _camera;
+        private readonly CachedValue<float> _CurrentUElementPosX;
+        private readonly CachedValue<float> _CurrentUElementPosY;
+        private readonly CachedValue<DiagnosticInfoType> _DiagnosticInfoType;
+        private readonly CachedValue<EntityLabelMapOffsets> _EntityLabelMap;
+        private readonly CachedValue<DiagnosticElement> _FPSRectangle;
+        private readonly CachedValue<DiagnosticElement> _FrameTimeRectangle;
+        private readonly CachedValue<IngameData> _ingameData;
+        private readonly CachedValue<IngameStateOffsets> _ingameState;
+        private readonly CachedValue<IngameUIElements> _ingameUi;
+        private readonly CachedValue<DiagnosticElement> _LatencyRectangle;
         private CachedValue<Element> _mouseActions;
+        private readonly CachedValue<ServerData> _serverData;
+        private readonly CachedValue<float> _TimeInGameF;
+        private readonly CachedValue<Element> _UIHover;
+        private readonly CachedValue<Element> _UIHoverTooltip;
+        private readonly CachedValue<float> _UIHoverX;
+        private readonly CachedValue<float> _UIHoverY;
+        private readonly CachedValue<Element> _UIRoot;
 
-
-        public IngameState() {
+        public IngameState()
+        {
             _ingameState = new FrameCache<IngameStateOffsets>(() => M.Read<IngameStateOffsets>(Address /*+M.offsets.IgsOffsetDelta*/));
+
             _camera = new AreaCache<Camera>(
                 () => GetObject<Camera>(Address + /*0x1258*/Extensions.GetOffset<IngameStateOffsets>(nameof(IngameStateOffsets.Camera))));
+
             _ingameData = new AreaCache<IngameData>(() => GetObject<IngameData>(_ingameState.Value.Data));
             _serverData = new AreaCache<ServerData>(() => GetObject<ServerData>(_ingameState.Value.ServerData));
             _ingameUi = new AreaCache<IngameUIElements>(() => GetObject<IngameUIElements>(_ingameState.Value.IngameUi));
@@ -44,16 +46,20 @@ namespace PoEMemory
             _CurrentUElementPosX = new FrameCache<float>(() => _ingameState.Value.CurentUElementPosX);
             _CurrentUElementPosY = new FrameCache<float>(() => _ingameState.Value.CurentUElementPosY);
             _DiagnosticInfoType = new FrameCache<DiagnosticInfoType>(() => (DiagnosticInfoType) _ingameState.Value.DiagnosticInfoType);
+
             _LatencyRectangle = new AreaCache<DiagnosticElement>(
                 () => GetObject<DiagnosticElement>(
                     Address + Extensions.GetOffset<IngameStateOffsets>(nameof(IngameStateOffsets.LatencyRectangle))));
+
             _FrameTimeRectangle = new AreaCache<DiagnosticElement>(
                 () => GetObject<DiagnosticElement>(Address + /*0x1628*/
                                                    +Extensions.GetOffset<IngameStateOffsets>(
                                                        nameof(IngameStateOffsets.FrameTimeRectangle))));
+
             _FPSRectangle = new AreaCache<DiagnosticElement>(
                 () => GetObject<DiagnosticElement>(Address /*0x1870*/ +
                                                    Extensions.GetOffset<IngameStateOffsets>(nameof(IngameStateOffsets.FPSRectangle))));
+
             _TimeInGameF = new FrameCache<float>(() => _ingameState.Value.TimeInGameF);
             _EntityLabelMap = new AreaCache<EntityLabelMapOffsets>(() => M.Read<EntityLabelMapOffsets>(_ingameState.Value.EntityLabelMap));
         }
@@ -63,20 +69,16 @@ namespace PoEMemory
         public bool InGame => ServerData.IsInGame;
         public ServerData ServerData => _serverData.Value;
         public IngameUIElements IngameUi => _ingameUi.Value;
-
         public Element UIRoot => _UIRoot.Value;
         public Element UIHover => _UIHover.Value;
         public float UIHoverX => _UIHoverX.Value;
         public float UIHoverY => _UIHoverY.Value;
         public Element UIHoverTooltip => _UIHoverTooltip.Value;
-
         public float CurentUElementPosX => _CurrentUElementPosX.Value;
         public float CurentUElementPosY => _CurrentUElementPosY.Value;
-
         public long EntityLabelMap => _EntityLabelMap.Value.EntityLabelMap;
         public DiagnosticInfoType DiagnosticInfoType => _DiagnosticInfoType.Value;
         public DiagnosticElement LatencyRectangle => _LatencyRectangle.Value;
-
         public DiagnosticElement FrameTimeRectangle => _FrameTimeRectangle.Value;
         public DiagnosticElement FPSRectangle => _FPSRectangle.Value;
         public float CurLatency => LatencyRectangle.CurrValue;
@@ -85,7 +87,8 @@ namespace PoEMemory
         public TimeSpan TimeInGame => TimeSpan.FromSeconds(_ingameState.Value.TimeInGame);
         public float TimeInGameF => _TimeInGameF.Value;
 
-        public void UpdateData() {
+        public void UpdateData()
+        {
             _ingameData.ForceUpdate();
         }
     }

@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Shared.Helpers;
-using Shared.Interfaces;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
+using ExileCore.Shared.Interfaces;
 using GameOffsets;
 using MoreLinq;
-using Shared;
-using Shared.Enums;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory
 {
     public struct FileInformation
     {
-        public FileInformation(long ptr, int changeCount, int test1, int test2) {
+        public FileInformation(long ptr, int changeCount, int test1, int test2)
+        {
             Ptr = ptr;
             ChangeCount = changeCount;
             Test1 = test1;
@@ -31,10 +30,13 @@ namespace PoEMemory
     {
         private readonly IMemory mem;
 
-        public FilesFromMemory(IMemory memory) => mem = memory;
+        public FilesFromMemory(IMemory memory)
+        {
+            mem = memory;
+        }
 
-
-        public Dictionary<string, FileInformation> GetAllFiles() {
+        public Dictionary<string, FileInformation> GetAllFiles()
+        {
             var files = new ConcurrentDictionary<string, FileInformation>();
             var fileRoot = mem.AddressOfProcess + mem.BaseOffsets[OffsetsName.FileRoot];
             var start = mem.Read<long>(fileRoot + 0x8);
@@ -50,19 +52,19 @@ namespace PoEMemory
                                                                     () => advancedInformation.String.ToString(mem));*/
                 var str = advancedInformation.String.ToString(mem);
 
-
                 if (str.Length <= 0) return;
 
                 files.TryAdd(
                     str,
                     new FileInformation(filesOffsets.MoreInformation, advancedInformation.AreaCount, advancedInformation.Test1,
-                                        advancedInformation.Test2));
+                        advancedInformation.Test2));
             });
-            
+
             return files.ToDictionary();
         }
 
-        public Dictionary<string, FileInformation> GetAllFilesSync() {
+        public Dictionary<string, FileInformation> GetAllFilesSync()
+        {
             var files = new Dictionary<string, FileInformation>();
             var fileRoot = mem.AddressOfProcess + mem.BaseOffsets[OffsetsName.FileRoot];
             var start = mem.Read<long>(fileRoot + 0x8);
@@ -73,13 +75,14 @@ namespace PoEMemory
                 var filesOffsets = mem.Read<FilesOffsets>(p);
                 var advancedInformation = mem.Read<GameOffsets.FileInformation>(filesOffsets.MoreInformation);
                 if (advancedInformation.String.buf == 0) continue;
+
                 var str = RemoteMemoryObject.Cache.StringCache.Read($"{nameof(FilesFromMemory)}{advancedInformation.String.buf}",
-                                                                    () => advancedInformation.String.ToString(mem));
+                    () => advancedInformation.String.ToString(mem));
 
                 if (str.Length <= 0) continue;
 
                 files[str] = new FileInformation(filesOffsets.MoreInformation, advancedInformation.AreaCount, advancedInformation.Test1,
-                                                 advancedInformation.Test2);
+                    advancedInformation.Test2);
             }
 
             return files;

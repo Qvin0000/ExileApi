@@ -1,6 +1,6 @@
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.MemoryObjects;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Animated : Component
     {

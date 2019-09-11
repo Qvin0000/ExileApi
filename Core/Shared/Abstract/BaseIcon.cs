@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Exile;
-using Exile.PoEMemory.MemoryObjects;
-using PoEMemory.Components;
-using Shared;
-using Shared.Enums;
-using Shared.Helpers;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.Components;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
+using ExileCore.Shared.Interfaces;
 using SharpDX;
 
-namespace Shared.Abstract
+namespace ExileCore.Shared.Abstract
 {
     public abstract class BaseIcon
     {
-        protected static readonly Dictionary<string, Size2> strongboxesUV = new Dictionary<string, Size2>()
+        protected static readonly Dictionary<string, Size2> strongboxesUV = new Dictionary<string, Size2>
         {
             {"Metadata/Chests/StrongBoxes/Large", new Size2(7, 7)},
             {"Metadata/Chests/StrongBoxes/Strongbox", new Size2(1, 2)},
@@ -32,10 +27,10 @@ namespace Shared.Abstract
             {"Metadata/Chests/StrongBoxes/Arcanist", new Size2(1, 8)},
             {"Metadata/Chests/StrongBoxes/Gemcutter", new Size2(6, 1)},
             {"Metadata/Chests/StrongBoxes/StrongboxDivination", new Size2(7, 1)},
-            {"Metadata/Chests/AbyssChest", new Size2(7, 7)},
+            {"Metadata/Chests/AbyssChest", new Size2(7, 7)}
         };
 
-        protected static readonly Dictionary<string, Color> FossilRarity = new Dictionary<string, Color>()
+        protected static readonly Dictionary<string, Color> FossilRarity = new Dictionary<string, Color>
         {
             {"Fractured", Color.Aquamarine},
             {"Faceted", Color.Aquamarine},
@@ -64,14 +59,11 @@ namespace Shared.Abstract
             {"Frigid", Color.Yellow}
         };
 
-        protected bool PathCheck(Entity path, params string[] check) {
-            foreach (var s in check)
-                if (path.Path.Equals(s, StringComparison.Ordinal))
-                    return true;
-            return false;
-        }
+        private readonly ISettings _settings;
+        protected bool _HasIngameIcon;
 
-        public BaseIcon(Entity entity, ISettings settings) {
+        public BaseIcon(Entity entity, ISettings settings)
+        {
             _settings = settings;
             Entity = entity;
 
@@ -82,6 +74,7 @@ namespace Shared.Abstract
             }
 
             Rarity = Entity.Rarity;
+
             switch (Rarity)
             {
                 case MonsterRarity.White:
@@ -104,12 +97,15 @@ namespace Shared.Abstract
             Show = () => Entity.IsValid;
             Hidden = () => entity.IsHidden;
             GridPosition = () => Entity.GridPos;
+
             if (Entity.HasComponent<MinimapIcon>())
             {
                 var name = Entity.GetComponent<MinimapIcon>().Name;
+
                 if (!string.IsNullOrEmpty(name))
                 {
                     var iconIndexByName = Extensions.IconIndexByName(name);
+
                     if (iconIndexByName != MapIconsIndex.MyPlayer)
                     {
                         MainTexture = new HudTexture("Icons.png") {UV = SpriteHelper.GetUV(iconIndexByName), Size = 16};
@@ -136,6 +132,7 @@ namespace Shared.Abstract
                         Show = () =>
                         {
                             var minimapIcon = Entity.GetComponent<MinimapIcon>();
+
                             return Entity.IsValid && minimapIcon.IsVisible &&
                                    (minimapIcon.IsHide == false || Entity.GetComponent<Transitionable>().Flag1 == 1);
                         };
@@ -152,31 +149,34 @@ namespace Shared.Abstract
                         Show = () =>
                         {
                             var c = Entity.GetComponent<MinimapIcon>();
-                            return c!=null && c.IsVisible && c.IsHide == false;
+                            return c != null && c.IsVisible && c.IsHide == false;
                         };
                     }
                 }
             }
         }
 
-        protected bool _HasIngameIcon = false;
-
         public bool HasIngameIcon => _HasIngameIcon;
-        private readonly ISettings _settings;
-        public Entity Entity { get; private set; }
+        public Entity Entity { get; }
         public Func<Vector2> GridPosition { get; set; }
-
         public RectangleF DrawRect { get; set; }
-
         public Func<bool> Show { get; set; }
-
         public Func<bool> Hidden { get; protected set; } = () => false;
         public HudTexture MainTexture { get; protected set; }
-
         public IconPriority Priority { get; protected set; }
         public MonsterRarity Rarity { get; protected set; }
-
         public string Text { get; protected set; }
         public string RenderName => Entity.RenderName;
+
+        protected bool PathCheck(Entity path, params string[] check)
+        {
+            foreach (var s in check)
+            {
+                if (path.Path.Equals(s, StringComparison.Ordinal))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

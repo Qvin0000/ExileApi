@@ -1,24 +1,21 @@
 using System.Collections.Generic;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class WorldArea : RemoteMemoryObject
     {
+        private List<WorldArea> connections;
+        private List<WorldArea> corruptedAreas;
         private string id;
-        public string Id => id != null ? id : id = M.ReadStringU(M.Read<long>(Address));
-
-        public int Index { get; set; }
-
         private string name;
+        public string Id => id != null ? id : id = M.ReadStringU(M.Read<long>(Address));
+        public int Index { get; set; }
         public string Name => name != null ? name : name = M.ReadStringU(M.Read<long>(Address + 8), 255);
-
-
         public int Act => M.Read<int>(Address + 0x10);
         public bool IsTown => M.Read<byte>(Address + 0x14) == 1;
         public bool HasWaypoint => M.Read<byte>(Address + 0x15) == 1;
         public int AreaLevel => M.Read<int>(Address + 0x26);
         public int WorldAreaId => M.Read<int>(Address + 0x2a);
-
         public bool IsAtlasMap => Id.StartsWith("MapAtlas");
         public bool IsMapWorlds => Id.StartsWith("MapWorlds");
         public bool IsCorruptedArea => Id.Contains("SideArea") || Id.Contains("Sidearea");
@@ -26,12 +23,9 @@ namespace PoEMemory
         public bool IsDailyArea => Id.Contains("Daily");
         public bool IsMapTrialArea => Id.StartsWith("EndGame_Labyrinth_trials");
         public bool IsLabyrinthArea => !IsMapTrialArea && Id.Contains("Labyrinth");
-
         public bool IsAbyssArea =>
             Id.Equals("AbyssLeague") || Id.Equals("AbyssLeague2") || Id.Equals("AbyssLeagueBoss") || Id.Equals("AbyssLeagueBoss2") ||
             Id.Equals("AbyssLeagueBoss3");
-
-        private List<WorldArea> connections;
 
         public IList<WorldArea> Connections
         {
@@ -46,6 +40,7 @@ namespace PoEMemory
 
                     if (connectionsCount > 30)
                         return connections;
+
                     for (var i = 0; i < connectionsCount; i++)
                     {
                         var newArea = TheGame.Files.WorldAreas.GetByAddress(M.Read<long>(connectionsPtr));
@@ -57,8 +52,6 @@ namespace PoEMemory
                 return connections;
             }
         }
-
-        private List<WorldArea> corruptedAreas;
 
         public IList<WorldArea> CorruptedAreas
         {
@@ -73,6 +66,7 @@ namespace PoEMemory
 
                     if (corruptedAreasCount > 30)
                         return corruptedAreas;
+
                     for (var i = 0; i < corruptedAreasCount; i++)
                     {
                         var newArea = TheGame.Files.WorldAreas.GetByAddress(M.Read<long>(corruptedAreasPtr));
@@ -85,6 +79,9 @@ namespace PoEMemory
             }
         }
 
-        public override string ToString() => $"{Name}";
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
     }
 }

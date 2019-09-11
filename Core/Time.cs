@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Exile
+namespace ExileCore
 {
     public class Time
     {

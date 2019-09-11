@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using Shared.Enums;
+using ExileCore.Shared.Enums;
 
-namespace Shared.SomeMagic
+namespace ExileCore.Shared.SomeMagic
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct MemoryBasicInformation

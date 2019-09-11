@@ -7,11 +7,12 @@ namespace Loader
 {
     public class AppForm : RenderForm
     {
-        private NotifyIcon notifyIcon;
-        private ContextMenu contextMenu1;
+        private readonly ContextMenu contextMenu1;
+        public Action FixImguiCapture;
+        private readonly NotifyIcon notifyIcon;
 
-
-        public AppForm() {
+        public AppForm()
+        {
             SuspendLayout();
             contextMenu1 = new ContextMenu();
             var menuItem1 = new MenuItem();
@@ -27,11 +28,13 @@ namespace Loader
             notifyIcon.ContextMenu = contextMenu1;
             notifyIcon.Icon = Icon;
             menuItem1.Click += (sender, args) => { Close(); };
+
             menuItem2.Click += (sender, args) =>
             {
                 BringToFront();
                 FixImguiCapture?.Invoke();
             };
+
             Icon = Icon.ExtractAssociatedIcon("textures\\poehud.ico");
             notifyIcon.Icon = Icon;
             StartPosition = FormStartPosition.Manual;
@@ -50,12 +53,11 @@ namespace Loader
             BringToFront();
         }
 
-        public Action FixImguiCapture;
-        protected override void Dispose(bool disposing) {
+        protected override void Dispose(bool disposing)
+        {
             if (notifyIcon != null)
-            {
                 notifyIcon.Icon = null;
-            }
+
             notifyIcon?.Dispose();
             contextMenu1?.Dispose();
             base.Dispose(disposing);

@@ -1,6 +1,4 @@
-using System;
-
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class StateMachine : Component
     {

@@ -1,32 +1,33 @@
 using System.Collections.Generic;
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
 using GameOffsets;
-using Shared.Interfaces;
-using Shared.Enums;
 using SharpDX;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Actor : Component
     {
-        private FrameCache<ActorComponentOffsets> cacheValue;
-        private ActorComponentOffsets Struct => cacheValue.Value;
-        public Actor() => cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
+        private readonly FrameCache<ActorComponentOffsets> cacheValue;
 
+        public Actor()
+        {
+            cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
+        }
+
+        private ActorComponentOffsets Struct => cacheValue.Value;
         /// <summary>
-        ///     Standing still = 2048 =bit 11 set
-        ///     running = 2178 = bit 11 & 7
-        ///     Maybe Bit-field : Bit 7 set = running
+        /// Standing still = 2048 =bit 11 set
+        /// running = 2178 = bit 11 & 7
+        /// Maybe Bit-field : Bit 7 set = running
         /// </summary>
         public short ActionId => Address != 0 ? Struct.ActionId : (short) 0;
         public ActionFlags Action => Address != 0 ? (ActionFlags) Struct.ActionId : ActionFlags.None;
-
         public bool isMoving => (Action & ActionFlags.Moving) > 0;
         public bool isAttacking => (Action & ActionFlags.UsingAbility) > 0;
-
         public int AnimationId => Address != 0 ? Struct.AnimationId : 0;
         public AnimationE Animation => Address != 0 ? (AnimationE) Struct.AnimationId : AnimationE.Idle;
-
         /*public bool HasMinion(Entity entity) {
             if (Address == 0) return false;
 
@@ -43,7 +44,6 @@ namespace PoEMemory.Components
 
         //public float TimeSinseLastMove => -M.Read<float>(Address + 0x110);
         //public float TimeSinseLastAction => -M.Read<float>(Address + 0x114);
-
         /// <summary>
         /// Currently performed action information.
         /// WARNING: This memory location changes a lot,
@@ -59,6 +59,7 @@ namespace PoEMemory.Components
             get
             {
                 var result = new List<DeployedObject>();
+
                 for (var addr = Struct.DeployedObjectArray.First; addr < Struct.DeployedObjectArray.Last; addr += 8)
                 {
                     var objectId = M.Read<uint>(addr);
@@ -77,14 +78,19 @@ namespace PoEMemory.Components
                 var skillsStartPointer = Struct.ActorSkillsArray.First;
                 var skillsEndPointer = Struct.ActorSkillsArray.Last;
                 skillsStartPointer += 8; //Don't ask me why. Just skipping first one
+
                 if ((skillsEndPointer - skillsStartPointer) / 16 > 50)
                     return new List<ActorSkill>();
 
                 var result = new List<ActorSkill>();
+
                 for (var addr = skillsStartPointer;
                     addr < skillsEndPointer;
                     addr += 16) //16 because we are reading each second pointer (pointer vectors)
+                {
                     result.Add(ReadObject<ActorSkill>(addr));
+                }
+
                 return result;
             }
         }
@@ -112,18 +118,19 @@ namespace PoEMemory.Components
 
         public class ActionWrapper : RemoteMemoryObject
         {
-            private FrameCache<ActionWrapperOffsets> cacheValue;
-            private ActionWrapperOffsets Struct => cacheValue.Value;
-            public ActionWrapper() => cacheValue = new FrameCache<ActionWrapperOffsets>(() => M.Read<ActionWrapperOffsets>(Address));
+            private readonly FrameCache<ActionWrapperOffsets> cacheValue;
 
+            public ActionWrapper()
+            {
+                cacheValue = new FrameCache<ActionWrapperOffsets>(() => M.Read<ActionWrapperOffsets>(Address));
+            }
+
+            private ActionWrapperOffsets Struct => cacheValue.Value;
             public float DestinationX => Struct.Destination.X;
             public float DestinationY => Struct.Destination.Y;
-
             public Vector2 Destination => Struct.Destination;
-
             public Entity Target => ReadObject<Entity>(Struct.Target);
             public Vector2 CastDestination => new Vector2(DestinationX, DestinationY);
-
             public ActorSkill Skill => ReadObject<ActorSkill>(Struct.Skill);
         }
     }

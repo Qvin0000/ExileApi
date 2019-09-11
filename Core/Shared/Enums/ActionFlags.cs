@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     [Flags]
     public enum ActionFlags

@@ -1,4 +1,4 @@
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Inventories : Component
     {
@@ -13,7 +13,8 @@ namespace PoEMemory.Components
         public InventoryVisual RightRing => ReadVisual(8);
         public InventoryVisual Belt => ReadVisual(9);
 
-        internal InventoryVisual ReadVisual(int index) {
+        internal InventoryVisual ReadVisual(int index)
+        {
             index++; //Mean (Address + 0x40 + index * 0x40)
             return ReadObject<InventoryVisual>(Address + index * 0x40);
         }

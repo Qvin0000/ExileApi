@@ -1,26 +1,26 @@
 using System;
-using Exile;
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.Components;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
-using Shared.Enums;
-using Shared.Static;
-using PoEMemory.Components;
-using Shared.Enums;
-using Shared.Helpers;
 
-namespace PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class HoverItemIcon : Element
     {
+        private static readonly int InventPosXOff = Extensions.GetOffset<NormalInventoryItemOffsets>(nameof(NormalInventoryItemOffsets.InventPosX));
+        private static readonly int InventPosYOff = Extensions.GetOffset<NormalInventoryItemOffsets>(nameof(NormalInventoryItemOffsets.InventPosY));
+
+        private static readonly int ItemsOnGroundLabelElementOffset =
+            Extensions.GetOffset<IngameUElementsOffsets>(nameof(IngameUElementsOffsets.itemsOnGroundLabelRoot));
+
+        private ToolTipType? toolTip;
         public Element InventoryItemTooltip => ReadObject<Element>(Address + 0x338);
         public Element ItemInChatTooltip => ReadObject<Element>(Address + 0x1A8);
         public ItemOnGroundTooltip ToolTipOnGround => TheGame.IngameState.IngameUi.ItemOnGroundTooltip;
-        private ToolTipType? toolTip;
-        private static int InventPosXOff = Extensions.GetOffset<NormalInventoryItemOffsets>(nameof(NormalInventoryItemOffsets.InventPosX));
-        private static int InventPosYOff = Extensions.GetOffset<NormalInventoryItemOffsets>(nameof(NormalInventoryItemOffsets.InventPosY));
         public int InventPosX => M.Read<int>(Address + InventPosXOff);
         public int InventPosY => M.Read<int>(Address + InventPosYOff);
-
 
         public ToolTipType ToolTipType
         {
@@ -73,9 +73,6 @@ namespace PoEMemory.Elements
             }
         }
 
-        private static int ItemsOnGroundLabelElementOffset =
-            Extensions.GetOffset<IngameUElementsOffsets>(nameof(IngameUElementsOffsets.itemsOnGroundLabelRoot));
-
         public Entity Item
         {
             get
@@ -85,8 +82,10 @@ namespace PoEMemory.Elements
                     case ToolTipType.ItemOnGround:
                         // This offset is same as Game.IngameState.IngameUi.ItemsOnGroundLabels offset.
                         var le = TheGame.IngameState.IngameUi.ReadObjectAt<ItemsOnGroundLabelElement>(ItemsOnGroundLabelElementOffset);
+
                         if (le == null)
                             return null;
+
                         var e = le.ItemOnHover;
                         return e?.GetComponent<WorldItem>()?.ItemEntity;
                     case ToolTipType.InventoryItem:
@@ -100,12 +99,15 @@ namespace PoEMemory.Elements
             }
         }
 
-        private ToolTipType GetToolTipType() {
+        private ToolTipType GetToolTipType()
+        {
             try
             {
                 if (InventoryItemTooltip != null && InventoryItemTooltip.IsVisible) return ToolTipType.InventoryItem;
+
                 if (ToolTipOnGround != null && ToolTipOnGround.Tooltip != null && ToolTipOnGround.TooltipUI != null &&
                     ToolTipOnGround.TooltipUI.IsVisible) return ToolTipType.ItemOnGround;
+
                 if (ItemInChatTooltip != null && ItemInChatTooltip.IsVisible && ItemInChatTooltip.ChildCount > 1 &&
                     ItemInChatTooltip.Children[0].IsVisible && ItemInChatTooltip.Children[1].IsVisible) return ToolTipType.ItemInChat;
             }

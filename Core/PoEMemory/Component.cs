@@ -1,18 +1,19 @@
 using System.Text;
-using Exile.PoEMemory.MemoryObjects;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory
 {
     public class Component : RemoteMemoryObject
     {
         public long OwnerAddress => M.Read<long>(Address + 0x8);
         public Entity Owner => ReadObject<Entity>(Address + 8);
 
-        public string DumpObject() {
+        public string DumpObject()
+        {
             var type = GetType();
             var propertyInfos = type.GetProperties();
             var strs = new StringBuilder();
+
             foreach (var propertyInfo in propertyInfos)
             {
                 var value = propertyInfo.GetValue(this, null);

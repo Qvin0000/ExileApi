@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
-using Shared.Interfaces;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory
 {
     public abstract class FileInMemory
     {
-        private Func<long> fAddress;
+        private readonly Func<long> fAddress;
 
-        protected FileInMemory(IMemory m, Func<long> address) {
+        protected FileInMemory(IMemory m, Func<long> address)
+        {
             M = m;
             Address = address();
             fAddress = address;
@@ -18,7 +19,8 @@ namespace PoEMemory.FilesInMemory
         public long Address { get; }
         private int NumberOfRecords => M.Read<int>(fAddress() + 0x40, 0x20);
 
-        protected IEnumerable<long> RecordAddresses() {
+        protected IEnumerable<long> RecordAddresses()
+        {
             if (fAddress() == 0)
             {
                 yield return 0;
@@ -26,6 +28,7 @@ namespace PoEMemory.FilesInMemory
             }
 
             var cnt = NumberOfRecords;
+
             if (cnt == 0)
             {
                 yield return 0;
@@ -37,7 +40,10 @@ namespace PoEMemory.FilesInMemory
 
             var recLen = (lastRec - firstRec) / cnt;
 
-            for (var i = 0; i < cnt; i++) yield return firstRec + i * recLen;
+            for (var i = 0; i < cnt; i++)
+            {
+                yield return firstRec + i * recLen;
+            }
         }
     }
 }

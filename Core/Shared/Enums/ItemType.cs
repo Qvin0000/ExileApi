@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     [Obsolete]
     public enum ItemType

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Exile.PoEMemory.MemoryObjects;
-using GameOffsets;
+using ExileCore.PoEMemory.MemoryObjects;
 
-
-namespace PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class ItemsOnGroundLabelElement : Element
     {
@@ -27,29 +25,31 @@ namespace PoEMemory.Elements
 
         public string ItemOnHoverPath => ItemOnHover != null ? ItemOnHover.Path : "Null";
         public string LabelOnHoverText => LabelOnHover != null ? LabelOnHover.Text : "Null";
-
-
         public int CountLabels => M.Read<int>(Address + 0x268);
         public int CountLabels2 => M.Read<int>(Address + 0x2A8);
 
-        public new List<LabelOnGround> LabelsOnGround
+        public List<LabelOnGround> LabelsOnGround
         {
             get
             {
                 var address = M.Read<long>(Address + 0x2A0);
 
                 var result = new List<LabelOnGround>();
+
                 if (address <= 0)
                     return null;
+
                 var limit = 0;
+
                 for (var nextAddress = M.Read<long>(address); nextAddress != address; nextAddress = M.Read<long>(nextAddress))
                 {
                     var labelOnGround = GetObject<LabelOnGround>(nextAddress);
+
                     if (labelOnGround.Label.IsValid)
-                    {
                         result.Add(labelOnGround);
-                    }
+
                     limit++;
+
                     if (limit > 1000)
                         return null;
                 }

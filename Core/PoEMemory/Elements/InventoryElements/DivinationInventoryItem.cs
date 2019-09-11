@@ -1,6 +1,6 @@
 using SharpDX;
 
-namespace PoEMemory.InventoryElements
+namespace ExileCore.PoEMemory.Elements.InventoryElements
 {
     public class DivinationInventoryItem : NormalInventoryItem
     {
@@ -9,7 +9,8 @@ namespace PoEMemory.InventoryElements
         public override int InventPosX => 0;
         public override int InventPosY => 0;
 
-        public override RectangleF GetClientRect() {
+        public override RectangleF GetClientRect()
+        {
             var tmp = Parent.GetClientRect();
 
             // div stash tab scrollbar element scroll value calculator

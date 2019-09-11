@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface INativePtrArray
     {

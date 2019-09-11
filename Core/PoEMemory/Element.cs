@@ -1,37 +1,40 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Exile;
+using ExileCore.PoEMemory.Elements;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
 using MoreLinq;
-using PoEMemory.Elements;
-using Shared.Helpers;
-using Shared.Interfaces;
 using SharpDX;
 
-
-namespace PoEMemory
+namespace ExileCore.PoEMemory
 {
     public class Element : RemoteMemoryObject
     {
         public const int OffsetBuffers = 0;
+        private static readonly int IsVisibleLocalOff = Extensions.GetOffset<ElementOffsets>(nameof(ElementOffsets.IsVisibleLocal));
+        private static readonly int ChildStartOffset = Extensions.GetOffset<ElementOffsets>(nameof(ElementOffsets.ChildStart));
 
         // dd id
         // dd (something zero)
         // 16 dup <128-bytes structure>
         // then the rest is
-        private CachedValue<ElementOffsets> _cacheElement;
+        private readonly CachedValue<ElementOffsets> _cacheElement;
         private CachedValue<bool> _cacheElementIsVisibleLocal;
+        private readonly List<Element> _childrens = new List<Element>();
+        private CachedValue<RectangleF> _getClientRect;
 
-        public ElementOffsets Elem => _cacheElement.Value;
-        private static readonly int IsVisibleLocalOff = Extensions.GetOffset<ElementOffsets>(nameof(ElementOffsets.IsVisibleLocal));
-        private static readonly int ChildStartOffset = Extensions.GetOffset<ElementOffsets>(nameof(ElementOffsets.ChildStart));
+        // public Element Root => Elem.Root==0 ?null: GetObject<Element>(M.Read<long>(Elem.Root+0xE8));
+        private Element _parent;
+        private long childHashCache;
 
-        public Element() {
+        public Element()
+        {
             _cacheElement = new FrameCache<ElementOffsets>(() => Address == 0 ? default : M.Read<ElementOffsets>(Address));
             _cacheElementIsVisibleLocal = new FrameCache<bool>(() => Address == 0 ? default : M.Read<bool>(Address + IsVisibleLocalOff));
         }
 
+        public ElementOffsets Elem => _cacheElement.Value;
         public bool IsValid => Elem.SelfPointer == Address;
 
         //public int vTable => Elem.vTable;
@@ -39,13 +42,8 @@ namespace PoEMemory
 
         //public bool IsVisibleLocal => Address!=0 && _cacheElementIsVisibleLocal.Value;
         public bool IsVisibleLocal => (Elem.IsVisibleLocal & 4) == 4;
-
         public Element Root => TheGame.IngameState.UIRoot;
-
-        // public Element Root => Elem.Root==0 ?null: GetObject<Element>(M.Read<long>(Elem.Root+0xE8));
-
-        private Element _parent;
-        public Element Parent => Elem.Parent == 0 ? null : _parent ?? (_parent= GetObject<Element>(Elem.Parent));
+        public Element Parent => Elem.Parent == 0 ? null : _parent ?? (_parent = GetObject<Element>(Elem.Parent));
         public Vector2 Position => Elem.Position;
         public float X => Elem.X;
         public float Y => Elem.Y;
@@ -89,44 +87,53 @@ namespace PoEMemory
         }
 
         public IList<Element> Children => GetChildren<Element>();
-        private List<Element> _childrens = new List<Element>();
-
-
-        private long childHashCache;
         public long ChildHash => Elem.Childs.GetHashCode();
+        public RectangleF GetClientRectCache =>
+            _getClientRect?.Value ?? (_getClientRect = new TimeCache<RectangleF>(GetClientRect, 200)).Value;
+        public Element this[int index] => GetChildAtIndex(index);
 
-        protected List<Element> GetChildren<T>() where T : Element {
+        protected List<Element> GetChildren<T>() where T : Element
+        {
             var e = Elem;
             if (Address == 0 || e.ChildStart == 0 || e.ChildEnd == 0 || ChildCount < 0) return _childrens;
 
-
             if (ChildHash == childHashCache)
                 return _childrens;
+
             var pointers = M.ReadPointersArray(e.ChildStart, e.ChildEnd);
 
             if (pointers.Count != ChildCount) return _childrens;
             _childrens.Clear();
-            
-            foreach (var pointer in pointers) _childrens.Add(GetObject<Element>(pointer));
+
+            foreach (var pointer in pointers)
+            {
+                _childrens.Add(GetObject<Element>(pointer));
+            }
 
             childHashCache = ChildHash;
             return _childrens;
         }
 
-        private IList<Element> GetParentChain() {
+        private IList<Element> GetParentChain()
+        {
             var list = new List<Element>();
+
             if (Address == 0)
                 return list;
+
             var hashSet = new HashSet<Element>();
             var root = Root;
             var parent = Parent;
+
             if (root == null || parent == null)
                 return list;
+
             while (!hashSet.Contains(parent) && root.Address != parent.Address && parent.Address != 0)
             {
                 list.Add(parent);
                 hashSet.Add(parent);
                 parent = parent.Parent;
+
                 if (parent == null)
                     break;
             }
@@ -134,10 +141,12 @@ namespace PoEMemory
             return list;
         }
 
-        public Vector2 GetParentPos() {
+        public Vector2 GetParentPos()
+        {
             float num = 0;
             float num2 = 0;
             var rootScale = TheGame.IngameState.UIRoot.Scale;
+
             foreach (var current in GetParentChain())
             {
                 num += current.X * current.Scale / rootScale;
@@ -147,12 +156,8 @@ namespace PoEMemory
             return new Vector2(num, num2);
         }
 
-        private CachedValue<RectangleF> _getClientRect;
-
-        public RectangleF GetClientRectCache =>
-            _getClientRect?.Value ?? (_getClientRect = new TimeCache<RectangleF>(GetClientRect, 200)).Value;
-
-        public virtual RectangleF GetClientRect() {
+        public virtual RectangleF GetClientRect()
+        {
             if (Address == 0) return RectangleF.Empty;
             var vPos = GetParentPos();
             float width = TheGame.IngameState.Camera.Width;
@@ -167,11 +172,14 @@ namespace PoEMemory
             return new RectangleF(num, num2, xScale * Width * Scale / rootScale, yScale * Height * Scale / rootScale);
         }
 
-        public Element GetChildFromIndices(params int[] indices) {
+        public Element GetChildFromIndices(params int[] indices)
+        {
             var poe_UElement = this;
+
             foreach (var index in indices)
             {
                 poe_UElement = poe_UElement.GetChildAtIndex(index);
+
                 if (poe_UElement == null)
                 {
                     var str = "";
@@ -192,9 +200,9 @@ namespace PoEMemory
             return poe_UElement;
         }
 
-        public Element GetChildAtIndex(int index) =>
-            index >= ChildCount ? null : GetObject<Element>(M.Read<long>(Address + ChildStartOffset, index * 8));
-
-        public Element this[int index] => GetChildAtIndex(index);
+        public Element GetChildAtIndex(int index)
+        {
+            return index >= ChildCount ? null : GetObject<Element>(M.Read<long>(Address + ChildStartOffset, index * 8));
+        }
     }
 }

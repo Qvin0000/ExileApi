@@ -1,16 +1,18 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Shared.SomeMagic
+namespace ExileCore.Shared.SomeMagic
 {
     public static unsafe class TypeConverter
     {
-        public static T PointerToGenericType<T>(IntPtr pointer) where T : struct {
+        public static T PointerToGenericType<T>(IntPtr pointer) where T : struct
+        {
             switch (MarshalType<T>.TypeCode)
             {
                 case TypeCode.Object:
                     if (MarshalType<T>.IsIntPtr)
                         return (T) (object) *(IntPtr*) pointer;
+
                     break;
                 case TypeCode.Boolean:
                     return (T) (object) *(bool*) pointer;
@@ -47,7 +49,8 @@ namespace Shared.SomeMagic
             return (T) Marshal.PtrToStructure(pointer, typeof(T));
         }
 
-        public static byte[] GenericTypeToBytes<T>(T generic) where T : struct {
+        public static byte[] GenericTypeToBytes<T>(T generic) where T : struct
+        {
             var size = MarshalType<T>.Size;
 
             switch (MarshalType<T>.TypeCode)
@@ -94,6 +97,7 @@ namespace Shared.SomeMagic
             if (!MarshalType<T>.HasUnmanagedTypes)
             {
                 var genericPtr = MarshalType<T>.GetPointer(ref generic);
+
                 fixed (byte* bytesPtr = bytes)
                 {
                     NativeMethods.Copy(bytesPtr, genericPtr, size);
@@ -110,7 +114,8 @@ namespace Shared.SomeMagic
             return bytes;
         }
 
-        public static T BytesToGenericType<T>(byte[] bytes) where T : struct {
+        public static T BytesToGenericType<T>(byte[] bytes) where T : struct
+        {
             var size = MarshalType<T>.Size;
 
             switch (MarshalType<T>.TypeCode)
@@ -160,6 +165,7 @@ namespace Shared.SomeMagic
             if (!MarshalType<T>.HasUnmanagedTypes)
             {
                 var genericPtr = MarshalType<T>.GetPointer(ref generic);
+
                 fixed (byte* bytesPtr = bytes)
                 {
                     NativeMethods.Copy(genericPtr, bytesPtr, size);

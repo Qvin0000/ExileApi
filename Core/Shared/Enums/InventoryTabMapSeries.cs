@@ -1,4 +1,4 @@
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     public enum InventoryTabMapSeries : byte
     {
@@ -7,6 +7,6 @@ namespace Shared.Enums
         Original = 1,
         The_Awakening = 2,
         War_for_the_Atlas = 4,
-        Bestiary = 5,
+        Bestiary = 5
     }
 }

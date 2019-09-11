@@ -1,30 +1,29 @@
-﻿using ImGuiNET;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Shared.Interfaces;
-using Shared.Nodes;
+using ExileCore.Shared.Interfaces;
+using ExileCore.Shared.Nodes;
+using ImGuiNET;
 using Newtonsoft.Json;
-using Shared.Nodes;
 
-namespace Exile.RenderQ
+namespace ExileCore.RenderQ
 {
     public class ThemeEditor
     {
-        private readonly CoreSettings coreSettings;
         public const string ThemeExtension = ".hudtheme";
         public const string DefaultThemeName = "Default";
         private const string ThemesFolder = "config/themes";
-
+        private readonly CoreSettings coreSettings;
         private ThemeConfig LoadedTheme;
+        private string NewThemeName = "MyNewTheme";
+        private int SelectedThemeId;
+        private string SelectedThemeName;
 
-        public ThemeEditor(CoreSettings coreSettings) {
+        public ThemeEditor(CoreSettings coreSettings)
+        {
             this.coreSettings = coreSettings;
 
             GenerateDefaultTheme();
@@ -43,18 +42,16 @@ namespace Exile.RenderQ
             coreSettings.Theme.OnValueSelected += ApplyTheme;
         }
 
-        private void LoadThemeFilesList() {
+        private void LoadThemeFilesList()
+        {
             var fi = new DirectoryInfo(ThemesFolder);
+
             coreSettings.Theme.Values = fi.GetFiles($"*{ThemeExtension}").OrderByDescending(x => x.LastWriteTime)
-                                          .Select(x => Path.GetFileNameWithoutExtension(x.Name)).ToList();
+                .Select(x => Path.GetFileNameWithoutExtension(x.Name)).ToList();
         }
 
-
-        private string SelectedThemeName;
-        private int SelectedThemeId;
-        private string NewThemeName = "MyNewTheme";
-
-        public void DrawSettingsMenu() {
+        public void DrawSettingsMenu()
+        {
             if (ImGui.Combo("Select Theme", ref SelectedThemeId, coreSettings.Theme.Values.ToArray(), coreSettings.Theme.Values.Count))
             {
                 if (SelectedThemeName != coreSettings.Theme.Values[SelectedThemeId])
@@ -133,6 +130,7 @@ namespace Exile.RenderQ
             var count = colorTypes.Count() / 2;
 
             foreach (var type in colorTypes)
+            {
                 unsafe
                 {
                     var nameFixed = Regex.Replace(type.ToString(), "(\\B[A-Z])", " $1");
@@ -140,39 +138,46 @@ namespace Exile.RenderQ
                     var styleColorVec4 = ImGui.GetStyleColorVec4(type);
                     var colorValue = new Vector4(styleColorVec4->X, styleColorVec4->Y, styleColorVec4->Z, styleColorVec4->W);
 
-
                     if (ImGui.ColorEdit4(nameFixed, ref colorValue,
-                                         ImGuiColorEditFlags.AlphaBar | ImGuiColorEditFlags.NoInputs |
-                                         ImGuiColorEditFlags.AlphaPreviewHalf))
+                            ImGuiColorEditFlags.AlphaBar | ImGuiColorEditFlags.NoInputs |
+                            ImGuiColorEditFlags.AlphaPreviewHalf))
+
                         //    style.SetColor(type, colorValue);
                         ImGui.PushStyleColor(type, colorValue);
+
                     if (count-- == -1)
                         ImGui.NextColumn();
                 }
+            }
         }
 
-        private bool DrawBoolSetting(string name, bool result) {
+        private bool DrawBoolSetting(string name, bool result)
+        {
             ImGui.Checkbox(name, ref result);
             return result;
         }
 
-        private float DrawFloatSetting(string name, float result, float min, float max, float power = 1) {
+        private float DrawFloatSetting(string name, float result, float min, float max, float power = 1)
+        {
             ImGui.SliderFloat(name, ref result, min, max, "%.0f", power);
             return result;
         }
 
-        private Vector2 DrawVectorSetting(string name, Vector2 result, float min, float max, float power = 1) {
+        private Vector2 DrawVectorSetting(string name, Vector2 result, float min, float max, float power = 1)
+        {
             ImGui.SliderFloat2(name, ref result, min, max, "%.0f", power);
             return result;
         }
 
-        public static void ApplyTheme(string fileName) {
+        public static void ApplyTheme(string fileName)
+        {
             var theme = LoadTheme(fileName, true);
 
             if (theme == null)
             {
                 DebugWindow.LogMsg($"Can't find theme file {fileName}, loading default.", 3);
                 theme = LoadTheme(DefaultThemeName, true);
+
                 if (theme == null)
                 {
                     DebugWindow.LogMsg($"Can't find default theme file {DefaultThemeName}, Generating default and saving...", 3);
@@ -184,7 +189,8 @@ namespace Exile.RenderQ
             ApplyTheme(theme);
         }
 
-        public static void ApplyTheme(ThemeConfig theme) {
+        public static void ApplyTheme(ThemeConfig theme)
+        {
             var style = ImGui.GetStyle();
 
             style.AntiAliasedLines = theme.AntiAliasedLines;
@@ -205,28 +211,33 @@ namespace Exile.RenderQ
             style.ChildRounding = theme.ChildWindowRounding;
             style.WindowTitleAlign = theme.WindowTitleAlign;
             style.WindowRounding = theme.WindowRounding;
+
             //style.WindowMinSize = theme.WindowMinSize;
             style.WindowPadding = theme.WindowPadding;
             style.Alpha = theme.Alpha;
             style.AntiAliasedFill = theme.AntiAliasedFill;
             style.CurveTessellationTol = theme.CurveTessellationTolerance;
 
-
             foreach (var color in theme.Colors)
+            {
                 try
                 {
                     if (color.Key == ImGuiCol.COUNT) //This shit made a crash
                         continue;
+
                     ImGui.PushStyleColor(color.Key, color.Value);
                 }
                 catch (Exception ex)
                 {
                     DebugWindow.LogError(ex.Message, 5);
                 }
+            }
         }
 
-        private ThemeConfig ReadThemeFromCurrent() {
+        private ThemeConfig ReadThemeFromCurrent()
+        {
             var style = ImGui.GetStyle();
+
             var result = new ThemeConfig
             {
                 AntiAliasedLines = style.AntiAliasedLines,
@@ -251,11 +262,14 @@ namespace Exile.RenderQ
                 AntiAliasedFill = style.AntiAliasedFill,
                 CurveTessellationTolerance = style.CurveTessellationTol
             };
+
             //result.WindowMinSize = style.WindowMinSize;
 
             var colorTypeValues = Enum.GetValues(typeof(ImGuiCol)).Cast<ImGuiCol>();
+
             //Read colors
             foreach (var colorType in colorTypeValues)
+            {
                 unsafe
                 {
                     if (colorType == ImGuiCol.COUNT) //This shit made a crash
@@ -264,11 +278,13 @@ namespace Exile.RenderQ
                     var SP4 = ImGui.GetStyleColorVec4(colorType);
                     result.Colors.Add(colorType, new Vector4(SP4->X, SP4->Y, SP4->Z, SP4->W));
                 }
+            }
 
             return result;
         }
 
-        private static ThemeConfig GenerateDefaultTheme() {
+        private static ThemeConfig GenerateDefaultTheme()
+        {
             var resultTheme = new ThemeConfig();
             resultTheme.Colors.Add(ImGuiCol.Text, new Vector4(0.90f, 0.90f, 0.90f, 1.00f));
             resultTheme.Colors.Add(ImGuiCol.TextDisabled, new Vector4(0.60f, 0.60f, 0.60f, 1.00f));
@@ -303,6 +319,7 @@ namespace Exile.RenderQ
             resultTheme.Colors.Add(ImGuiCol.ResizeGrip, new Vector4(1.00f, 1.00f, 1.00f, 0.16f));
             resultTheme.Colors.Add(ImGuiCol.ResizeGripHovered, new Vector4(0.78f, 0.82f, 1.00f, 0.60f));
             resultTheme.Colors.Add(ImGuiCol.ResizeGripActive, new Vector4(0.78f, 0.82f, 1.00f, 0.90f));
+
             //  resultTheme.Colors.Add(ImGuiCol.CloseButton, new Vector4(0.50f, 0.50f, 0.90f, 0.50f));
             //   resultTheme.Colors.Add(ImGuiCol.CloseButtonHovered, new Vector4(0.70f, 0.70f, 0.90f, 0.60f));
             //    resultTheme.Colors.Add(ImGuiCol.CloseButtonActive, new Vector4(0.70f, 0.70f, 0.70f, 1.00f));
@@ -318,11 +335,14 @@ namespace Exile.RenderQ
 
         #region SaveLoad
 
-        private static ThemeConfig LoadTheme(string fileName, bool nullIfNotFound) {
+        private static ThemeConfig LoadTheme(string fileName, bool nullIfNotFound)
+        {
             ThemeConfig result;
+
             try
             {
                 var fullPath = Path.Combine(ThemesFolder, fileName + ThemeExtension);
+
                 if (File.Exists(fullPath))
                 {
                     var json = File.ReadAllText(fullPath);
@@ -336,14 +356,17 @@ namespace Exile.RenderQ
 
             if (nullIfNotFound)
                 return null;
+
             return GenerateDefaultTheme();
         }
 
-        private static void SaveTheme(ThemeConfig theme, string fileName) {
+        private static void SaveTheme(ThemeConfig theme, string fileName)
+        {
             try
             {
                 var fullPath = Path.Combine(ThemesFolder, fileName + ThemeExtension);
                 var settingsDirName = Path.GetDirectoryName(fullPath);
+
                 if (!Directory.Exists(settingsDirName))
                     Directory.CreateDirectory(settingsDirName);
 
@@ -364,9 +387,14 @@ namespace Exile.RenderQ
 
     public class ThemeConfig : ISettings
     {
-        public ThemeConfig() => Enable = new ToggleNode(true);
-        public ToggleNode Enable { get; set; }
+        public Dictionary<ImGuiCol, Vector4> Colors = new Dictionary<ImGuiCol, Vector4>();
 
+        public ThemeConfig()
+        {
+            Enable = new ToggleNode(true);
+        }
+
+        public ToggleNode Enable { get; set; }
 
         #region ThemeSettings
 
@@ -390,7 +418,7 @@ namespace Exile.RenderQ
         //
         // Summary:
         //     Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
-        public float GrabRounding { get; set; } = 0;
+        public float GrabRounding { get; set; }
 
         //
         // Summary:
@@ -439,7 +467,7 @@ namespace Exile.RenderQ
         // Summary:
         //     Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used
         //     by most widgets).
-        public float FrameRounding { get; set; } = 0;
+        public float FrameRounding { get; set; }
 
         //
         // Summary:
@@ -449,7 +477,7 @@ namespace Exile.RenderQ
         //
         // Summary:
         //     Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
-        public float ChildWindowRounding { get; set; } = 0;
+        public float ChildWindowRounding { get; set; }
 
         //
         // Summary:
@@ -487,8 +515,5 @@ namespace Exile.RenderQ
         public float CurveTessellationTolerance { get; set; } = 1f;
 
         #endregion
-
-
-        public Dictionary<ImGuiCol, Vector4> Colors = new Dictionary<ImGuiCol, Vector4>();
     }
 }

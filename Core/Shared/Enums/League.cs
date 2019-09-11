@@ -1,4 +1,4 @@
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     public enum LeagueType
     {
@@ -8,6 +8,6 @@ namespace Shared.Enums
         Breach,
         Perandus,
         Delve,
-        Legion,
+        Legion
     }
 }

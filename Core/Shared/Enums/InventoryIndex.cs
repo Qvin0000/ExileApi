@@ -1,4 +1,4 @@
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     public enum InventoryIndex
     {
@@ -16,8 +16,8 @@ namespace Shared.Enums
         Belt,
         Boots,
         PlayerInventory,
-
         Flask
+
         //Stash1 = 24,
         //Stash2
     }

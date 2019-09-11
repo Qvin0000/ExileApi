@@ -1,24 +1,40 @@
 using System;
 using System.IO;
-using System.Runtime;
-using System.Text;
 using System.Threading;
-using Shared.Interfaces;
-using Shared.Nodes;
+using ExileCore.Shared.Interfaces;
+using ExileCore.Shared.Nodes;
 using Newtonsoft.Json;
-using Shared.Nodes;
 
-
-namespace Exile
+namespace ExileCore
 {
     public class SettingsContainer
     {
         private const string SETTINGS_FILE_NAME = "config/settings.json";
         private const string DEFAULT_PROFILE_NAME = "global";
         private const string CFG_DIR = "config";
-        private static ReaderWriterLockSlim rwLock { get; } = new ReaderWriterLockSlim();
         public static readonly JsonSerializerSettings jsonSettings;
-        public event EventHandler<string> OnProfileChange;
+        private string _currentProfileName = "";
+        public CoreSettings CoreSettings;
+
+        static SettingsContainer()
+        {
+            jsonSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new SortContractResolver(),
+                Converters = new JsonConverter[] {new ColorNodeConverter(), new ToggleNodeConverter(), new FileNodeConverter()}
+            };
+        }
+
+        public SettingsContainer()
+        {
+            if (!Directory.Exists(CFG_DIR)) Directory.CreateDirectory(CFG_DIR);
+
+            if (!Directory.Exists($"{CFG_DIR}\\{DEFAULT_PROFILE_NAME}")) Directory.CreateDirectory($"{CFG_DIR}\\{DEFAULT_PROFILE_NAME}");
+
+            LoadCoreSettings();
+        }
+
+        private static ReaderWriterLockSlim rwLock { get; } = new ReaderWriterLockSlim();
 
         private string CurrentProfileName
         {
@@ -30,26 +46,10 @@ namespace Exile
             }
         }
 
-        static SettingsContainer() =>
-            jsonSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new SortContractResolver(),
-                Converters = new JsonConverter[] {new ColorNodeConverter(), new ToggleNodeConverter(), new FileNodeConverter(),}
-            };
+        public event EventHandler<string> OnProfileChange;
 
-
-        public SettingsContainer() {
-            if (!Directory.Exists(CFG_DIR)) Directory.CreateDirectory(CFG_DIR);
-
-            if (!Directory.Exists($"{CFG_DIR}\\{DEFAULT_PROFILE_NAME}")) Directory.CreateDirectory($"{CFG_DIR}\\{DEFAULT_PROFILE_NAME}");
-
-            LoadCoreSettings();
-        }
-
-        public CoreSettings CoreSettings;
-        private string _currentProfileName = "";
-
-        public void LoadCoreSettings() {
+        public void LoadCoreSettings()
+        {
             try
             {
                 if (!File.Exists(SETTINGS_FILE_NAME))
@@ -71,7 +71,8 @@ namespace Exile
             }
         }
 
-        public void SaveCoreSettings() {
+        public void SaveCoreSettings()
+        {
             try
             {
                 rwLock.EnterWriteLock();
@@ -87,18 +88,22 @@ namespace Exile
             }
         }
 
-        public void SaveSettings(IPlugin plugin) {
+        public void SaveSettings(IPlugin plugin)
+        {
             if (plugin == null) return;
             if (string.IsNullOrWhiteSpace(CurrentProfileName)) CurrentProfileName = DEFAULT_PROFILE_NAME;
             rwLock.EnterWriteLock();
 
             if (!Directory.Exists($"{CFG_DIR}\\{CurrentProfileName}")) Directory.CreateDirectory($"{CFG_DIR}\\{CurrentProfileName}");
+
             File.WriteAllText($"{CFG_DIR}\\{CurrentProfileName}\\{plugin.InternalName}_settings.json",
-                              JsonConvert.SerializeObject(plugin._Settings, Formatting.Indented, jsonSettings));
+                JsonConvert.SerializeObject(plugin._Settings, Formatting.Indented, jsonSettings));
+
             rwLock.ExitWriteLock();
         }
 
-        public string LoadSettings(IPlugin plugin) {
+        public string LoadSettings(IPlugin plugin)
+        {
             if (!Directory.Exists($"{CFG_DIR}\\{CurrentProfileName}"))
                 throw new DirectoryNotFoundException($"{CurrentProfileName} not found in {CFG_DIR}");
 
@@ -109,17 +114,19 @@ namespace Exile
             return readAllText.Length == 0 ? null : readAllText;
         }
 
-        public static TSettingType LoadSettingFile<TSettingType>(string fileName) {
+        public static TSettingType LoadSettingFile<TSettingType>(string fileName)
+        {
             if (!File.Exists(fileName))
             {
                 Logger.Log.Error("Cannot find " + fileName + " file.");
-                return default(TSettingType);
+                return default;
             }
 
             return JsonConvert.DeserializeObject<TSettingType>(File.ReadAllText(fileName));
         }
 
-        public static void SaveSettingFile<TSettingType>(string fileName, TSettingType setting) {
+        public static void SaveSettingFile<TSettingType>(string fileName, TSettingType setting)
+        {
             var serialized = JsonConvert.SerializeObject(setting, Formatting.Indented);
 
             File.WriteAllText(fileName, serialized);

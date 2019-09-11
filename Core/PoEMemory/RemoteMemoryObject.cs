@@ -1,7 +1,9 @@
 using System;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory
 {
     public abstract class RemoteMemoryObject
     {
@@ -20,23 +22,27 @@ namespace PoEMemory
             }
         }
 
-        protected virtual void OnAddressChange() { }
-
         public static Cache Cache => pCache;
         public IMemory M => pM;
         public TheGame TheGame => pTheGame;
-
         public static TheGame pTheGame { get; protected set; }
         protected static Cache pCache { get; set; }
         protected static IMemory pM { get; set; }
 
+        protected virtual void OnAddressChange()
+        {
+        }
 
         // public static ConcurrentDictionary<string,int> CountType = new ConcurrentDictionary<string, int>();
+        public T ReadObjectAt<T>(int offset) where T : RemoteMemoryObject, new()
+        {
+            return ReadObject<T>(Address + offset);
+        }
 
-        public T ReadObjectAt<T>(int offset) where T : RemoteMemoryObject, new() => ReadObject<T>(Address + offset);
-
-        public T ReadObject<T>(long addressPointer) where T : RemoteMemoryObject, new() {
+        public T ReadObject<T>(long addressPointer) where T : RemoteMemoryObject, new()
+        {
             var pointer = M.Read<long>(addressPointer);
+
             // CountType.AddOrUpdate(typeof(T).FullName, 1, (s, oldValue) => oldValue + 1);
             /*
             if (typeof(T) == typeof(Element) && pointer != 0)
@@ -69,11 +75,18 @@ namespace PoEMemory
             return t;
         }
 
-        public T GetObjectAt<T>(int offset) where T : RemoteMemoryObject, new() => GetObject<T>(Address + offset);
+        public T GetObjectAt<T>(int offset) where T : RemoteMemoryObject, new()
+        {
+            return GetObject<T>(Address + offset);
+        }
 
-        public T GetObjectAt<T>(long offset) where T : RemoteMemoryObject, new() => GetObject<T>(Address + offset);
+        public T GetObjectAt<T>(long offset) where T : RemoteMemoryObject, new()
+        {
+            return GetObject<T>(Address + offset);
+        }
 
-        public T GetObject<T>(long address) where T : RemoteMemoryObject, new() {
+        public T GetObject<T>(long address) where T : RemoteMemoryObject, new()
+        {
             //    CountType.AddOrUpdate(typeof(T).FullName, 1, (s, oldValue) => oldValue + 1);
             /*if (typeof(T) == typeof(Element) && address != 0)
             {
@@ -93,9 +106,13 @@ namespace PoEMemory
             return t;
         }
 
-        public T GetObject<T>(IntPtr address) where T : RemoteMemoryObject, new() => GetObject<T>(address.ToInt64());
+        public T GetObject<T>(IntPtr address) where T : RemoteMemoryObject, new()
+        {
+            return GetObject<T>(address.ToInt64());
+        }
 
-        public T AsObject<T>() where T : RemoteMemoryObject, new() {
+        public T AsObject<T>() where T : RemoteMemoryObject, new()
+        {
             //     CountType.AddOrUpdate(typeof(T).FullName, 1, (s, oldValue) => oldValue + 1);
             /*
             if (typeof(T) == typeof(Element) && Address != 0)
@@ -115,10 +132,19 @@ namespace PoEMemory
             return t;
         }
 
-        public override bool Equals(object obj) => obj is RemoteMemoryObject remoteMemoryObject && remoteMemoryObject.Address == Address;
+        public override bool Equals(object obj)
+        {
+            return obj is RemoteMemoryObject remoteMemoryObject && remoteMemoryObject.Address == Address;
+        }
 
-        public override int GetHashCode() => (int) Address + GetType().Name.GetHashCode();
+        public override int GetHashCode()
+        {
+            return (int) Address + GetType().Name.GetHashCode();
+        }
 
-        public override string ToString() => $"{Address:X}";
+        public override string ToString()
+        {
+            return $"{Address:X}";
+        }
     }
 }

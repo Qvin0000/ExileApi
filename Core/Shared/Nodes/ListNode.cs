@@ -1,20 +1,16 @@
 using System;
 using System.Collections.Generic;
-using Exile;
-using Shared.Static;
 using Newtonsoft.Json;
+using SharpDX;
 
-namespace Shared.Nodes
+namespace ExileCore.Shared.Nodes
 {
     public class ListNode
     {
         [JsonIgnore] public Action<string> OnValueSelected = delegate { };
         [JsonIgnore] public Action<string> OnValueSelectedPre = delegate { };
-
         private string value;
-
-        public ListNode() { }
-
+        [JsonIgnore] public List<string> Values = new List<string>();
 
         public string Value
         {
@@ -29,7 +25,7 @@ namespace Shared.Nodes
                     }
                     catch
                     {
-                        DebugWindow.LogMsg("Error in function that subscribed for: ListNode.OnValueSelectedPre", 10, SharpDX.Color.Red);
+                        DebugWindow.LogMsg("Error in function that subscribed for: ListNode.OnValueSelectedPre", 10, Color.Red);
                     }
 
                     this.value = value;
@@ -41,16 +37,20 @@ namespace Shared.Nodes
                     catch (Exception ex)
                     {
                         DebugWindow.LogMsg($"Error in function that subscribed for: ListNode.OnValueSelected. Error: {ex.Message}", 10,
-                                               SharpDX.Color.Red);
+                            Color.Red);
                     }
                 }
             }
         }
 
-        public static implicit operator string(ListNode node) => node.Value;
+        public static implicit operator string(ListNode node)
+        {
+            return node.Value;
+        }
 
-        [JsonIgnore] public List<string> Values = new List<string>();
-
-        public void SetListValues(List<string> values) => Values = values;
+        public void SetListValues(List<string> values)
+        {
+            Values = values;
+        }
     }
 }
