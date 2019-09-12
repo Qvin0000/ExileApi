@@ -173,6 +173,7 @@
     <Compile Include="PoEMemory\Components\Armour.cs" />
     <Compile Include="PoEMemory\Components\AttributeRequirements.cs" />
     <Compile Include="PoEMemory\Components\Base.cs" />
+    <Compile Include="PoEMemory\Components\Beam.cs" />
     <Compile Include="PoEMemory\Components\Buff.cs" />
     <Compile Include="PoEMemory\Components\Charges.cs" />
     <Compile Include="PoEMemory\Components\Chest.cs" />
