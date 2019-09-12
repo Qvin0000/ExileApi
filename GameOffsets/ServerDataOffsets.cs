@@ -23,7 +23,7 @@ namespace GameOffsets
   {
     public const int Skip = 0x5000;
     [FieldOffset(0x63E8-Skip)]public NativeStringU League2;
-    [FieldOffset(0x6340-Skip)]public NativePtrArray PassiveSkillIds;
+    [FieldOffset(0x6AA0-Skip)]public NativePtrArray PassiveSkillIds;
     [FieldOffset(0x63B0-Skip)]public byte PlayerClass;
     [FieldOffset(0x6394-Skip)]public int CharacterLevel;
     [FieldOffset(0x6398-Skip)]public int PassiveRefundPointsLeft;
