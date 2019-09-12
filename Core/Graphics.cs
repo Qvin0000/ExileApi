@@ -64,6 +64,11 @@ namespace ExileCore
             return DrawText(text, position.ToVector2Num(), color, _settings.FontSize, _settings.Font, align);
         }
 
+        public Vector2N DrawText(string text, Vector2 position, Color color, int height, FontAlign align = FontAlign.Left)
+        {
+            return DrawText(text, position.ToVector2Num(), color, height, _settings.Font, align);
+        }
+
         public Vector2N DrawText(string text, Vector2N position, Color color)
         {
             return DrawText(text, position, color, _settings.FontSize, _settings.Font);
