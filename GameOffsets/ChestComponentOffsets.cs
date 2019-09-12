@@ -10,7 +10,7 @@ namespace GameOffsets
         [FieldOffset(0x79)] public bool IsLocked;
         [FieldOffset(0xB8)] public bool IsStrongbox;
         [FieldOffset(0x7C)] public readonly byte quality;
-        [FieldOffset(0x20)] public long StrongboxData;
+        [FieldOffset(0x58)] public long StrongboxData;
 
     }
 }
