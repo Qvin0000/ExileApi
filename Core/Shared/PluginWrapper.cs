@@ -1,28 +1,19 @@
 using System;
 using System.Diagnostics;
-using Exile;
-using Exile.PoEMemory.MemoryObjects;
-using Shared.Interfaces;
-using Shared.Static;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Interfaces;
 
-namespace Shared
+namespace ExileCore.Shared
 {
     public class PluginWrapper
     {
-        private static Stopwatch sw = Stopwatch.StartNew();
+        private static readonly Stopwatch sw = Stopwatch.StartNew();
         private double startTick;
-        public bool Force => _plugin.Force;
-        public string Name => _plugin.Name;
-        public int Order => _plugin.Order;
-        private readonly IPlugin _plugin;
-        public IPlugin Plugin => _plugin;
-        public bool CanRender { get; set; }
-        public bool CanBeMultiThreading => Plugin.CanUseMultiThreading;
-        public DebugInformation TickDebugInformation { get; }
-        public DebugInformation RenderDebugInformation { get; }
 
-        public PluginWrapper(IPlugin plugin) {
-            _plugin = plugin;
+        public PluginWrapper(IPlugin plugin)
+        {
+            Plugin = plugin;
+
             lock (Core.SyncLocker)
             {
                 TickDebugInformation = new DebugInformation($"{Name} [P]", "plugin");
@@ -30,18 +21,31 @@ namespace Shared
             }
         }
 
+        public bool Force => Plugin.Force;
+        public string Name => Plugin.Name;
+        public int Order => Plugin.Order;
+        public IPlugin Plugin { get; }
+        public bool CanRender { get; set; }
+        public bool CanBeMultiThreading => Plugin.CanUseMultiThreading;
+        public DebugInformation TickDebugInformation { get; }
+        public DebugInformation RenderDebugInformation { get; }
+        public bool IsEnable => Plugin._Settings.Enable;
 
-        public void CorrectThisTick(float val) {
+        public void CorrectThisTick(float val)
+        {
             TickDebugInformation.CorrectAfterTick(val);
         }
-        public bool IsEnable => _plugin._Settings.Enable;
 
-        public void TurnOnOffPlugin(bool state) => _plugin._Settings.Enable.Value = state;
+        public void TurnOnOffPlugin(bool state)
+        {
+            Plugin._Settings.Enable.Value = state;
+        }
 
-        public void AreaChange(AreaInstance area) {
+        public void AreaChange(AreaInstance area)
+        {
             try
             {
-                _plugin.AreaChange(area);
+                Plugin.AreaChange(area);
             }
             catch (Exception e)
             {
@@ -49,11 +53,12 @@ namespace Shared
             }
         }
 
-        public Job PerfomanceTick() {
+        public Job PerfomanceTick()
+        {
             try
             {
                 startTick = sw.Elapsed.TotalMilliseconds;
-                var tick = _plugin.Tick();
+                var tick = Plugin.Tick();
                 TickDebugInformation.Tick = sw.Elapsed.TotalMilliseconds - startTick;
                 return tick;
             }
@@ -64,10 +69,11 @@ namespace Shared
             }
         }
 
-        public Job Tick() {
+        public Job Tick()
+        {
             try
             {
-              return  _plugin.Tick();
+                return Plugin.Tick();
             }
             catch (Exception e)
             {
@@ -76,11 +82,12 @@ namespace Shared
             }
         }
 
-        public void PerfomanceRender() {
+        public void PerfomanceRender()
+        {
             try
             {
                 startTick = sw.Elapsed.TotalMilliseconds;
-                _plugin.Render();
+                Plugin.Render();
                 RenderDebugInformation.Tick = sw.Elapsed.TotalMilliseconds - startTick;
             }
             catch (Exception e)
@@ -89,10 +96,11 @@ namespace Shared
             }
         }
 
-        public void Render() {
+        public void Render()
+        {
             try
             {
-                _plugin.Render();
+                Plugin.Render();
             }
             catch (Exception e)
             {
@@ -100,16 +108,17 @@ namespace Shared
             }
         }
 
-
-        private void LogError(Exception e) {
-            var msg = $"{_plugin.Name} -> {e}";
+        private void LogError(Exception e)
+        {
+            var msg = $"{Plugin.Name} -> {e}";
             DebugWindow.LogError(msg);
         }
 
-        public void EntityIgnored(Entity entity) {
+        public void EntityIgnored(Entity entity)
+        {
             try
             {
-                _plugin.EntityIgnored(entity);
+                Plugin.EntityIgnored(entity);
             }
             catch (Exception e)
             {
@@ -117,10 +126,11 @@ namespace Shared
             }
         }
 
-        public void EntityAddedAny(Entity entity) {
+        public void EntityAddedAny(Entity entity)
+        {
             try
             {
-                _plugin.EntityAddedAny(entity);
+                Plugin.EntityAddedAny(entity);
             }
             catch (Exception e)
             {
@@ -128,10 +138,11 @@ namespace Shared
             }
         }
 
-        public void EntityAdded(Entity entity) {
+        public void EntityAdded(Entity entity)
+        {
             try
             {
-                _plugin.EntityAdded(entity);
+                Plugin.EntityAdded(entity);
             }
             catch (Exception e)
             {
@@ -139,10 +150,11 @@ namespace Shared
             }
         }
 
-        public void EntityRemoved(Entity entity) {
+        public void EntityRemoved(Entity entity)
+        {
             try
             {
-                _plugin.EntityRemoved(entity);
+                Plugin.EntityRemoved(entity);
             }
             catch (Exception e)
             {
@@ -150,17 +162,23 @@ namespace Shared
             }
         }
 
-        public void SetApi(GameController gameController, Graphics graphics) => _plugin.SetApi(gameController, graphics);
+        public void SetApi(GameController gameController, Graphics graphics)
+        {
+            Plugin.SetApi(gameController, graphics);
+        }
 
-        public void LoadSettings() => _plugin._LoadSettings();
+        public void LoadSettings()
+        {
+            Plugin._LoadSettings();
+        }
 
-
-        public void Close() {
+        public void Close()
+        {
             try
             {
-                _plugin.OnClose();
-                _plugin.OnUnload();
-                _plugin.Dispose();
+                Plugin.OnClose();
+                Plugin.OnUnload();
+                Plugin.Dispose();
             }
             catch (Exception e)
             {
@@ -168,6 +186,9 @@ namespace Shared
             }
         }
 
-        public void DrawSettings() => _plugin.DrawSettings();
+        public void DrawSettings()
+        {
+            Plugin.DrawSettings();
+        }
     }
 }

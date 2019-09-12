@@ -1,4 +1,4 @@
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class AttributeRequirements : Component
     {

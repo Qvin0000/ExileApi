@@ -1,6 +1,4 @@
-using PoEMemory;
-
-namespace Exile.PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class IncursionWindow : Element
     {

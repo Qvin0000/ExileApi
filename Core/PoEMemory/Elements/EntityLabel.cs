@@ -1,6 +1,6 @@
-using System;
+using ExileCore.PoEMemory.MemoryObjects;
 
-namespace PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class EntityLabel : Element
     {
@@ -31,6 +31,7 @@ namespace PoEMemory.Elements
                 if (LabelLen <= 0 || LabelLen > 1024)
                 {
                     return string.Empty;
+
                     // return null;
                 }
 
@@ -44,7 +45,6 @@ namespace PoEMemory.Elements
                 return M.ReadStringU(Address + 0xC50, LabelLen * 2, false);
             }
         }
-
 
         public string Text2 => NativeStringReader.ReadString(Address + 0x2E8, M);
     }

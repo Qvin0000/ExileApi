@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
-using PoEMemory.FilesInMemory;
+using ExileCore.PoEMemory.FilesInMemory;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class GrantedEffectsPerLevel : RemoteMemoryObject
     {
         public SkillGemWrapper SkillGemWrapper => ReadObject<SkillGemWrapper>(Address + 0x8);
-
         public int Level => M.Read<int>(Address + 0x10);
         public int RequiredLevel => M.Read<int>(Address + 0x74);
-
         public int ManaMultiplier => M.Read<int>(Address + 0x78);
 
         //public int RequirementsComparer => M.Read<int>(Address + 0x80);
@@ -62,8 +60,6 @@ namespace PoEMemory
             }
         }
 
-        internal int ReadStatValue(int index) => M.Read<int>(Address + 0x54 + index * 4);
-
         public IEnumerable<Tuple<StatsDat.StatRecord, int>> QualityStats
         {
             get
@@ -86,8 +82,6 @@ namespace PoEMemory
             }
         }
 
-        internal int ReadQualityStatValue(int index) => M.Read<int>(Address + 0x9c + index * 4);
-
         public IEnumerable<StatsDat.StatRecord> TypeStats
         {
             get
@@ -108,6 +102,16 @@ namespace PoEMemory
 
                 return result;
             }
+        }
+
+        internal int ReadStatValue(int index)
+        {
+            return M.Read<int>(Address + 0x54 + index * 4);
+        }
+
+        internal int ReadQualityStatValue(int index)
+        {
+            return M.Read<int>(Address + 0x9c + index * 4);
         }
     }
 }

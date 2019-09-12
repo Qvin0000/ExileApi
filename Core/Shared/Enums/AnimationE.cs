@@ -1,4 +1,4 @@
-﻿namespace Shared.Enums
+﻿namespace ExileCore.Shared.Enums
 {
     /// <summary>
     /// Copied from GGPK -> Animation.dat file
@@ -117,6 +117,6 @@
         ChainStrikeThrow,
         SliceAndDice,
         ChargeStart,
-        CoilingAssault,
+        CoilingAssault
     }
 }

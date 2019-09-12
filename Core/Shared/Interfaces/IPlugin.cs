@@ -1,17 +1,13 @@
 using System;
-using Exile;
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.MemoryObjects;
 
-
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface IPlugin : IDisposable
     {
         bool Initialized { get; set; }
         ISettings _Settings { get; }
-
         bool CanUseMultiThreading { get; }
-        void DrawSettings();
         bool Force { get; }
         string DirectoryName { get; set; }
         string DirectoryFullName { get; set; }
@@ -19,6 +15,7 @@ namespace Shared.Interfaces
         string Name { get; }
         string Description { get; }
         int Order { get; }
+        void DrawSettings();
         void OnLoad();
         void OnUnload();
         bool Initialise();

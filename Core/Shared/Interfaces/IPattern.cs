@@ -1,4 +1,4 @@
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface IPattern
     {

@@ -1,21 +1,22 @@
 using System;
-using Exile;
-using Shared.Static;
 using Newtonsoft.Json;
+using SharpDX;
 
-namespace Shared.Nodes
+namespace ExileCore.Shared.Nodes
 {
     public class TextNode
     {
         [JsonIgnore] public Action OnValueChanged = delegate { };
         private string value;
 
-        public TextNode() { }
+        public TextNode()
+        {
+        }
 
-        public TextNode(string value) => Value = value;
-
-        public void SetValueNoEvent(string newValue) => value = newValue;
-
+        public TextNode(string value)
+        {
+            Value = value;
+        }
 
         public string Value
         {
@@ -32,14 +33,25 @@ namespace Shared.Nodes
                     }
                     catch (Exception)
                     {
-                        DebugWindow.LogMsg("Error in function that subscribed for: TextNode.OnValueChanged", 10, SharpDX.Color.Red);
+                        DebugWindow.LogMsg("Error in function that subscribed for: TextNode.OnValueChanged", 10, Color.Red);
                     }
                 }
             }
         }
 
-        public static implicit operator string(TextNode node) => node.Value;
+        public void SetValueNoEvent(string newValue)
+        {
+            value = newValue;
+        }
 
-        public static implicit operator TextNode(string value) => new TextNode(value);
+        public static implicit operator string(TextNode node)
+        {
+            return node.Value;
+        }
+
+        public static implicit operator TextNode(string value)
+        {
+            return new TextNode(value);
+        }
     }
 }

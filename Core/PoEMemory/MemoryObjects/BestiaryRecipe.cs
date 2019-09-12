@@ -1,42 +1,35 @@
 using System.Collections.Generic;
 using System.Linq;
 
-
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class BestiaryRecipe : RemoteMemoryObject
     {
-        public int Id { get; internal set; }
-
-        private string recipeId = null;
-        public string RecipeId => recipeId != null ? recipeId : recipeId = M.ReadStringU(M.Read<long>(Address));
-
-        private string description = null;
-        public string Description => description != null ? description : description = M.ReadStringU(M.Read<long>(Address + 0x8));
-
-        private string notes = null;
-        public string Notes => notes != null ? notes : notes = M.ReadStringU(M.Read<long>(Address + 0x20));
-
-        private string hint = null;
-        public string HintText => hint != null ? hint : hint = M.ReadStringU(M.Read<long>(Address + 0x28));
-
-        public bool RequireSpecialMonster => Components.Count == 4;
-
+        private List<BestiaryRecipeComponent> components;
+        private string description;
+        private string hint;
+        private string notes;
+        private string recipeId;
         private BestiaryRecipeComponent specialMonster;
+        public int Id { get; internal set; }
+        public string RecipeId => recipeId != null ? recipeId : recipeId = M.ReadStringU(M.Read<long>(Address));
+        public string Description => description != null ? description : description = M.ReadStringU(M.Read<long>(Address + 0x8));
+        public string Notes => notes != null ? notes : notes = M.ReadStringU(M.Read<long>(Address + 0x20));
+        public string HintText => hint != null ? hint : hint = M.ReadStringU(M.Read<long>(Address + 0x28));
+        public bool RequireSpecialMonster => Components.Count == 4;
 
         public BestiaryRecipeComponent SpecialMonster
         {
             get
             {
                 if (!RequireSpecialMonster) return null;
+
                 if (specialMonster == null)
                     specialMonster = Components.FirstOrDefault();
 
                 return specialMonster;
             }
         }
-
-        private List<BestiaryRecipeComponent> components;
 
         public IList<BestiaryRecipeComponent> Components
         {
@@ -53,6 +46,9 @@ namespace PoEMemory
             }
         }
 
-        public override string ToString() => HintText + ": " + Description;
+        public override string ToString()
+        {
+            return HintText + ": " + Description;
+        }
     }
 }

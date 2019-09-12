@@ -1,15 +1,12 @@
-using System;
-
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class ItemMod : RemoteMemoryObject
     {
+        private string displayName;
+        private string group;
         private int level;
         private string name;
         private string rawName;
-        private string @group;
-        private string displayName;
-
         public int Value1 => M.Read<int>(Address, 0);
         public int Value2 => M.Read<int>(Address, 4);
         public int Value3 => M.Read<int>(Address, 8);
@@ -21,6 +18,7 @@ namespace PoEMemory
             {
                 if (rawName == null)
                     ParseName();
+
                 return rawName;
             }
         }
@@ -29,9 +27,10 @@ namespace PoEMemory
         {
             get
             {
-                if (@group == null)
+                if (group == null)
                     ParseName();
-                return @group;
+
+                return group;
             }
         }
 
@@ -41,6 +40,7 @@ namespace PoEMemory
             {
                 if (rawName == null)
                     ParseName();
+
                 return name;
             }
         }
@@ -51,6 +51,7 @@ namespace PoEMemory
             {
                 if (rawName == null)
                     ParseName();
+
                 return displayName;
             }
         }
@@ -61,24 +62,32 @@ namespace PoEMemory
             {
                 if (rawName == null)
                     ParseName();
+
                 return level;
             }
         }
 
-        private void ParseName() {
+        private void ParseName()
+        {
             var addr = M.Read<long>(Address + 0x20, 0);
             rawName = Cache.StringCache.Read($"{nameof(ItemMod)}{addr}", () => M.ReadStringU(addr));
+
             displayName = Cache.StringCache.Read($"{nameof(ItemMod)}{addr + (rawName.Length + 2) * 2}",
-                                                 () => M.ReadStringU(addr + (rawName.Length + 2) * 2));
+                () => M.ReadStringU(addr + (rawName.Length + 2) * 2));
+
             name = rawName.Replace("_", ""); // Master Crafted mod can have underscore on the end, need to ignore
-            @group = Cache.StringCache.Read($"{nameof(ItemMod)}{Address + 0x20}", () => M.ReadStringU(M.Read<long>(Address + 0x20, 0x70)));
+            group = Cache.StringCache.Read($"{nameof(ItemMod)}{Address + 0x20}", () => M.ReadStringU(M.Read<long>(Address + 0x20, 0x70)));
             var ixDigits = name.IndexOfAny("0123456789".ToCharArray());
+
             if (ixDigits < 0 || !int.TryParse(name.Substring(ixDigits), out level))
                 level = 1;
             else
                 name = name.Substring(0, ixDigits);
         }
 
-        public override string ToString() => $"{Name} ({Value1}, {Value2}, {Value3}, {Value4}";
+        public override string ToString()
+        {
+            return $"{Name} ({Value1}, {Value2}, {Value3}, {Value4}";
+        }
     }
 }

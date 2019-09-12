@@ -1,28 +1,26 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
-using Exile;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Cache
 {
-
     public abstract class CachedValue
     {
+        public static int TotalCount;
+        public static int LifeCount;
         public static float Latency { get; set; } = 25;
-        public static int TotalCount=0;
-        public static int LifeCount=0;
     }
-    public abstract class CachedValue<T>:CachedValue
+
+    public abstract class CachedValue<T> : CachedValue
     {
-
-
-        protected static Stopwatch sw = Stopwatch.StartNew();
-        private readonly Func<T> _func;
-        private T _value;
-
         public delegate void CacheUpdateEvent(T t);
 
-        public event CacheUpdateEvent OnUpdate;
+        protected static Stopwatch sw = Stopwatch.StartNew();
+        public static long GetFromCache;
+        public static long ReadingFromMemory;
+        private readonly Func<T> _func;
+        private bool _force;
+        private T _value;
 
         //private object obj;
         public CachedValue(Func<T> func)
@@ -31,10 +29,6 @@ namespace Shared.Interfaces
             Interlocked.Increment(ref TotalCount);
             Interlocked.Increment(ref LifeCount);
         }
-
-        public static long GetFromCache = 0;
-        public static long ReadingFromMemory = 0;
-
 
         public T Value
         {
@@ -48,20 +42,25 @@ namespace Shared.Interfaces
                         _force = false;
                         _value = _func();
                     }
-                    OnUpdate?.Invoke(_value);  ReadingFromMemory++;
+
+                    OnUpdate?.Invoke(_value);
+                    ReadingFromMemory++;
                 }
                 else
-                {
                     GetFromCache++;
-                }
+
                 return _value;
             }
         }
 
         public T RealValue => _func();
+        public event CacheUpdateEvent OnUpdate;
 
-        public void ForceUpdate() => _force = true;
-        private bool _force;
+        public void ForceUpdate()
+        {
+            _force = true;
+        }
+
         protected abstract bool Update(bool force);
 
         ~CachedValue()

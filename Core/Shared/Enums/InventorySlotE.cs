@@ -1,4 +1,4 @@
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     /// <summary>
     /// Copied from GGPK -> Inventories.dat file
@@ -41,6 +41,6 @@ namespace Shared.Enums
         IncursionSacrifice,
         BetrayalUnveiling,
         ItemSynthesisInput,
-        ItemSynthesisOutput,
+        ItemSynthesisOutput
     }
 }

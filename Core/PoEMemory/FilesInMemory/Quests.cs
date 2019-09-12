@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class Quests : UniversalFileWrapper<Quest>
     {
-        public Quests(IMemory game, Func<long> address) : base(game, address) { }
+        public Quests(IMemory game, Func<long> address) : base(game, address)
+        {
+        }
 
         public IList<Quest> EntriesList
         {
@@ -18,6 +21,9 @@ namespace PoEMemory.FilesInMemory
             }
         }
 
-        public Quest GetByAddress(long address) => base.GetByAddress(address);
+        public Quest GetByAddress(long address)
+        {
+            return base.GetByAddress(address);
+        }
     }
 }

@@ -1,25 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Shared.Enums;
+using ExileCore.Shared.Enums;
 
-
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class ActorSkill : RemoteMemoryObject
     {
         public ushort Id => M.Read<ushort>(Address + 0x10);
         public GrantedEffectsPerLevel EffectsPerLevel => ReadObject<GrantedEffectsPerLevel>(Address + 0x20);
-
         public bool CanBeUsedWithWeapon => M.Read<byte>(Address + 0x46) > 0;
         public bool CanBeUsed => M.Read<byte>(Address + 0x47) == 0;
-
         public int Cost => M.Read<byte>(Address + 0x4C);
 
         //public int Unknown_Old_MaxUses => M.Read<int>(Address + 0x4c);
         public int TotalUses => M.Read<int>(Address + 0x50);
         public float Cooldown => M.Read<int>(Address + 0x58) / 100f; //Converted milliseconds to seconds
-
         public int SoulsPerUse => M.Read<int>(Address + 0x68);
         public int TotalVaalUses => M.Read<int>(Address + 0x6c);
         public bool IsOnSkillBar => SkillBarSlot != -1;
@@ -31,6 +27,7 @@ namespace PoEMemory
             {
                 var id = Id;
                 var effects = EffectsPerLevel;
+
                 if (effects != null)
                 {
                     var skill = effects.SkillGemWrapper;
@@ -49,6 +46,7 @@ namespace PoEMemory
                 else
                 {
                     string name;
+
                     switch (id)
                     {
                         case 0x266:
@@ -64,6 +62,7 @@ namespace PoEMemory
                                 name = InternalName;
                             else
                                 name = "WashedUp";
+
                             break;
                     }
 
@@ -78,9 +77,13 @@ namespace PoEMemory
             {
                 var skillBarIds = TheGame.IngameState.ServerData.SkillBarIds;
                 var id = Id;
+
                 for (var i = 0; i < 8; i++)
+                {
                     if (skillBarIds[i] == id)
                         return i;
+                }
+
                 return -1;
             }
         }
@@ -88,24 +91,17 @@ namespace PoEMemory
         internal int SlotIdentifier => (Id >> 8) & 0xff;
         public int SocketIndex => (SlotIdentifier >> 2) & 15;
         public bool IsUserSkill => (SlotIdentifier & 0x80) > 0;
-
         public bool AllowedToCast => CanBeUsedWithWeapon && CanBeUsed;
-
         public byte SkillUseStage => M.Read<byte>(Address + 0x8);
         public bool IsUsing => SkillUseStage > 2; //GetStat(PlayerStats.CastingSpell) > 0;
-
         public bool PrepareForUsage => SkillUseStage == 1; //GetStat(PlayerStats.CastingSpell) > 0;
-
         public TimeSpan CastTime => TimeSpan.FromMilliseconds((int) Math.Ceiling(1000f / (HundredTimesAttacksPerSecond / 100f)));
-        public float Dps => GetStat((GameStat.HundredTimesDamagePerSecond + (IsUsing ? 4 : 0))) / 100f;
-
+        public float Dps => GetStat(GameStat.HundredTimesDamagePerSecond + (IsUsing ? 4 : 0)) / 100f;
         public int HundredTimesAttacksPerSecond =>
-            GetStat((IsUsing ? GameStat.HundredTimesCastsPerSecond : GameStat.HundredTimesAttacksPerSecond));
-
+            GetStat(IsUsing ? GameStat.HundredTimesCastsPerSecond : GameStat.HundredTimesAttacksPerSecond);
         public bool IsTotem => GetStat(GameStat.IsTotem) == 1 || GetStat(GameStat.SkillIsTotemified) == 1;
         public bool IsTrap => GetStat(GameStat.IsTrap) == 1 || GetStat(GameStat.SkillIsTrapped) == 1;
         public bool IsVaalSkill => SoulsPerUse >= 1 && TotalVaalUses >= 1;
-
         private bool IsMine => true; //TODO
         /*public int UsesAvailable
         {
@@ -142,34 +138,34 @@ namespace PoEMemory
         //Doesn't work after patch or what
         //public List<DeployedObject> DeployedObjects => ObjectManager.Instance.GameController.Player.GetComponent<Actor>().DeployedObjects.Where(x => x.ObjectKey == Id).ToList();
 
-
         public string InternalName
         {
             get
             {
                 var effects = EffectsPerLevel;
+
                 if (effects != null)
                     return effects.SkillGemWrapper.ActiveSkill.InternalName;
-                else
+
+                string name;
+
+                switch (Id)
                 {
-                    string name;
-                    switch (Id)
-                    {
-                        case 0x266:
-                            return "Interaction";
-                            break;
+                    case 0x266:
+                        return "Interaction";
+                        break;
 
-                        case 0x2909:
-                            return "Move";
-                            break;
+                    case 0x2909:
+                        return "Move";
+                        break;
 
-                        default:
-                            if (Id != 0x37d9)
-                                return Id.ToString(CultureInfo.InvariantCulture);
-                            else
-                                return "WashedUp";
-                            break;
-                    }
+                    default:
+                        if (Id != 0x37d9)
+                            return Id.ToString(CultureInfo.InvariantCulture);
+                        else
+                            return "WashedUp";
+
+                        break;
                 }
             }
         }
@@ -190,7 +186,8 @@ namespace PoEMemory
             }
         }
 
-        internal void ReadStats(Dictionary<GameStat, int> stats, long address) {
+        internal void ReadStats(Dictionary<GameStat, int> stats, long address)
+        {
             var statPtrStart = M.Read<long>(address + 0x68);
             var statPtrEnd = M.Read<long>(address + 0x70);
 
@@ -207,13 +204,15 @@ namespace PoEMemory
             }
         }
 
-
-        public int GetStat(GameStat stat) {
+        public int GetStat(GameStat stat)
+        {
             if (!Stats.TryGetValue(stat, out var num)) return 0;
             return num;
         }
 
-
-        public override string ToString() => $"IsUsing: {IsUsing}, {Name}, Id: {Id}, InternalName: {InternalName}, CanBeUsed: {CanBeUsed}";
+        public override string ToString()
+        {
+            return $"IsUsing: {IsUsing}, {Name}, Id: {Id}, InternalName: {InternalName}, CanBeUsed: {CanBeUsed}";
+        }
     }
 }

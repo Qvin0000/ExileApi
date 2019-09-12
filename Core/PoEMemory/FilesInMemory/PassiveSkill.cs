@@ -2,23 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class PassiveSkill : RemoteMemoryObject
     {
-        private int passiveId = -1;
-        public int PassiveId => passiveId != -1 ? passiveId : passiveId = M.Read<int>(Address + 0x30);
-
         private string id;
-        public string Id => id != null ? id : id = M.ReadStringU(M.Read<long>(Address), 255);
-
         private string name;
-        public string Name => name != null ? name : name = M.ReadStringU(M.Read<long>(Address + 0x34), 255);
-
-        public string Icon => M.ReadStringU(M.Read<long>(Address + 0x8), 255); //Read on request
-
+        private int passiveId = -1;
         private List<Tuple<StatsDat.StatRecord, int>> stats;
+        public int PassiveId => passiveId != -1 ? passiveId : passiveId = M.Read<int>(Address + 0x30);
+        public string Id => id != null ? id : id = M.ReadStringU(M.Read<long>(Address), 255);
+        public string Name => name != null ? name : name = M.ReadStringU(M.Read<long>(Address + 0x34), 255);
+        public string Icon => M.ReadStringU(M.Read<long>(Address + 0x8), 255); //Read on request
 
         public IEnumerable<Tuple<StatsDat.StatRecord, int>> Stats
         {
@@ -33,16 +28,22 @@ namespace PoEMemory.FilesInMemory
                     var statsPointers = M.ReadSecondPointerArray_Count(pointerToStats, statsCount);
 
                     stats = statsPointers.Select((x, i) =>
-                                                     new Tuple<StatsDat.StatRecord, int>(
-                                                         TheGame.Files.Stats.GetStatByAddress(x), ReadStatValue(i))).ToList();
+                        new Tuple<StatsDat.StatRecord, int>(
+                            TheGame.Files.Stats.GetStatByAddress(x), ReadStatValue(i))).ToList();
                 }
 
                 return stats;
             }
         }
 
-        internal int ReadStatValue(int index) => M.Read<int>(Address + 0x20 + index * 4);
+        internal int ReadStatValue(int index)
+        {
+            return M.Read<int>(Address + 0x20 + index * 4);
+        }
 
-        public override string ToString() => $"{Name}, Id: {Id}, PassiveId: {PassiveId}";
+        public override string ToString()
+        {
+            return $"{Name}, Id: {Id}, PassiveId: {PassiveId}";
+        }
     }
 }

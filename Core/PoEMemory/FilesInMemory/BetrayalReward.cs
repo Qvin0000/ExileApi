@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PoEMemory.FilesInMemory
+﻿namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class BetrayalReward : RemoteMemoryObject
     {
@@ -13,6 +7,9 @@ namespace PoEMemory.FilesInMemory
         public BetrayalRank Rank => TheGame.Files.BetrayalRanks.GetByAddress(M.Read<long>(Address + 0x28));
         public string Reward => M.ReadStringU(M.Read<long>(Address + 0x30));
 
-        public override string ToString() => Reward;
+        public override string ToString()
+        {
+            return Reward;
+        }
     }
 }

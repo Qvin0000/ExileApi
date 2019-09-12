@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface IYieldBase : IEnumerable, IEnumerator
     {

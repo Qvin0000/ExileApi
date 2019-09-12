@@ -1,27 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
 using GameOffsets.Native;
-using Shared.Enums;
-using Shared.Interfaces;
-using Shared.Helpers;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class IngameData : RemoteMemoryObject
     {
-        private CachedValue<IngameDataOffsets> _cacheStruct;
-        public IngameDataOffsets DataStruct => _cacheStruct.Value;
-        private CachedValue<Entity> _localPlayer;
-        private CachedValue<AreaTemplate> _CurrentArea;
-        private CachedValue<WorldArea> _CurrentWorldArea;
+        private readonly CachedValue<IngameDataOffsets> _cacheStruct;
+        private readonly CachedValue<AreaTemplate> _CurrentArea;
+        private readonly CachedValue<WorldArea> _CurrentWorldArea;
+        private readonly CachedValue<long> _EntitiesCount;
         private EntityList _EntityList;
-        private CachedValue<long> _EntitiesCount;
+        private readonly CachedValue<Entity> _localPlayer;
+        private NativePtrArray cacheMapStats;
+        private NativePtrArray cacheStats;
+        private readonly Dictionary<GameStat, int> mapStats = new Dictionary<GameStat, int>();
 
-        public IngameData() {
+        public IngameData()
+        {
             _cacheStruct = new AreaCache<IngameDataOffsets>(() => M.Read<IngameDataOffsets>(Address));
             _localPlayer = new AreaCache<Entity>(() => GetObject<Entity>(_cacheStruct.Value.LocalPlayer));
             _CurrentArea = new AreaCache<AreaTemplate>(() => GetObject<AreaTemplate>(_cacheStruct.Value.CurrentArea));
@@ -30,6 +30,7 @@ namespace PoEMemory
             _EntitiesCount = new FrameCache<long>(() => M.Read<long>(Address + offset));
         }
 
+        public IngameDataOffsets DataStruct => _cacheStruct.Value;
         public long EntitiesCount => _EntitiesCount.Value;
         public AreaTemplate CurrentArea => _CurrentArea.Value;
         public WorldArea CurrentWorldArea => _CurrentWorldArea.Value;
@@ -38,14 +39,8 @@ namespace PoEMemory
         public Entity LocalPlayer => _localPlayer.Value;
         public long EntiteisTest => DataStruct.EntityList;
         public EntityList EntityList => _EntityList ?? (_EntityList = GetObject<EntityList>(DataStruct.EntityList));
-
         private long LabDataPtr => _cacheStruct.Value.LabDataPtr;
         public LabyrinthData LabyrinthData => LabDataPtr == 0 ? null : GetObject<LabyrinthData>(LabDataPtr);
-
-        private Dictionary<GameStat, int> mapStats = new Dictionary<GameStat, int>();
-        private NativePtrArray cacheMapStats;
-
-        private NativePtrArray cacheStats;
 
         public Dictionary<GameStat, int> MapStats
         {
@@ -58,9 +53,12 @@ namespace PoEMemory
                 var key = 0;
                 var value = 0;
                 var total_stats = (int) (statPtrEnd - statPtrStart);
+
                 if (total_stats / 8 > 200)
                     return null;
+
                 var bytes = M.ReadMem(statPtrStart, total_stats);
+
                 for (var i = 0; i < bytes.Length; i += 8)
                 {
                     key = BitConverter.ToInt32(bytes, i);
@@ -84,15 +82,16 @@ namespace PoEMemory
             }
         }
 
-
         public class PortalObject : RemoteMemoryObject
         {
             public const int StructSize = 0x38;
-
             public string PlayerOwner => NativeStringReader.ReadString(Address + 0x08, M);
             public WorldArea Area => TheGame.Files.WorldAreas.GetAreaByAreaId(M.Read<int>(Address + 0x50));
 
-            public override string ToString() => $"{PlayerOwner} => {Area.Name}";
+            public override string ToString()
+            {
+                return $"{PlayerOwner} => {Area.Name}";
+            }
         }
     }
 }

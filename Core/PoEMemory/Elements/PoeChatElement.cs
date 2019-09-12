@@ -1,4 +1,4 @@
-namespace PoEMemory.Elements
+namespace ExileCore.PoEMemory.Elements
 {
     public class PoeChatElement : Element
     {
@@ -10,6 +10,7 @@ namespace PoEMemory.Elements
             {
                 if (index < TotalMessageCount)
                     return GetChildAtIndex(index).AsObject<EntityLabel>();
+
                 return null;
             }
         }

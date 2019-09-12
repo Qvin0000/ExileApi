@@ -2,17 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Exile.PoEMemory.MemoryObjects;
-using Plugins;
-using PoEMemory;
-using Shared;
-using Shared.Abstract;
-using Shared.Enums;
-using Shared.Interfaces;
-using Shared.SomeMagic;
+using ExileCore.PoEMemory;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Interfaces;
+using ExileCore.Shared.SomeMagic;
 using SharpDX;
 
-namespace Exile
+namespace ExileCore
 {
     public class PluginBridge
     {
@@ -36,10 +35,11 @@ namespace Exile
         private readonly CoreSettings _settings;
         private readonly DebugInformation debClearCache;
         private readonly DebugInformation debDeltaTime;
-        private bool IsForeGroundLast;
         private readonly TimeCache<Vector2> LeftCornerMap;
+        private readonly TimeCache<Vector2> UnderCornerMap;
+        private bool IsForeGroundLast;
         public PluginBridge PluginBridge;
-        private readonly TimeCache<Vector2> UnderCornerMap;    
+
         public GameController(Memory memory, SoundController soundController, SettingsContainer settings,
             MultiThreadManager multiThreadManager)
         {
@@ -48,6 +48,7 @@ namespace Exile
             SoundController = soundController;
             Settings = settings;
             MultiThreadManager = multiThreadManager;
+
             try
             {
                 Cache = new Cache();
@@ -66,13 +67,13 @@ namespace Exile
 
             IsForeGroundCache = WinApi.IsForegroundWindow(Window.Process.MainWindowHandle);
             var values = Enum.GetValues(typeof(IconPriority));
- 
 
             LeftPanel = new PluginPanel(GetLeftCornerMap());
             UnderPanel = new PluginPanel(GetUnderCornerMap());
 
             var debParseFile = new DebugInformation("Parse files", false);
             debClearCache = new DebugInformation("Clear cache", false);
+
             // Core.DebugInformations.Add(debParseFile);
             /*Area.OnAreaChange += controller =>
             {
@@ -83,15 +84,16 @@ namespace Exile
                 });
             };*/
 
-
             debDeltaTime = Core.DebugInformations.FirstOrDefault(x => x.Name == "Delta Time");
 
             NativeMethods.LogError = _settings.LogReadMemoryError;
+
             _settings.LogReadMemoryError.OnValueChanged +=
                 (obj, b) => NativeMethods.LogError = _settings.LogReadMemoryError;
 
             LeftCornerMap = new TimeCache<Vector2>(GetLeftCornerMap, 500);
             UnderCornerMap = new TimeCache<Vector2>(GetUnderCornerMap, 500);
+
             eIsForegroundChanged += b =>
             {
                 if (b)
@@ -115,7 +117,6 @@ namespace Exile
         }
 
         private Stopwatch sw { get; } = Stopwatch.StartNew();
-
         public long ElapsedMs => sw.ElapsedMilliseconds;
         public TheGame Game { get; }
         public AreaController Area { get; }
@@ -137,7 +138,6 @@ namespace Exile
         public double DeltaTime => debDeltaTime.Tick;
         public bool Initialized { get; }
         public ICollection<Entity> Entities => EntityListWrapper.Entities;
-
         public Dictionary<string, object> Debug { get; } = new Dictionary<string, object>();
 
         public void Dispose()
@@ -156,9 +156,11 @@ namespace Exile
                     IsForeGroundLast = IsForeGroundCache;
                     eIsForegroundChanged(IsForeGroundCache);
                 }
+
                 AreaInstance.CurrentHash = Game.CurrentAreaHash;
                 if (LeftPanel.Used) LeftPanel.StartDrawPoint = LeftCornerMap.Value;
                 if (UnderPanel.Used) UnderPanel.StartDrawPoint = UnderCornerMap.Value;
+
                 //Every 3 frame check area change and force garbage collect every new area
                 if (Core.FramesCount % 3 == 0 && Area.RefreshState())
                     debClearCache.TickAction(() => { RemoteMemoryObject.Cache.TryClearCache(); });
@@ -200,6 +202,7 @@ namespace Exile
 
                     clientRect.Y += diagnosticElement.Y + diagnosticElement.Height;
                     var fpsRectangle = ingameState.FPSRectangle;
+
                     // clientRect.X -= fpsRectangle.X + fpsRectangle.Width + 6;
                     break;
             }
@@ -210,8 +213,10 @@ namespace Exile
         private Vector2 GetUnderCornerMap()
         {
             if (!InGame) return Vector2.Zero;
+
             //  var questPanel = Game.IngameState.IngameUi.QuestTracker;
             var gemPanel = Game.IngameState.IngameUi.GemLvlUpPanel.Parent;
+
             //    var questPanelRect = questPanel.GetClientRectCache();
             RectangleF clientRect;
             clientRect = gemPanel.GetClientRectCache;

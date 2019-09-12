@@ -1,4 +1,4 @@
-namespace Shared.Enums
+namespace ExileCore.Shared.Enums
 {
     public enum MapIconsIndex
     {
@@ -195,6 +195,6 @@ namespace Shared.Enums
         LegionJewellery = 192,
         LegionUniques = 193,
         LegionWeapons = 194,
-        LegionWeaponEnchants = 195,
+        LegionWeaponEnchants = 195
     }
 }

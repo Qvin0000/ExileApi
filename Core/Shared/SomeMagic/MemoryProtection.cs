@@ -1,18 +1,13 @@
 using System;
-using Shared.Enums;
+using ExileCore.Shared.Enums;
 
-namespace Shared.SomeMagic
+namespace ExileCore.Shared.SomeMagic
 {
     public class MemoryProtection : IDisposable
     {
-        public static SafeMemoryHandle ProcessHandle { get; private set; }
-        public static IntPtr Address { get; private set; }
-        public static int Size { get; private set; }
-        public static MemoryProtectionType OldProtection { get; private set; }
-        public static MemoryProtectionType NewProtection { get; private set; }
-
         public MemoryProtection(SafeMemoryHandle processHandle, IntPtr address, int size,
-                                MemoryProtectionType protection = MemoryProtectionType.PAGE_EXECUTE_READWRITE) {
+            MemoryProtectionType protection = MemoryProtectionType.PAGE_EXECUTE_READWRITE)
+        {
             ProcessHandle = processHandle;
             Address = address;
             Size = size;
@@ -20,11 +15,21 @@ namespace Shared.SomeMagic
             OldProtection = NativeMethods.ChangeMemoryProtection(ProcessHandle, Address, Size, NewProtection);
         }
 
-        ~MemoryProtection() => Dispose();
+        public static SafeMemoryHandle ProcessHandle { get; private set; }
+        public static IntPtr Address { get; private set; }
+        public static int Size { get; private set; }
+        public static MemoryProtectionType OldProtection { get; private set; }
+        public static MemoryProtectionType NewProtection { get; private set; }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             NativeMethods.ChangeMemoryProtection(ProcessHandle, Address, Size, OldProtection);
             GC.SuppressFinalize(this);
+        }
+
+        ~MemoryProtection()
+        {
+            Dispose();
         }
     }
 }

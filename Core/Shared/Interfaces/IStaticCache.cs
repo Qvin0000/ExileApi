@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface IStaticCache<T>
     {
@@ -13,7 +12,6 @@ namespace Shared.Interfaces
         float Coeff { get; }
         T Read(string addr, Func<T> func);
         void UpdateCache();
-
         bool Remove(string key);
     }
 }

@@ -1,4 +1,4 @@
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class SkillGemWrapper : RemoteMemoryObject
     {

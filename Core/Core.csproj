@@ -10,8 +10,8 @@
     <ProjectGuid>{5539D732-34A7-44AB-9E28-116C3429B12A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core</RootNamespace>
-    <AssemblyName>Core</AssemblyName>
+    <RootNamespace>ExileCore</RootNamespace>
+    <AssemblyName>ExileCore</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <LangVersion>8</LangVersion>
@@ -40,16 +40,17 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GameOffsets, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\BitBucket\PoeHelper\GameOffsets.dll</HintPath>
+    <Reference Include="Antlr4.Runtime, Version=4.6.0.0, Culture=neutral, PublicKeyToken=09abb75b9ed49849">
+      <HintPath>..\packages\Antlr4.Runtime.4.6.6\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="ImGui.NET, Version=1.71.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ImGui.NET, Version=1.71.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\deps\ImGui.NET.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="InlineIL, Version=1.3.2.0, Culture=neutral, PublicKeyToken=1058fa0ac76b4b05, processorArchitecture=MSIL">
       <HintPath>..\packages\InlineIL.Fody.1.3.2\lib\net452\InlineIL.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="JM.LinqFaster, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\LinqFaster.1.0.0\lib\net461\JM.LinqFaster.dll</HintPath>
@@ -57,6 +58,7 @@
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="MoreLinq, Version=3.2.0.0, Culture=neutral, PublicKeyToken=384d532d7e88985d">
@@ -68,18 +70,25 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PoeFilterParser, Version=1.0.42.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\PoeFilterParser.1.0.42\lib\net471\PoeFilterParser.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ProcessMemoryUtilities, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\ProcessMemoryUtilities.Net.1.2.0\lib\net48\ProcessMemoryUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10">
       <HintPath>..\packages\Serilog.2.8.0\lib\net46\Serilog.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.Sinks.RollingFile.3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1">
       <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
@@ -116,29 +125,36 @@
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.InteropServices" />
     <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
       <HintPath>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Runtime.Serialization.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Threading.Thread" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -157,6 +173,7 @@
     <Compile Include="PoEMemory\Components\Armour.cs" />
     <Compile Include="PoEMemory\Components\AttributeRequirements.cs" />
     <Compile Include="PoEMemory\Components\Base.cs" />
+    <Compile Include="PoEMemory\Components\Beam.cs" />
     <Compile Include="PoEMemory\Components\Buff.cs" />
     <Compile Include="PoEMemory\Components\Charges.cs" />
     <Compile Include="PoEMemory\Components\Chest.cs" />
@@ -437,7 +454,6 @@
     <Compile Include="Time.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Shared\packages.config" />
   </ItemGroup>
@@ -449,6 +465,12 @@
     <None Include="cimgui.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GameOffsets\GameOffsets.csproj">
+      <Project>{38084bc9-079d-487e-b774-d2f407dc8389}</Project>
+      <Name>GameOffsets</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

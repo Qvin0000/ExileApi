@@ -3,40 +3,45 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using JM.LinqFaster;
-using SharpDX.Direct2D1;
 
-namespace Exile
+namespace ExileCore
 {
     [DebuggerDisplay("Name: {Name}, Elapsed: {ElapsedMs}, Completed: {IsCompleted}, Failed: {IsFailed}")]
     public class Job
     {
-        public Action Work { get; set; }
-        public string Name { get; set; }
         public volatile bool IsCompleted;
         public volatile bool IsFailed;
         public volatile bool IsStarted;
-        public ThreadUnit WorkingOnThread { get; set; }
-        public double ElapsedMs { get; set; }
 
         public Job(string name, Action work)
         {
             Name = name;
             Work = work;
         }
+
+        public Action Work { get; set; }
+        public string Name { get; set; }
+        public ThreadUnit WorkingOnThread { get; set; }
+        public double ElapsedMs { get; set; }
     }
 
     public class MultiThreadManager
     {
-        private volatile bool ProcessWorking = false;
         private const long CriticalWorkTimeMs = 750;
         private readonly object locker = new object();
-        private bool Closed;
+        private int _lock;
 
+        //Used for debug, maybe now can be delete
+        private object _objectInitWork;
+        private readonly List<ThreadUnit> BrokenThreads = new List<ThreadUnit>();
+        private bool Closed;
+        private readonly ConcurrentQueue<ThreadUnit> FreeThreads = new ConcurrentQueue<ThreadUnit>();
+        private readonly ConcurrentQueue<Job> Jobs = new ConcurrentQueue<Job>();
+        private readonly Queue<Job> processJobs = new Queue<Job>();
+        private volatile bool ProcessWorking;
         private SpinWait spinWait;
         private ThreadUnit[] threads;
-        public int FailedThreadsCount { get; private set; }
 
         public MultiThreadManager(int countThreads)
         {
@@ -44,10 +49,7 @@ namespace Exile
             ChangeNumberThreads(countThreads);
         }
 
-        ConcurrentQueue<Job> Jobs = new ConcurrentQueue<Job>();
-        Queue<Job> processJobs = new Queue<Job>();
-        ConcurrentQueue<ThreadUnit> FreeThreads = new ConcurrentQueue<ThreadUnit>();
-        List<ThreadUnit> BrokenThreads = new List<ThreadUnit>();
+        public int FailedThreadsCount { get; private set; }
         public int ThreadsCount { get; private set; }
 
         public void ChangeNumberThreads(int countThreads)
@@ -56,6 +58,7 @@ namespace Exile
             {
                 if (countThreads == ThreadsCount)
                     return;
+
                 ThreadsCount = countThreads;
 
                 if (threads != null)
@@ -65,12 +68,16 @@ namespace Exile
                         thread?.Abort();
                     }
 
-                    while (!FreeThreads.IsEmpty) FreeThreads.TryDequeue(out _);
+                    while (!FreeThreads.IsEmpty)
+                    {
+                        FreeThreads.TryDequeue(out _);
+                    }
                 }
 
                 if (countThreads > 0)
                 {
                     threads = new ThreadUnit[ThreadsCount];
+
                     for (var i = 0; i < ThreadsCount; i++)
                     {
                         threads[i] = new ThreadUnit($"Thread #{i}", i);
@@ -78,35 +85,30 @@ namespace Exile
                     }
                 }
                 else
-                {
                     threads = null;
-                }
-                
             }
         }
-
 
         public Job AddJob(Job job)
         {
             job.IsStarted = true;
-            bool jobAbsorbed = false;
+            var jobAbsorbed = false;
+
             if (!FreeThreads.IsEmpty)
             {
                 FreeThreads.TryDequeue(out var threadUnit);
+
                 if (threadUnit != null)
                 {
                     jobAbsorbed = threadUnit.AddJob(job);
+
                     if (threadUnit.Free)
-                    {
                         FreeThreads.Enqueue(threadUnit);
-                    }   
                 }
             }
 
             if (!jobAbsorbed)
-            {
                 Jobs.Enqueue(job);
-            }
 
             return job;
         }
@@ -114,28 +116,20 @@ namespace Exile
         public Job AddJob(Action action, string name)
         {
             var newJob = new Job(name, action);
-     
+
             return AddJob(newJob);
         }
 
-        private int _lock = 0;
-
-        //Used for debug, maybe now can be delete
-        private object _objectInitWork;
-
         public void Process(object o)
         {
-            if (threads==null)
+            if (threads == null)
                 return;
+
             if (Interlocked.CompareExchange(ref _lock, 1, 0) == 1)
-            {
                 return;
-            }
-            
+
             if (ProcessWorking)
-            {
                 DebugWindow.LogMsg($"WTF {_objectInitWork.GetType()}");
-            }
 
             _objectInitWork = o;
             ProcessWorking = true;
@@ -146,7 +140,6 @@ namespace Exile
                 processJobs.Enqueue(j);
             }
 
-
             if (ThreadsCount > 1)
             {
                 while (processJobs.Count > 0)
@@ -155,25 +148,24 @@ namespace Exile
                     {
                         FreeThreads.TryDequeue(out var freeThread);
                         var job = processJobs.Dequeue();
+
                         if (!freeThread.AddJob(job))
-                        {
                             processJobs.Enqueue(job);
-                        }
                         else
                         {
                             if (freeThread.Free)
-                            {
                                 FreeThreads.Enqueue(freeThread);
-                            }
                         }
                     }
                     else
                     {
                         spinWait.SpinOnce();
                         var allThreadsBusy = true;
-                        for (int i = 0; i < threads.Length; i++)
+
+                        for (var i = 0; i < threads.Length; i++)
                         {
                             var th = threads[i];
+
                             if (th.Free)
                             {
                                 allThreadsBusy = false;
@@ -183,15 +175,17 @@ namespace Exile
 
                         if (allThreadsBusy)
                         {
-                            for (int i = 0; i < threads.Length; i++)
+                            for (var i = 0; i < threads.Length; i++)
                             {
                                 var th = threads[i];
                                 var thWorkingTime = th.WorkingTime;
+
                                 if (thWorkingTime > CriticalWorkTimeMs)
                                 {
                                     DebugWindow.LogMsg(
                                         $"Repair thread #{th.Number} with Job1: {th.Job.Name} (C: {th.Job.IsCompleted} F: {th.Job.IsFailed}) && Job2:{th.SecondJob.Name} (C: {th.SecondJob.IsCompleted} F: {th.SecondJob.IsFailed}) Time: {thWorkingTime} > {thWorkingTime >= CriticalWorkTimeMs}",
                                         5);
+
                                     th.Abort();
                                     BrokenThreads.Add(th);
                                     var newThread = new ThreadUnit($"Repair critical time {th.Number}", th.Number);
@@ -209,7 +203,8 @@ namespace Exile
             else
             {
                 var threadUnit = threads[0];
-                while (processJobs.Count>0)
+
+                while (processJobs.Count > 0)
                 {
                     if (threadUnit.Free)
                     {
@@ -220,11 +215,13 @@ namespace Exile
                     {
                         spinWait.SpinOnce();
                         var threadUnitWorkingTime = threadUnit.WorkingTime;
+
                         if (threadUnitWorkingTime > CriticalWorkTimeMs)
                         {
                             DebugWindow.LogMsg(
                                 $"Repair thread #{threadUnit.Number} withreadUnit Job1: {threadUnit.Job.Name} (C: {threadUnit.Job.IsCompleted} F: {threadUnit.Job.IsFailed}) && Job2:{threadUnit.SecondJob.Name} (C: {threadUnit.SecondJob.IsCompleted} F: {threadUnit.SecondJob.IsFailed}) Time: {threadUnitWorkingTime} > {threadUnitWorkingTime >= CriticalWorkTimeMs}",
                                 5);
+
                             threadUnit.Abort();
                             BrokenThreads.Add(threadUnit);
                             threadUnit = new ThreadUnit($"Repair critical time {threadUnit.Number}", threadUnit.Number);
@@ -238,10 +235,12 @@ namespace Exile
             if (BrokenThreads.Count > 0)
             {
                 var criticalWorkTimeMs = CriticalWorkTimeMs * 2;
+
                 for (var index = 0; index < BrokenThreads.Count; index++)
                 {
                     var brokenThread = BrokenThreads[index];
-                    if(brokenThread==null) continue;
+                    if (brokenThread == null) continue;
+
                     if (brokenThread.WorkingTime > criticalWorkTimeMs)
                     {
                         brokenThread.ForceAbort();
@@ -250,9 +249,7 @@ namespace Exile
                 }
 
                 if (BrokenThreads.AllF(x => x == null))
-                {
                     BrokenThreads.Clear();
-                }
             }
 
             Interlocked.CompareExchange(ref _lock, 0, 1);
@@ -295,7 +292,10 @@ namespace Exile
 
         public void Close()
         {
-            foreach (var thread in threads) thread.Abort();
+            foreach (var thread in threads)
+            {
+                thread.Abort();
+            }
 
             Closed = true;
         }
@@ -306,22 +306,24 @@ namespace Exile
         private readonly AutoResetEvent _event;
         private readonly Stopwatch sw;
         private readonly Thread thread;
-
-        public static int CountJobs { get; set; }
-        public static int CountWait { get; set; }
+        private bool _wait = true;
         private volatile bool abort;
+        private bool running = true;
 
         public ThreadUnit(string name, int number)
         {
             Number = number;
-            Job = new Job("InitJob",null)
+
+            Job = new Job("InitJob", null)
             {
-                IsCompleted = true,
+                IsCompleted = true
             };
-            SecondJob = new Job("InitJob",null)
+
+            SecondJob = new Job("InitJob", null)
             {
-                IsCompleted = true,
+                IsCompleted = true
             };
+
             _event = new AutoResetEvent(false);
 
             thread = new Thread(DoWork);
@@ -331,17 +333,13 @@ namespace Exile
             sw = Stopwatch.StartNew();
         }
 
+        public static int CountJobs { get; set; }
+        public static int CountWait { get; set; }
         public int Number { get; }
-
         public Job Job { get; private set; }
         public Job SecondJob { get; private set; }
         public bool Free => Job.IsCompleted || SecondJob.IsCompleted;
-
         public long WorkingTime => sw.ElapsedMilliseconds;
-
-        private bool _wait = true;
-
-        private bool running = true;
 
         private void DoWork()
         {
@@ -399,7 +397,8 @@ namespace Exile
         public bool AddJob(Job job)
         {
             job.WorkingOnThread = this;
-            bool jobSetted = false;
+            var jobSetted = false;
+
             if (Job.IsCompleted)
             {
                 Job = job;
@@ -418,6 +417,7 @@ namespace Exile
                 _wait = false;
                 _event.Set();
             }
+
             return jobSetted;
         }
 
@@ -428,11 +428,12 @@ namespace Exile
             Job.IsFailed = true;
             Job.IsFailed = true;
             abort = true;
+
             if (_wait)
-            {
                 _event.Set();
-            }
+
             running = false;
+
             //thread.Abort();
         }
 

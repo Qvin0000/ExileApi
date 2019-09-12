@@ -1,25 +1,24 @@
 using System;
-using System.Globalization;
-using System.Linq;
+using ExileCore.Shared.Cache;
 using GameOffsets;
 using ProcessMemoryUtilities.Memory;
-using Shared.Interfaces;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class DiagnosticElement : RemoteMemoryObject
     {
-        private CachedValue<DiagnosticElementOffsets> _cachedValue;
-        private CachedValue<DiagnosticElementArrayOffsets> _cachedValue2;
+        private readonly CachedValue<DiagnosticElementOffsets> _cachedValue;
+        private readonly CachedValue<DiagnosticElementArrayOffsets> _cachedValue2;
+        private readonly FrameCache<float[]> Values;
 
-        private DiagnosticElementOffsets DiagnosticElementStruct => _cachedValue.Value;
-        private DiagnosticElementArrayOffsets DiagnosticElementArrayStruct => _cachedValue2.Value;
-
-        public DiagnosticElement() {
+        public DiagnosticElement()
+        {
             _cachedValue = new FrameCache<DiagnosticElementOffsets>(() => M.Read<DiagnosticElementOffsets>(Address));
+
             _cachedValue2 =
                 new FrameCache<DiagnosticElementArrayOffsets>(
                     () => M.Read<DiagnosticElementArrayOffsets>(DiagnosticElementStruct.DiagnosticArray));
+
             Values = new FrameCache<float[]>(() =>
             {
                 var buffer = new float[80];
@@ -28,8 +27,8 @@ namespace PoEMemory
             });
         }
 
-        private FrameCache<float[]> Values;
-
+        private DiagnosticElementOffsets DiagnosticElementStruct => _cachedValue.Value;
+        private DiagnosticElementArrayOffsets DiagnosticElementArrayStruct => _cachedValue2.Value;
         public long DiagnosticArray => DiagnosticElementStruct.DiagnosticArray;
         public float[] DiagnosticArrayValues => Values.Value;
         public float CurrValue => DiagnosticElementArrayStruct.CurrValue;

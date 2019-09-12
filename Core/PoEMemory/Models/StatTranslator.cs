@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-using PoEMemory;
-using Shared.Enums;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Enums;
 
-
-namespace Basic.Models
+namespace ExileCore.PoEMemory.Models
 {
     public class StatTranslator
     {
         private readonly Dictionary<string, AddStat> mods;
 
-        public StatTranslator() =>
+        public StatTranslator()
+        {
             mods = new Dictionary<string, AddStat>
             {
                 {"Dexterity", Single(ItemStatEnum.Dexterity)},
@@ -68,28 +68,43 @@ namespace Basic.Models
                 {"LocalIncreasedArmourAndEnergyShield", MultipleSame(ItemStatEnum.LocalArmorPercent, ItemStatEnum.LocalESPercent)},
                 {"LocalIncreasedEvasionAndEnergyShield", MultipleSame(ItemStatEnum.LocalEVPercent, ItemStatEnum.LocalESPercent)}
             };
+        }
 
-        public void Translate(ItemStats stats, ItemMod m) {
+        public void Translate(ItemStats stats, ItemMod m)
+        {
             if (!mods.ContainsKey(m.Name)) return;
             mods[m.Name](stats, m);
         }
 
-        private AddStat Single(ItemStatEnum stat) => delegate(ItemStats x, ItemMod m) { x.AddToMod(stat, m.Value1); };
+        private AddStat Single(ItemStatEnum stat)
+        {
+            return delegate(ItemStats x, ItemMod m) { x.AddToMod(stat, m.Value1); };
+        }
 
-        private AddStat Average(ItemStatEnum stat) => delegate(ItemStats x, ItemMod m) { x.AddToMod(stat, (m.Value1 + m.Value2) / 2f); };
+        private AddStat Average(ItemStatEnum stat)
+        {
+            return delegate(ItemStats x, ItemMod m) { x.AddToMod(stat, (m.Value1 + m.Value2) / 2f); };
+        }
 
-        private AddStat Dual(ItemStatEnum s1, ItemStatEnum s2) =>
-            delegate(ItemStats x, ItemMod m)
+        private AddStat Dual(ItemStatEnum s1, ItemStatEnum s2)
+        {
+            return delegate(ItemStats x, ItemMod m)
             {
                 x.AddToMod(s1, m.Value1);
                 x.AddToMod(s2, m.Value2);
             };
+        }
 
-        private AddStat MultipleSame(params ItemStatEnum[] stats) =>
-            delegate(ItemStats x, ItemMod m)
+        private AddStat MultipleSame(params ItemStatEnum[] stats)
+        {
+            return delegate(ItemStats x, ItemMod m)
             {
-                foreach (var stat in stats) x.AddToMod(stat, m.Value1);
+                foreach (var stat in stats)
+                {
+                    x.AddToMod(stat, m.Value1);
+                }
             };
+        }
 
         private delegate void AddStat(ItemStats stats, ItemMod m);
     }

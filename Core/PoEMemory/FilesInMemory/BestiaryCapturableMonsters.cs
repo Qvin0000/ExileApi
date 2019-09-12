@@ -1,14 +1,20 @@
 using System;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Interfaces;
 
-
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class BestiaryCapturableMonsters : UniversalFileWrapper<BestiaryCapturableMonster>
     {
-        public BestiaryCapturableMonsters(IMemory m, Func<long> address) : base(m, address) { }
-
         private int IdCounter;
-        protected void EntryAdded(long addr, BestiaryCapturableMonster entry) => entry.Id = IdCounter++;
+
+        public BestiaryCapturableMonsters(IMemory m, Func<long> address) : base(m, address)
+        {
+        }
+
+        protected void EntryAdded(long addr, BestiaryCapturableMonster entry)
+        {
+            entry.Id = IdCounter++;
+        }
     }
 }

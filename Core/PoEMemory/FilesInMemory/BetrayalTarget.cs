@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ExileCore.PoEMemory.MemoryObjects;
 
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class BetrayalTarget : RemoteMemoryObject
     {
@@ -14,6 +10,9 @@ namespace PoEMemory.FilesInMemory
         public string FullName => M.ReadStringU(M.Read<long>(Address + 0x51));
         public string Name => M.ReadStringU(M.Read<long>(Address + 0x61));
 
-        public override string ToString() => Name;
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using JM.LinqFaster;
 using SharpDX.Multimedia;
 using SharpDX.XAudio2;
-using SharpDX.XAudio2.Fx;
 
-namespace Exile
+namespace ExileCore
 {
     public class MyWave
     {
@@ -19,15 +16,17 @@ namespace Exile
 
     public class SoundController : IDisposable
     {
-        private bool initialized;
-        XAudio2 xAudio2;
-        MasteringVoice masteringVoice;
+        private readonly List<SourceVoice> _list = new List<SourceVoice>();
+        private readonly bool initialized;
+        private readonly MasteringVoice masteringVoice;
+        private readonly Dictionary<string, MyWave> Sounds;
+        private readonly string soundsDir;
+        private readonly XAudio2 xAudio2;
 
-        private Dictionary<string, MyWave> Sounds;
-        string soundsDir;
-
-        public SoundController(string dir) {
+        public SoundController(string dir)
+        {
             soundsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dir);
+
             if (!Directory.Exists(soundsDir))
             {
                 initialized = false;
@@ -45,58 +44,68 @@ namespace Exile
             var soundFiles = Directory.GetFiles(soundsDir, "*.wav");
             Sounds = new Dictionary<string, MyWave>(soundFiles.Length);
 
-        /*
-            foreach (var file in soundFiles)
-            {
-                var fileInfo = new FileInfo(file);
-                var soundStream = new SoundStream(File.OpenRead(file));
-                var waveFormat = soundStream.Format;
-
-                var buffer = new AudioBuffer()
+            /*
+                foreach (var file in soundFiles)
                 {
-                    Stream = soundStream.ToDataStream(), AudioBytes = (int) soundStream.Length, Flags = BufferFlags.EndOfStream
-                };
-                soundStream.Close();
-                Sounds[fileInfo.Name.Split('.').First()] = new MyWave()
-                {
-                    Buffer = buffer, WaveFormat = waveFormat, DecodedPacketsInfo = soundStream.DecodedPacketsInfo
-                };
-            }
-*/
+                    var fileInfo = new FileInfo(file);
+                    var soundStream = new SoundStream(File.OpenRead(file));
+                    var waveFormat = soundStream.Format;
+    
+                    var buffer = new AudioBuffer()
+                    {
+                        Stream = soundStream.ToDataStream(), AudioBytes = (int) soundStream.Length, Flags = BufferFlags.EndOfStream
+                    };
+                    soundStream.Close();
+                    Sounds[fileInfo.Name.Split('.').First()] = new MyWave()
+                    {
+                        Buffer = buffer, WaveFormat = waveFormat, DecodedPacketsInfo = soundStream.DecodedPacketsInfo
+                    };
+                }
+    */
 
             initialized = true;
         }
 
-        List<SourceVoice> _list = new List<SourceVoice>();
+        public void Dispose()
+        {
+            foreach (var wave in Sounds)
+            {
+                wave.Value.Buffer.Stream.Dispose();
+            }
 
-        public void PlaySound(string name) {
+            xAudio2.StopEngine();
+            masteringVoice?.Dispose();
+            xAudio2?.Dispose();
+        }
+
+        public void PlaySound(string name)
+        {
             if (!initialized)
                 return;
+
             if (Sounds.TryGetValue(name, out var wave))
             {
                 if (wave == null)
-                {
-                   wave = LoadSound(name);
-                }
-
+                    wave = LoadSound(name);
             }
             else
-            {
                 wave = LoadSound(name);
-            }
 
             if (wave == null)
             {
                 DebugWindow.LogError($"Sound file: {name}.wav not found.");
                 return;
             }
+
             var sourceVoice = new SourceVoice(xAudio2, wave.WaveFormat, true);
             sourceVoice.SubmitSourceBuffer(wave.Buffer, wave.DecodedPacketsInfo);
             sourceVoice.Start();
             _list.Add(sourceVoice);
+
             for (var i = 0; i < _list.Count; i++)
             {
                 var sv = _list[i];
+
                 if (sv.State.BuffersQueued <= 0)
                 {
                     sv.Stop();
@@ -107,44 +116,36 @@ namespace Exile
             }
         }
 
+        public void PreloadSound(string name)
+        {
+            LoadSound(name);
+        }
 
-        public void PreloadSound(string name) { LoadSound(name); }
-        
-        private MyWave LoadSound(string name) {
-            
-          
+        private MyWave LoadSound(string name)
+        {
             if (name.IndexOf(".wav", StringComparison.Ordinal) == -1)
-            {
                 name = Path.Combine(soundsDir, $"{name}.wav");
-            }
+
             var fileInfo = new FileInfo(name);
             if (!fileInfo.Exists) return null;
             var soundStream = new SoundStream(File.OpenRead(name));
             var waveFormat = soundStream.Format;
 
-            var buffer = new AudioBuffer()
+            var buffer = new AudioBuffer
             {
                 Stream = soundStream.ToDataStream(), AudioBytes = (int) soundStream.Length, Flags = BufferFlags.EndOfStream
             };
+
             soundStream.Close();
-            var wave = new MyWave() {Buffer = buffer, WaveFormat = waveFormat, DecodedPacketsInfo = soundStream.DecodedPacketsInfo};
+            var wave = new MyWave {Buffer = buffer, WaveFormat = waveFormat, DecodedPacketsInfo = soundStream.DecodedPacketsInfo};
             Sounds[fileInfo.Name.Split('.').First()] = wave;
             Sounds[fileInfo.Name] = wave;
             return wave;
         }
 
-
-        public void SetVolume(float volume) { masteringVoice.SetVolume(volume); }
-
-        public void Dispose() {
-            foreach (var wave in Sounds)
-            {
-                wave.Value.Buffer.Stream.Dispose();
-            }
-
-            xAudio2.StopEngine();
-            masteringVoice?.Dispose();
-            xAudio2?.Dispose();
+        public void SetVolume(float volume)
+        {
+            masteringVoice.SetVolume(volume);
         }
     }
 }

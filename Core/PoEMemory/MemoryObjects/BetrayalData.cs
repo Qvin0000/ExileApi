@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using Exile.PoEMemory.MemoryObjects;
-using PoEMemory;
-using PoEMemory.FilesInMemory;
-using PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.FilesInMemory;
 
-namespace PoEMemory.MemoryObjects
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class BetrayalData : RemoteMemoryObject
     {
@@ -15,9 +12,10 @@ namespace PoEMemory.MemoryObjects
             get
             {
                 var betrayalStateAddr = M.Read<long>(Address + 0x2D0);
+
                 return M.ReadStructsArray<BetrayalSyndicateState>(betrayalStateAddr,
-                                                                  betrayalStateAddr + BetrayalSyndicateState.STRUCT_SIZE * 14,
-                                                                  BetrayalSyndicateState.STRUCT_SIZE, this);
+                    betrayalStateAddr + BetrayalSyndicateState.STRUCT_SIZE * 14,
+                    BetrayalSyndicateState.STRUCT_SIZE, this);
             }
         }
 

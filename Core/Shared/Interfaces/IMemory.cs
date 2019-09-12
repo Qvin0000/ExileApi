@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using PoEMemory;
-using Shared.Enums;
+using ExileCore.PoEMemory;
+using ExileCore.Shared.Enums;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface IMemory : IDisposable
     {
@@ -14,7 +14,6 @@ namespace Shared.Interfaces
         long AddressOfProcess { get; }
         Dictionary<OffsetsName, long> BaseOffsets { get; }
         Process Process { get; }
-
 
         /// <summary>
         /// Read string as ASCII

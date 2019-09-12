@@ -1,20 +1,26 @@
 using System;
 using System.Windows.Forms;
-using Exile;
-using Shared.Static;
 using Newtonsoft.Json;
+using SharpDX;
 
-namespace Shared.Nodes
+namespace ExileCore.Shared.Nodes
 {
     public class HotkeyNode
     {
+        private bool _pressed;
+        private bool _unPressed;
         [JsonIgnore] public Action OnValueChanged = delegate { };
         private Keys value;
 
-        public HotkeyNode() => value = Keys.Space;
+        public HotkeyNode()
+        {
+            value = Keys.Space;
+        }
 
-        public HotkeyNode(Keys value) => Value = value;
-
+        public HotkeyNode(Keys value)
+        {
+            Value = value;
+        }
 
         public Keys Value
         {
@@ -31,23 +37,29 @@ namespace Shared.Nodes
                     }
                     catch
                     {
-                        DebugWindow.LogMsg("Error in function that subscribed for: HotkeyNode.OnValueChanged", 10, SharpDX.Color.Red);
+                        DebugWindow.LogMsg("Error in function that subscribed for: HotkeyNode.OnValueChanged", 10, Color.Red);
                     }
                 }
             }
         }
 
-        public static implicit operator Keys(HotkeyNode node) => node.Value;
+        public static implicit operator Keys(HotkeyNode node)
+        {
+            return node.Value;
+        }
 
-        public static implicit operator HotkeyNode(Keys value) => new HotkeyNode(value);
+        public static implicit operator HotkeyNode(Keys value)
+        {
+            return new HotkeyNode(value);
+        }
 
-        private bool _pressed;
-
-        public bool PressedOnce() {
+        public bool PressedOnce()
+        {
             if (Input.IsKeyDown(value))
             {
                 if (_pressed)
                     return false;
+
                 _pressed = true;
                 return true;
             }
@@ -56,9 +68,8 @@ namespace Shared.Nodes
             return false;
         }
 
-        private bool _unPressed;
-
-        public bool UnpressedOnce() {
+        public bool UnpressedOnce()
+        {
             if (Input.GetKeyState(value))
                 _unPressed = true;
             else

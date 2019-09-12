@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
-using Shared;
-using Shared.Helpers;
-using Shared.Static;
+using ExileCore.Shared;
+using ExileCore.Shared.Helpers;
 using ImGuiNET;
-using Shared;
 using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
@@ -16,36 +13,41 @@ using SharpDX.Windows;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Device = SharpDX.Direct3D11.Device;
 using Resource = SharpDX.Direct3D11.Resource;
+using Vector4 = System.Numerics.Vector4;
 
-namespace Exile.RenderQ
+namespace ExileCore.RenderQ
 {
     public class DX11 : IDisposable
     {
         private readonly RenderForm _form;
-        public DeviceContext DeviceContext { get; private set; }
-        public Device D11Device { get; private set; }
-        private Viewport Viewport;
-        private Buffer ConstantBuffer;
-        private Buffer VertexBuffer;
-        private Buffer IndexBuffer;
-        public VertexShader VertexShader { get; set; }
-        public PixelShader PixelShader { get; set; }
-        public RenderTargetView RenderTargetView { get; set; }
-        public InputLayout Layout { get; set; }
-        public Texture2D BackBuffer { get; private set; }
-        private SwapChain _swapChain;
-        private Factory factory;
-        public bool VSync { get; set; } = false;
-        private Stopwatch sw;
-        private Dictionary<string, ShaderResourceView> LoadedTexturesByName { get; }
-        private Dictionary<IntPtr, ShaderResourceView> LoadedTexturesByPtrs { get; }
 
-        public DX11(RenderForm form, CoreSettings coreSettings) {
+        private readonly Vector4
+            _clearColor = Color.Transparent.ToVector4().ToVector4Num(); //new System.Numerics.Vector4(0.45f, 0.55f, 0.60f, 0.1f);
+
+        private readonly SwapChain _swapChain;
+        private readonly object _sync = new object();
+        private Color4 ClearColor = new Color4(0, 0, 0, 0);
+        private Buffer ConstantBuffer;
+        private double debugTime;
+        private double endFrameTime;
+        private readonly Factory factory;
+        private readonly DebugInformation ImGuiDebug;
+        private Buffer IndexBuffer;
+        private readonly DebugInformation SpritesDebug;
+        private double startFrameTime;
+        private readonly Stopwatch sw;
+        private readonly DebugInformation SwapchainDebug;
+        private Buffer VertexBuffer;
+        private Viewport Viewport;
+
+        public DX11(RenderForm form, CoreSettings coreSettings)
+        {
             _form = form;
             sw = Stopwatch.StartNew();
             LoadedTexturesByName = new Dictionary<string, ShaderResourceView>();
             LoadedTexturesByPtrs = new Dictionary<IntPtr, ShaderResourceView>();
-            var swapChainDesc = new SwapChainDescription()
+
+            var swapChainDesc = new SwapChainDescription
             {
                 Usage = Usage.RenderTargetOutput,
                 OutputHandle = form.Handle,
@@ -54,7 +56,7 @@ namespace Exile.RenderQ
                 Flags = SwapChainFlags.AllowModeSwitch,
                 SwapEffect = SwapEffect.Discard,
                 SampleDescription = new SampleDescription(1, 0),
-                ModeDescription = new ModeDescription()
+                ModeDescription = new ModeDescription
                 {
                     Format = Format.R8G8B8A8_UNorm,
                     Width = form.Width,
@@ -64,9 +66,11 @@ namespace Exile.RenderQ
                     ScanlineOrdering = DisplayModeScanlineOrder.Unspecified
                 }
             };
+
             Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None,
-                                       new[] {FeatureLevel.Level_11_0, FeatureLevel.Level_10_0}, swapChainDesc, out var device,
-                                       out var swapChain);
+                new[] {FeatureLevel.Level_11_0, FeatureLevel.Level_10_0}, swapChainDesc, out var device,
+                out var swapChain);
+
             D11Device = device;
             DeviceContext = device.ImmediateContext;
             _swapChain = swapChain;
@@ -75,6 +79,7 @@ namespace Exile.RenderQ
             factory.MakeWindowAssociation(form.Handle, WindowAssociationFlags.IgnoreAll);
             BackBuffer = Resource.FromSwapChain<Texture2D>(swapChain, 0);
             RenderTargetView = new RenderTargetView(device, BackBuffer);
+
             using (new PerformanceTimer("Init ImGuiRender"))
             {
                 ImGuiRender = new ImGuiRender(this, form, coreSettings);
@@ -86,6 +91,7 @@ namespace Exile.RenderQ
             }
 
             InitStates();
+
             form.UserResized += (sender, args) =>
             {
                 RenderTargetView?.Dispose();
@@ -104,24 +110,42 @@ namespace Exile.RenderQ
                 DeviceContext.OutputMerger.SetRenderTargets(RenderTargetView);
             };
 
-
             ImGuiDebug = new DebugInformation("ImGui");
             SpritesDebug = new DebugInformation("Sprites");
             SwapchainDebug = new DebugInformation("Swapchain");
+
             // Core.DebugInformations.Add(ImGuiDebug);
             // Core.DebugInformations.Add(ImGuiInputDebug);
             // Core.DebugInformations.Add(SpritesDebug);
             // Core.DebugInformations.Add(SwapchainDebug);
         }
 
-        private DebugInformation ImGuiDebug;
-        private DebugInformation SpritesDebug;
-        private DebugInformation SwapchainDebug;
+        public DeviceContext DeviceContext { get; }
+        public Device D11Device { get; }
+        public VertexShader VertexShader { get; set; }
+        public PixelShader PixelShader { get; set; }
+        public RenderTargetView RenderTargetView { get; set; }
+        public InputLayout Layout { get; set; }
+        public Texture2D BackBuffer { get; private set; }
+        public bool VSync { get; set; } = false;
+        private Dictionary<string, ShaderResourceView> LoadedTexturesByName { get; }
+        private Dictionary<IntPtr, ShaderResourceView> LoadedTexturesByPtrs { get; }
+        public ImGuiRender ImGuiRender { get; }
+        public SpritesRender SpritesRender { get; }
+        public int TextutresCount => LoadedTexturesByName.Count;
 
-        public ImGuiRender ImGuiRender { get; private set; }
-        public SpritesRender SpritesRender { get; private set; }
+        public void Dispose()
+        {
+            RenderTargetView.Dispose();
+            BackBuffer.Dispose();
+            DeviceContext.Dispose();
+            D11Device.Dispose();
+            _swapChain.Dispose();
+            factory.Dispose();
+        }
 
-        private void InitStates() {
+        private void InitStates()
+        {
             //Debug if texture broken
 
             //Blend
@@ -151,8 +175,9 @@ namespace Exile.RenderQ
                     DepthFailOperation = StencilOperation.Keep,
                     PassOperation = StencilOperation.Keep,
                     Comparison = Comparison.Always
-                },
+                }
             };
+
             depthStencilStateDescription.BackFace = depthStencilStateDescription.FrontFace;
             var depthStencilState = new DepthStencilState(D11Device, depthStencilStateDescription);
             DeviceContext.OutputMerger.SetDepthStencilState(depthStencilState);
@@ -170,27 +195,24 @@ namespace Exile.RenderQ
             // Setup and create the viewport for rendering.
             DeviceContext.Rasterizer.SetViewport(Viewport);
             DeviceContext.OutputMerger.SetRenderTargets(RenderTargetView);
+
             DeviceContext.Rasterizer.State =
-                new RasterizerState(D11Device, new RasterizerStateDescription() {FillMode = FillMode.Solid, CullMode = CullMode.None,});
+                new RasterizerState(D11Device, new RasterizerStateDescription {FillMode = FillMode.Solid, CullMode = CullMode.None});
         }
 
-        private Color4 ClearColor = new Color4(0, 0, 0, 0);
-
-        public void Clear(Color4 clear) {
+        public void Clear(Color4 clear)
+        {
             ClearColor = clear;
             Clear();
         }
 
-        public void Clear() => DeviceContext.ClearRenderTargetView(RenderTargetView, ClearColor);
+        public void Clear()
+        {
+            DeviceContext.ClearRenderTargetView(RenderTargetView, ClearColor);
+        }
 
-        private System.Numerics.Vector4
-            _clearColor = Color.Transparent.ToVector4().ToVector4Num(); //new System.Numerics.Vector4(0.45f, 0.55f, 0.60f, 0.1f);
-
-
-        private double startFrameTime = 0;
-        private double endFrameTime = 0;
-
-        public void DisposeTexture(string name) {
+        public void DisposeTexture(string name)
+        {
             lock (_sync)
             {
                 if (LoadedTexturesByName.TryGetValue(name, out var texture))
@@ -204,9 +226,8 @@ namespace Exile.RenderQ
             }
         }
 
-        private object _sync = new object();
-
-        public void AddOrUpdateTexture(string name, ShaderResourceView texture) {
+        public void AddOrUpdateTexture(string name, ShaderResourceView texture)
+        {
             lock (_sync)
             {
                 if (LoadedTexturesByName.TryGetValue(name, out var res)) res.Dispose();
@@ -215,32 +236,38 @@ namespace Exile.RenderQ
             }
         }
 
-
-        public int TextutresCount => LoadedTexturesByName.Count;
-
-        public ShaderResourceView GetTexture(string name) {
+        public ShaderResourceView GetTexture(string name)
+        {
             if (LoadedTexturesByName.TryGetValue(name, out var result)) return result;
             throw new FileNotFoundException($"Texture by name: {name} not found");
         }
 
-        public ShaderResourceView GetTexture(IntPtr ptr) {
+        public ShaderResourceView GetTexture(IntPtr ptr)
+        {
             if (LoadedTexturesByPtrs.TryGetValue(ptr, out var result)) return result;
             throw new FileNotFoundException($"Texture by ptr: {ptr} not found");
         }
 
-        public bool HasTexture(string name) => LoadedTexturesByName.ContainsKey(name);
-        public bool HasTexture(IntPtr name) => LoadedTexturesByPtrs.ContainsKey(name);
+        public bool HasTexture(string name)
+        {
+            return LoadedTexturesByName.ContainsKey(name);
+        }
 
-        private double debugTime = 0;
+        public bool HasTexture(IntPtr name)
+        {
+            return LoadedTexturesByPtrs.ContainsKey(name);
+        }
 
-        public void Render(double sleepTime, Core core) {
+        public void Render(double sleepTime, Core core)
+        {
             try
             {
                 startFrameTime = sw.Elapsed.TotalSeconds;
                 Clear(new Color(_clearColor.X, _clearColor.Y, _clearColor.Z, _clearColor.W));
                 debugTime = sw.Elapsed.TotalMilliseconds;
                 ImGui.NewFrame();
-               // ImGuiRender.InputUpdate();
+
+                // ImGuiRender.InputUpdate();
                 ImGuiRender.BeginBackGroundWindow();
                 core.Tick();
                 debugTime = sw.Elapsed.TotalMilliseconds;
@@ -259,15 +286,6 @@ namespace Exile.RenderQ
             {
                 Core.Logger.Error($"DX11.Render -> {e}");
             }
-        }
-
-        public void Dispose() {
-            RenderTargetView.Dispose();
-            BackBuffer.Dispose();
-            DeviceContext.Dispose();
-            D11Device.Dispose();
-            _swapChain.Dispose();
-            factory.Dispose();
         }
     }
 }

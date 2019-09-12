@@ -1,16 +1,21 @@
 using System;
 using System.Diagnostics;
-using Exile;
 using JM.LinqFaster;
-using Shared.Static;
 
-namespace Shared
+namespace ExileCore.Shared
 {
     public class DebugInformation
     {
-        public DebugInformation(string name, bool main = true) {
+        public static readonly int SizeArray = 512;
+        private readonly Stopwatch sw = Stopwatch.StartNew();
+        private bool show;
+        private double tick;
+
+        public DebugInformation(string name, bool main = true)
+        {
             Name = name;
             Main = main;
+
             for (var i = 0; i < SizeArray; i++)
             {
                 Ticks[i] = 0;
@@ -20,17 +25,16 @@ namespace Shared
             Core.DebugInformations.Add(this);
         }
 
-        public DebugInformation(string name, string description, bool main = true) : this(name, main) => Description = description;
+        public DebugInformation(string name, string description, bool main = true) : this(name, main)
+        {
+            Description = description;
+        }
 
-        private double tick;
         public string Name { get; }
         public string Description { get; }
         public bool Main { get; }
         public int IndexTickAverage { get; private set; }
         public int Index { get; private set; }
-
-        private bool show;
-        public static readonly int SizeArray = 512;
         public float Sum { get; private set; }
         public float Total { get; private set; }
         private float TotalIndex { get; set; }
@@ -38,7 +42,6 @@ namespace Shared
         public float TotalAverage { get; private set; }
         public float Average { get; private set; }
         public bool AtLeastOneFullTick { get; private set; }
-        private readonly Stopwatch sw = Stopwatch.StartNew();
 
         public double Tick
         {
@@ -46,6 +49,7 @@ namespace Shared
             set
             {
                 tick = value;
+
                 if (Index >= SizeArray)
                 {
                     Index = 0;
@@ -56,6 +60,7 @@ namespace Shared
                     TotalAverage = Total / TotalIndex;
                     TotalMaxAverage = Math.Max(TotalMaxAverage, Average);
                     if (IndexTickAverage >= SizeArray) IndexTickAverage = 0;
+
                     if (IndexTickAverage == 0 && Average > 16)
                     {
                         Average = 0;
@@ -72,17 +77,17 @@ namespace Shared
             }
         }
 
-        public void CorrectAfterTick(float val) {
+        public float[] Ticks { get; } = new float[SizeArray];
+        public float[] TicksAverage { get; } = new float[SizeArray];
+
+        public void CorrectAfterTick(float val)
+        {
             Ticks[Index - 1] = val;
             tick += val;
         }
 
-
-        public float[] Ticks { get; } = new float[SizeArray];
-        public float[] TicksAverage { get; } = new float[SizeArray];
-
-
-        public float TickAction(Action action, bool onlyValue = false) {
+        public float TickAction(Action action, bool onlyValue = false)
+        {
             var start = sw.Elapsed.TotalMilliseconds;
             action.Invoke();
             var value = (float) (sw.Elapsed.TotalMilliseconds - start);
@@ -91,6 +96,9 @@ namespace Shared
             return value;
         }
 
-        public void AddToCurrentTick(float value) => Ticks[Index] += value;
+        public void AddToCurrentTick(float value)
+        {
+            Ticks[Index] += value;
+        }
     }
 }

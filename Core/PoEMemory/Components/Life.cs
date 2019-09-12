@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Exile;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
 using JM.LinqFaster;
 using ProcessMemoryUtilities.Memory;
-using Shared.Helpers;
-using Shared.Interfaces;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Life : Component
     {
@@ -16,20 +15,18 @@ namespace PoEMemory.Components
         private readonly CachedValue<List<Buff>> _cachedValueBuffs;
         private readonly CachedValue<LifeComponentOffsets> _life;
 
-        public Life() {
+        public Life()
+        {
             _life = new FrameCache<LifeComponentOffsets>(() => Address == 0 ? default : M.Read<LifeComponentOffsets>(Address));
             _cachedValueBuffs = new FrameCache<List<Buff>>(ParseBuffs);
         }
 
         public long OwnerAddress => LifeComponentOffsetsStruct.Owner;
         private LifeComponentOffsets LifeComponentOffsetsStruct => _life.Value;
-
         public int MaxHP => Address != 0 ? LifeComponentOffsetsStruct.MaxHP : 1;
         public int CurHP => Address != 0 ? LifeComponentOffsetsStruct.CurHP : 0;
         public int ReservedFlatHP => LifeComponentOffsetsStruct.ReservedFlatHP;
-
         public int ReservedPercentHP => LifeComponentOffsetsStruct.ReservedPercentHP;
-
         public int MaxMana => Address != 0 ? LifeComponentOffsetsStruct.MaxMana : 1;
         public int CurMana => Address != 0 ? LifeComponentOffsetsStruct.CurMana : 1;
         public int ReservedFlatMana => LifeComponentOffsetsStruct.ReservedFlatMana;
@@ -45,26 +42,28 @@ namespace PoEMemory.Components
         private long BuffEnd => LifeComponentOffsetsStruct.Buffs.End;
         private long BuffLast => LifeComponentOffsetsStruct.Buffs.Last;
         private long MaxBuffCount => 512; // Randomly bumping to 512 from 32 buffs... no idea what real value is.
-
-
         public List<Buff> Buffs => _cachedValueBuffs.Value;
 
-        public List<Buff> ParseBuffs() {
+        public List<Buff> ParseBuffs()
+        {
             try
             {
                 var length = BuffLast - BuffStart;
                 var numBuffs = (int) length / 8;
+
                 if (length <= 0 || numBuffs >= MaxBuffCount || numBuffs <= 0 || BuffEnd <= 0) // * 8 as we buff pointer takes 8 bytes.
                     return new List<Buff>();
+
                 var buffer = new long[numBuffs];
                 ProcessMemory.ReadProcessMemoryArray(M.OpenProcessHandle, (IntPtr) BuffStart, buffer, 0, numBuffs);
 
-
                 var result = new List<Buff>(numBuffs);
+
                 for (var index = 0; index < buffer.Length; index++)
                 {
                     var l = buffer[index];
                     var buff = ReadObject<Buff>(l + 0x8);
+
                     if (buff.Address == 0 || buff.BuffOffsets.Name == 0)
                         continue;
 
@@ -77,11 +76,14 @@ namespace PoEMemory.Components
             {
                 DebugWindow.LogError(
                     $"Life Component Buffs problem. {LifeComponentOffsetsStruct.Buffs} Len: {BuffLast - BuffStart} Div: {(BuffLast - BuffStart) / 8} {Environment.NewLine}{e}");
+
                 return null;
             }
         }
 
-
-        public bool HasBuff(string buff) => Buffs?.AnyF(x => x.Name == buff) ?? false;
+        public bool HasBuff(string buff)
+        {
+            return Buffs?.AnyF(x => x.Name == buff) ?? false;
+        }
     }
 }

@@ -1,22 +1,20 @@
 using System;
-using Exile.PoEMemory.MemoryObjects;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.MemoryObjects;
 
-namespace Exile.Shared.Cache
+namespace ExileCore.Shared.Cache
 {
-    public class ValidCache<T>:CachedValue<T>
+    public class ValidCache<T> : CachedValue<T>
     {
         private readonly Entity _entity;
 
-        public ValidCache(Entity entity,Func<T> func) : base(func) { _entity = entity; }
-
-        protected override bool Update(bool force) {
-            return _entity.IsValid || force;
+        public ValidCache(Entity entity, Func<T> func) : base(func)
+        {
+            _entity = entity;
         }
 
-
-        
+        protected override bool Update(bool force)
+        {
+            return _entity.IsValid || force;
+        }
     }
-    
-    
 }

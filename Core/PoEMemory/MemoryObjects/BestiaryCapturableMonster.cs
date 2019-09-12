@@ -1,46 +1,37 @@
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class BestiaryCapturableMonster : RemoteMemoryObject
     {
-        public int Id { get; set; }
-
+        private BestiaryCapturableMonster bestiaryCapturableMonsterKey;
+        private BestiaryGenus bestiaryGenus;
+        private BestiaryGroup bestiaryGroup;
         private string monsterName;
-        public string MonsterName => monsterName != null ? monsterName : monsterName = M.ReadStringU(M.Read<long>(Address + 0x20));
-
         private MonsterVariety monsterVariety;
-
+        public int Id { get; set; }
+        public string MonsterName => monsterName != null ? monsterName : monsterName = M.ReadStringU(M.Read<long>(Address + 0x20));
         public MonsterVariety MonsterVariety =>
             monsterVariety != null
                 ? monsterVariety
-                : monsterVariety = (MonsterVariety) TheGame.Files.MonsterVarieties.GetByAddress(M.Read<long>(Address + 0x8));
-
-        private BestiaryGroup bestiaryGroup;
-
+                : monsterVariety = TheGame.Files.MonsterVarieties.GetByAddress(M.Read<long>(Address + 0x8));
         public BestiaryGroup BestiaryGroup =>
             bestiaryGroup != null
                 ? bestiaryGroup
-                : bestiaryGroup = (BestiaryGroup) TheGame.Files.BestiaryGroups.GetByAddress(M.Read<long>(Address + 0x18));
-
+                : bestiaryGroup = TheGame.Files.BestiaryGroups.GetByAddress(M.Read<long>(Address + 0x18));
         public long BestiaryEncountersPtr => M.Read<long>(Address + 0x30);
-
-        private BestiaryCapturableMonster bestiaryCapturableMonsterKey;
-
         public BestiaryCapturableMonster BestiaryCapturableMonsterKey =>
             bestiaryCapturableMonsterKey != null
                 ? bestiaryCapturableMonsterKey
                 : bestiaryCapturableMonsterKey =
-                    (BestiaryCapturableMonster) TheGame.Files.BestiaryCapturableMonsters.GetByAddress(M.Read<long>(Address + 0x6a));
-
-        private BestiaryGenus bestiaryGenus;
-
+                    TheGame.Files.BestiaryCapturableMonsters.GetByAddress(M.Read<long>(Address + 0x6a));
         public BestiaryGenus BestiaryGenus =>
             bestiaryGenus != null
                 ? bestiaryGenus
-                : bestiaryGenus = (BestiaryGenus) TheGame.Files.BestiaryGenuses.GetByAddress(M.Read<long>(Address + 0x61));
-
+                : bestiaryGenus = TheGame.Files.BestiaryGenuses.GetByAddress(M.Read<long>(Address + 0x61));
         public int AmountCaptured => TheGame.IngameState.ServerData.GetBeastCapturedAmount(this);
 
-        public override string ToString() =>
-            $"Nane: {MonsterName}, Group: {BestiaryGroup.Name}, Family: {BestiaryGroup.Family.Name}, Captured: {AmountCaptured}";
+        public override string ToString()
+        {
+            return $"Nane: {MonsterName}, Group: {BestiaryGroup.Name}, Family: {BestiaryGroup.Family.Name}, Captured: {AmountCaptured}";
+        }
     }
 }

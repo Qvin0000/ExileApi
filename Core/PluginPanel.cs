@@ -1,31 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.Enums;
+using ExileCore.Shared.Enums;
 using SharpDX;
 
-namespace Exile
+namespace ExileCore
 {
     public class PluginPanel
     {
         private readonly Direction direction;
+        private readonly List<Func<bool>> settings = new List<Func<bool>>();
 
-        public bool Used => settings.Any(x => x.Invoke());
-
-        private List<Func<bool>> settings = new List<Func<bool>>();
-        public void WantUse(Func<bool> enabled) => settings.Add(enabled);
-
-        public PluginPanel(Vector2 startDrawPoint, Direction direction = Direction.Down) : this(direction) =>
+        public PluginPanel(Vector2 startDrawPoint, Direction direction = Direction.Down) : this(direction)
+        {
             StartDrawPoint = startDrawPoint;
+        }
 
-        public PluginPanel(Direction direction = Direction.Down) {
+        public PluginPanel(Direction direction = Direction.Down)
+        {
             this.direction = direction;
             Margin = new Vector2(0, 0);
         }
 
-
+        public bool Used => settings.Any(x => x.Invoke());
         public Vector2 StartDrawPoint { get; set; }
-
         public Vector2 Margin { get; }
+
+        public void WantUse(Func<bool> enabled)
+        {
+            settings.Add(enabled);
+        }
     }
 }

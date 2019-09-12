@@ -1,34 +1,28 @@
 using System;
-using System.Diagnostics;
-using Exile;
-using Exile.PoEMemory.MemoryObjects;
-using Shared.Interfaces;
-using Shared.Static;
+using ExileCore.Shared.Cache;
 using GameOffsets;
-using PoEMemory.Components;
-using Serilog.Core;
 using SharpDX;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class Camera : RemoteMemoryObject
     {
-        private CachedValue<CameraOffsets> _cachedValue;
+        private static Vector2 oldplayerCord;
         private readonly CameraOffsets? _cameraOffsets;
+        private readonly CachedValue<CameraOffsets> _cachedValue;
 
-        public CameraOffsets CameraOffsets => _cachedValue.Value;
-
-
-        public Camera() {
+        public Camera()
+        {
             _cachedValue = new FrameCache<CameraOffsets>(() => M.Read<CameraOffsets>(Address));
+
             _cachedValue.OnUpdate += offsets =>
             {
                 HalfHeight = offsets.Height * 0.5f;
                 HalfWidth = offsets.Width * 0.5f;
-                
             };
         }
 
+        public CameraOffsets CameraOffsets => _cachedValue.Value;
         public int Width => CameraOffsets.Width;
         public int Height => CameraOffsets.Height;
         private float HalfWidth { get; set; }
@@ -36,17 +30,13 @@ namespace PoEMemory
         public Vector2 Size => new Vector2(Width, Height);
         public float ZFar => CameraOffsets.ZFar;
         public Vector3 Position => CameraOffsets.Position;
-
         public string PositionString => Position.ToString();
+
         //cameraarray 0x17c
-
-
         private Matrix Matrix => CameraOffsets.MatrixBytes;
 
-        private static Vector2 oldplayerCord;
-
-
-        public unsafe Vector2 WorldToScreen(Vector3 vec/*, Entity Entity*/) {
+        public unsafe Vector2 WorldToScreen(Vector3 vec /*, Entity Entity*/)
+        {
             try
             {
                 /*

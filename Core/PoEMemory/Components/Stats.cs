@@ -1,40 +1,38 @@
 using System;
 using System.Collections.Generic;
-using Exile;
-using Shared.Static;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
 using GameOffsets;
-using Shared.Enums;
-using Shared.Interfaces;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Stats : Component
     {
-        private CachedValue<StatsComponentOffsets> _cachedValue;
+        private readonly CachedValue<StatsComponentOffsets> _cachedValue;
+        private readonly CachedValue<Dictionary<GameStat, int>> _statDictionary;
+        private readonly Dictionary<string, int> testHumanDictionary = new Dictionary<string, int>();
+        private Dictionary<GameStat, int> testStatDictionary = new Dictionary<GameStat, int>();
+
+        public Stats()
+        {
+            _cachedValue = new FrameCache<StatsComponentOffsets>(() => M.Read<StatsComponentOffsets>(Address));
+            _statDictionary = new FrameCache<Dictionary<GameStat, int>>(ParseStats);
+
+            // _humanDictionary = new FrameCache<Dictionary<string,int>>(HumanStats);
+        }
 
         public new long OwnerAddress => StatsComponent.Owner;
         public StatsComponentOffsets StatsComponent => _cachedValue.Value;
 
-        private CachedValue<Dictionary<GameStat, int>> _statDictionary;
-
         //   private CachedValue<Dictionary<string, int>> _humanDictionary;
         //Stats goes as sequence of 2 values, 4 byte each. First goes stat ID then goes stat value
         public Dictionary<GameStat, int> StatDictionary => _statDictionary.Value;
-        // public Dictionary<string, int> HumanStatictionary => _humanDictionary.Value;
 
+        // public Dictionary<string, int> HumanStatictionary => _humanDictionary.Value;
         public long StatsCount => (StatsComponent.Stats.Last - StatsComponent.Stats.First) / 8;
 
-        public Stats() {
-            _cachedValue = new FrameCache<StatsComponentOffsets>(() => M.Read<StatsComponentOffsets>(Address));
-            _statDictionary = new FrameCache<Dictionary<GameStat, int>>(ParseStats);
-            // _humanDictionary = new FrameCache<Dictionary<string,int>>(HumanStats);
-        }
-
-        private Dictionary<GameStat, int> testStatDictionary = new Dictionary<GameStat, int>();
-        private Dictionary<string, int> testHumanDictionary = new Dictionary<string, int>();
-
-
-        public Dictionary<GameStat, int> ParseStats() {
+        public Dictionary<GameStat, int> ParseStats()
+        {
             if (Address == 0) return testStatDictionary;
 
             var statPtrStart = StatsComponent.Stats.First;
@@ -53,6 +51,7 @@ namespace PoEMemory.Components
             {
                 Core.Logger.Error(
                     $"Stats over capped: {StatsComponent.Stats} Total Stats: {total_stats} Max Stats: {max_stats}");
+
                 return testStatDictionary;
             }
 
@@ -61,6 +60,7 @@ namespace PoEMemory.Components
             testStatDictionary.Clear();
 
             for (var i = 0; i < bytes.Length - 0x04; i += 8)
+            {
                 try
                 {
                     key = BitConverter.ToInt32(bytes, i);
@@ -71,22 +71,29 @@ namespace PoEMemory.Components
                 {
                     throw new Exception($"Stats parse {e}");
                 }
-
+            }
 
             return testStatDictionary;
         }
 
-        public Dictionary<string, int> HumanStats() {
+        public Dictionary<string, int> HumanStats()
+        {
             var dictionary = StatDictionary;
             testHumanDictionary.Clear();
+
             //  var dict = new Dictionary<string, int>(dictionary.Count);
 
             var stats = TheGame.Files.Stats;
+
             if (stats == null)
                 return null;
+
             foreach (var d in dictionary)
+            {
                 if (stats.recordsById.TryGetValue((int) d.Key, out var res))
                     testHumanDictionary[res.Key] = d.Value;
+            }
+
             return testHumanDictionary;
         }
     }

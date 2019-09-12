@@ -1,23 +1,25 @@
 using System;
-using System.Runtime.Serialization;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Enums;
 using GameOffsets;
-using Shared.Interfaces;
-using Shared.Enums;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Map : Component
     {
         private readonly Lazy<MapComponentBase> mapBase;
         private readonly Lazy<MapComponentInner> mapInner;
-        public MapComponentInner MapInformation => mapInner.Value;
-        private CachedValue<WorldArea> _area;
+        private readonly CachedValue<WorldArea> _area;
 
-        public Map() {
+        public Map()
+        {
             mapBase = new Lazy<MapComponentBase>(() => M.Read<MapComponentBase>(Address));
             mapInner = new Lazy<MapComponentInner>(() => M.Read<MapComponentInner>(mapBase.Value.Base));
             _area = new StaticValueCache<WorldArea>(() => TheGame.Files.WorldAreas.GetByAddress(MapInformation.Area));
         }
+
+        public MapComponentInner MapInformation => mapInner.Value;
 
         //  public WorldArea Area => Global.Instance.WorldAreasGetByAddress(M.Read<long>(Address + 0x10, 0x18));
         public WorldArea Area => _area.Value;

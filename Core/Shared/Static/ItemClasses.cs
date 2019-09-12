@@ -1,24 +1,24 @@
 using System.Collections.Generic;
 
-namespace Shared.Static
+namespace ExileCore.Shared.Static
 {
     public class ItemClass
     {
-        public string ClassName { get; set; }
-        public string ClassCategory { get; set; }
-
-        public ItemClass(string className, string classCategory) {
+        public ItemClass(string className, string classCategory)
+        {
             ClassName = className;
             ClassCategory = classCategory;
         }
+
+        public string ClassName { get; set; }
+        public string ClassCategory { get; set; }
     }
 
     public class ItemClasses
     {
-        public IDictionary<string, ItemClass> contents { get; }
-
-        public ItemClasses() =>
-            contents = new Dictionary<string, ItemClass>()
+        public ItemClasses()
+        {
+            contents = new Dictionary<string, ItemClass>
             {
                 {"LifeFlask", new ItemClass("Life Flasks", "Flasks")},
                 {"ManaFlask", new ItemClass("Mana Flasks", "Flasks")},
@@ -69,5 +69,8 @@ namespace Shared.Static
                 {"MiscMapItem", new ItemClass("Misc Map Items", "")},
                 {"Leaguestone", new ItemClass("Leaguestones", "Other")}
             };
+        }
+
+        public IDictionary<string, ItemClass> contents { get; }
     }
 }

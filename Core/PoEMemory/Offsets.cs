@@ -1,17 +1,15 @@
 using System.Collections.Generic;
-using Shared.Helpers;
-using Shared.Interfaces;
-using Shared;
-using Shared.Enums;
+using ExileCore.Shared.Enums;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory
 {
     public class Offsets
     {
         public static Offsets Regular = new Offsets {IgsOffset = 0, IgsDelta = 0, ExeName = "PathOfExile_x64"};
-        public static Offsets Korean = new Offsets { IgsOffset = 0, IgsDelta = 0, ExeName = "Pathofexile_x64_KG" };
-        public static Offsets Steam = new Offsets {IgsOffset = 0x28, IgsDelta = 0, ExeName = "PathOfExile_x64Steam"};
+        public static Offsets Korean = new Offsets {IgsOffset = 0, IgsDelta = 0, ExeName = "Pathofexile_x64_KG"};
 
+        public static Offsets Steam = new Offsets {IgsOffset = 0x28, IgsDelta = 0, ExeName = "PathOfExile_x64Steam"};
         /*
         00007FF7006C7891  | 90                                 | nop                                        |
         00007FF7006C7892  | 48 8B 1D EF 93 06 01               | mov rbx,qword ptr ds:[7FF701730C88]        |
@@ -70,7 +68,8 @@ namespace PoEMemory
             new Pattern(
                 new byte[]
                 {
-                    0x0f, 0xc1 , 0x43, 0x4c, 0x48, 0x8b, 0x5d, 0xd8, 0x8b, 0x05, 0x1e, 0x3f, 0x45, 0x01, 0x89, 0x43, 0x48, 0x49, 0x8b, 0xfe, 0x4c, 0x89, 0x75, 0x20, 0x41, 0x83, 0xcf, 0x20
+                    0x0f, 0xc1, 0x43, 0x4c, 0x48, 0x8b, 0x5d, 0xd8, 0x8b, 0x05, 0x1e, 0x3f, 0x45, 0x01, 0x89, 0x43, 0x48, 0x49, 0x8b, 0xfe, 0x4c,
+                    0x89, 0x75, 0x20, 0x41, 0x83, 0xcf, 0x20
                 }, "xxx?xx??xx????xxxxxxxxx?xxx?", "Area change", 9430000);
 
         /*
@@ -91,7 +90,8 @@ namespace PoEMemory
         private static readonly Pattern GameStatePattern = new Pattern(
             new byte[]
             {
-                0x48, 0x83, 0xec, 0x50, 0x48, 0xc7, 0x44, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x89, 0x9c, 0x24, 0x00, 0x00, 0x00, 0x00, 0x48, 0x8b, 0xf9, 0x33, 0xed, 0x48, 0x39, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0f, 0x85, 0x00, 0x00, 0x00, 0x00,
+                0x48, 0x83, 0xec, 0x50, 0x48, 0xc7, 0x44, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x89, 0x9c, 0x24, 0x00, 0x00, 0x00, 0x00, 0x48,
+                0x8b, 0xf9, 0x33, 0xed, 0x48, 0x39, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0f, 0x85, 0x00, 0x00, 0x00, 0x00
             }, "xxxxxxxx?????xxxx????xxxxxxx????xxx????", "Game State", 1240000);
 
         /*
@@ -100,7 +100,6 @@ namespace PoEMemory
         PathOfExile_x64.exe+118FE3 - 0F94 C0               - sete al
         PathOfExile_x64.exe+118FE6 - 84 C0                 - test al,al
         */
-
         public long AreaChangeCount { get; private set; }
         public long Base { get; private set; }
         public string ExeName { get; private set; }
@@ -111,16 +110,18 @@ namespace PoEMemory
         public long isLoadingScreenOffset { get; private set; }
         public long GameStateOffset { get; private set; }
 
-
-        public Dictionary<OffsetsName, long> DoPatternScans(IMemory m) {
+        public Dictionary<OffsetsName, long> DoPatternScans(IMemory m)
+        {
             var array = m.FindPatterns( /*basePtrPattern,*/
                 fileRootPattern, areaChangePattern, /* isLoadingScreenPattern,*/ GameStatePattern);
 
             var result = new Dictionary<OffsetsName, long>();
+
             //  System.Console.WriteLine("Base Pattern: " + (m.AddressOfProcess + array[0]).ToString("x8"));
 
             var index = 0;
             var baseAddress = m.Process.MainModule.BaseAddress.ToInt64();
+
             //  Base = m.Read<int>(baseAddress + array[index] + 0xF) + array[index] + 0x13; index++;
             //  System.Console.WriteLine("Base Address: " + (Base + m.AddressOfProcess).ToString("x8"));
 
@@ -129,10 +130,12 @@ namespace PoEMemory
 
             FileRoot = m.Read<int>(baseAddress + array[index] + 15) + array[index] + 19;
             index++;
+
             //   System.Console.WriteLine("FileRoot Pointer: " + (FileRoot + m.AddressOfProcess).ToString("x8"));
 
             AreaChangeCount = m.Read<int>(baseAddress + array[index] + 10) + array[index] + 14;
             index++;
+
             // System.Console.WriteLine("AreaChangeCount: " + m.ReadInt(AreaChangeCount + m.AddressOfProcess).ToString());
 
             //    isLoadingScreenOffset = m.Read<int>(baseAddress + array[index] + 0x03) + array[index] + 0x07;
@@ -140,11 +143,13 @@ namespace PoEMemory
             // System.Console.WriteLine("Is Loading Screen Offset:" + (isLoadingScreenOffset + m.AddressOfProcess).ToString("x8"));
 
             GameStateOffset = m.Read<int>(baseAddress + array[index] + 29) + array[index] + 33;
+
             //  System.Console.WriteLine("Game State Offset:" + (GameStateOffset + m.AddressOfProcess).ToString("x8"));
 
             //  result.Add(OffsetsName.Base,Base);
             result.Add(OffsetsName.FileRoot, FileRoot);
             result.Add(OffsetsName.AreaChangeCount, AreaChangeCount);
+
             //   result.Add(OffsetsName.IsLoadingScreenOffset,isLoadingScreenOffset);
             result.Add(OffsetsName.GameStateOffset, GameStateOffset);
             return result;

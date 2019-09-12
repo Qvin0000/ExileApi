@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Interfaces
 {
     public interface ISettingsHolder
     {
@@ -10,7 +10,7 @@ namespace Shared.Interfaces
         string Unique { get; }
         int ID { get; set; }
         Action DrawDelegate { get; set; }
-        void Draw();
         IList<ISettingsHolder> Children { get; }
+        void Draw();
     }
 }

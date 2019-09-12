@@ -1,23 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Basic.Models;
-using Shared.Interfaces;
+using ExileCore.PoEMemory.Models;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class BaseItemTypes : FileInMemory
     {
-        public Dictionary<string, BaseItemType> Contents { get; } = new Dictionary<string, BaseItemType>();
-
-        public BaseItemTypes(IMemory m, Func<long> address) : base(m, address) => LoadItemTypes();
-
         private int tries = 0;
 
-        public BaseItemType Translate(string metadata) {
+        public BaseItemTypes(IMemory m, Func<long> address) : base(m, address)
+        {
+            LoadItemTypes();
+        }
+
+        public Dictionary<string, BaseItemType> Contents { get; } = new Dictionary<string, BaseItemType>();
+
+        public BaseItemType Translate(string metadata)
+        {
             if (Contents.Count == 0) LoadItemTypes();
 
             if (metadata == null) return null;
+
             if (!Contents.TryGetValue(metadata, out var type))
             {
                 Console.WriteLine("Key not found in BaseItemTypes: " + metadata);
@@ -27,10 +32,12 @@ namespace PoEMemory.FilesInMemory
             return type;
         }
 
-        private void LoadItemTypes() {
+        private void LoadItemTypes()
+        {
             foreach (var i in RecordAddresses())
             {
                 var key = M.ReadStringU(M.Read<long>(i));
+
                 var baseItemType = new BaseItemType
                 {
                     ClassName = M.ReadStringU(M.Read<long>(i + 0x10, 0)),
@@ -40,7 +47,9 @@ namespace PoEMemory.FilesInMemory
                     DropLevel = M.Read<int>(i + 0x30),
                     Tags = new string[M.Read<long>(i + 0xA8)]
                 };
+
                 var ta = M.Read<long>(i + 0xB0);
+
                 for (var k = 0; k < baseItemType.Tags.Length; k++)
                 {
                     var ii = ta + 0x8 + 0x10 * k;
@@ -49,14 +58,17 @@ namespace PoEMemory.FilesInMemory
 
                 var tmpTags = key.Split('/');
                 string tmpKey;
+
                 if (tmpTags.Length > 3)
                 {
                     baseItemType.MoreTagsFromPath = new string[tmpTags.Length - 3];
+
                     for (var k = 2; k < tmpTags.Length - 1; k++)
                     {
                         // This Regex and if condition change Item Path Category e.g. TwoHandWeapons
                         // To tag strings type e.g. two_hand_weapon
                         tmpKey = Regex.Replace(tmpTags[k], @"(?<!_)([A-Z])", "_$1").ToLower().Remove(0, 1);
+
                         if (tmpKey[tmpKey.Length - 1] == 's')
                             tmpKey = tmpKey.Remove(tmpKey.Length - 1);
 

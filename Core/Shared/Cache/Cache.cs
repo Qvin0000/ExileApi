@@ -1,26 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.Caching;
-using System.Threading.Tasks;
-using Shared.Cache;
-using PoEMemory;
-using Shared.Helpers;
-using Shared.Interfaces;
+using ExileCore.PoEMemory;
+using ExileCore.Shared.Interfaces;
 
-namespace Shared.Interfaces
+namespace ExileCore.Shared.Cache
 {
     public class Cache
     {
-        public Cache() => CreateCache();
-
-
-        public void CreateCache() {
-            StaticCacheElements = new StaticCache<RemoteMemoryObject>(300, 60, "Elements");
-            StaticCacheComponents = new StaticCache<RemoteMemoryObject>(90, 29, "Components");
-            StaticEntityCache = new StaticCache<RemoteMemoryObject>(60, 30, "Entity");
-            StaticEntityListCache = new StaticCache<RemoteMemoryObject>(60, 30, "Entities parse");
-            StaticServerEntityCache = new StaticCache<RemoteMemoryObject>(90, 30, "Server entities parse");
-            StringCache = new StaticCache<string>(300);
+        public Cache()
+        {
+            CreateCache();
         }
 
         public IStaticCache<RemoteMemoryObject> StaticCacheElements { get; private set; }
@@ -30,8 +17,18 @@ namespace Shared.Interfaces
         public IStaticCache<RemoteMemoryObject> StaticServerEntityCache { get; private set; }
         public IStaticCache<string> StringCache { get; private set; }
 
+        public void CreateCache()
+        {
+            StaticCacheElements = new StaticCache<RemoteMemoryObject>(300, 60, "Elements");
+            StaticCacheComponents = new StaticCache<RemoteMemoryObject>(90, 29, "Components");
+            StaticEntityCache = new StaticCache<RemoteMemoryObject>(60, 30, "Entity");
+            StaticEntityListCache = new StaticCache<RemoteMemoryObject>(60, 30, "Entities parse");
+            StaticServerEntityCache = new StaticCache<RemoteMemoryObject>(90, 30, "Server entities parse");
+            StringCache = new StaticCache<string>(300);
+        }
 
-        public void TryClearCache() {
+        public void TryClearCache()
+        {
             StaticCacheElements.UpdateCache();
             StaticCacheComponents.UpdateCache();
             StaticEntityCache.UpdateCache();

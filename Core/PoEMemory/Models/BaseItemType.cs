@@ -1,7 +1,6 @@
 using System.Text;
 
-
-namespace Basic.Models
+namespace ExileCore.PoEMemory.Models
 {
     public class BaseItemType
     {
@@ -13,9 +12,11 @@ namespace Basic.Models
         public string[] Tags { get; set; }
         public string[] MoreTagsFromPath { get; set; }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             var str = new StringBuilder();
             str.Append("Tags: ");
+
             foreach (var tag in Tags)
             {
                 str.Append(tag);
@@ -23,6 +24,7 @@ namespace Basic.Models
             }
 
             str.Append("More Tags: ");
+
             foreach (var s in MoreTagsFromPath)
             {
                 str.Append(s);

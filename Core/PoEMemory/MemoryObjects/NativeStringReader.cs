@@ -1,11 +1,11 @@
-using Shared.Interfaces;
-using Shared.Static;
+using ExileCore.Shared.Interfaces;
 
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class NativeStringReader
     {
-        public static string ReadString(long address, IMemory M) {
+        public static string ReadString(long address, IMemory M)
+        {
             var Size = M.Read<uint>(address + 0x10);
             var Capacity = M.Read<uint>(address + 0x18);
 
@@ -17,8 +17,8 @@ namespace PoEMemory
                 var readAddr = M.Read<long>(address);
                 return M.ReadStringU(readAddr);
             }
-            else
-                return M.ReadStringU(address);
+
+            return M.ReadStringU(address);
         }
     }
 }

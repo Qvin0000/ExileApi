@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 
-
-namespace PoEMemory
+namespace ExileCore.PoEMemory.MemoryObjects
 {
     public class AreaTemplate : RemoteMemoryObject
     {
@@ -16,10 +15,15 @@ namespace PoEMemory
         public int CorruptedAreasVariety => M.Read<int>(Address + 0xFB);
         public List<WorldArea> PossibleCorruptedAreas => _PossibleCorruptedAreas(Address + 0x103, CorruptedAreasVariety);
 
-        private List<WorldArea> _PossibleCorruptedAreas(long address, int count) {
+        private List<WorldArea> _PossibleCorruptedAreas(long address, int count)
+        {
             var list = new List<WorldArea>();
 
-            for (var i = 0; i < count; i++) list.Add(GetObject<WorldArea>(address + i * 8));
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(GetObject<WorldArea>(address + i * 8));
+            }
+
             return list;
         }
     }

@@ -1,16 +1,20 @@
-using System;
-using Shared.Helpers;
+using ExileCore.Shared.Cache;
+using ExileCore.Shared.Helpers;
 using GameOffsets;
-using Shared.Interfaces;
 using SharpDX;
 
-namespace PoEMemory.Components
+namespace ExileCore.PoEMemory.Components
 {
     public class Render : Component
     {
-        private CachedValue<RenderComponentOffsets> _cachedValue;
+        private readonly CachedValue<RenderComponentOffsets> _cachedValue;
+
+        public Render()
+        {
+            _cachedValue = new FrameCache<RenderComponentOffsets>(() => M.Read<RenderComponentOffsets>(Address));
+        }
+
         public RenderComponentOffsets RenderStruct => _cachedValue.Value;
-        public Render() => _cachedValue = new FrameCache<RenderComponentOffsets>(() => M.Read<RenderComponentOffsets>(Address));
         public float X => Pos.X;
         public float Y => Pos.Y;
         public float Z => Pos.Z;

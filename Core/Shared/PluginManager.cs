@@ -7,15 +7,15 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Exile;
-using Exile.PoEMemory.MemoryObjects;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Helpers;
+using ExileCore.Shared.Interfaces;
+using ExileCore.Shared.Nodes;
 using JM.LinqFaster;
+using Microsoft.CodeDom.Providers.DotNetCompilerPlatform;
 using MoreLinq.Extensions;
-using Shared.Helpers;
-using Shared.Interfaces;
-using Shared.Nodes;
 
-namespace Shared
+namespace ExileCore.Shared
 {
     public class PluginManager
     {
@@ -25,11 +25,10 @@ namespace Shared
         private readonly GameController _gameController;
         private readonly Graphics _graphics;
         private readonly MultiThreadManager _multiThreadManager;
-        public bool AllPluginsLoaded { get; private set; }
-        public string RootDirectory { get; }
-        private Dictionary<string, string> Directories = new Dictionary<string, string>();
-
-        public List<PluginWrapper> Plugins { get; private set; } = new List<PluginWrapper>();
+        private readonly Dictionary<string, string> Directories = new Dictionary<string, string>();
+        private object initLoadLocker = new object();
+        private readonly object lockerLoadAsm = new object();
+        private readonly Dictionary<string, Stopwatch> PluginLoadTime = new Dictionary<string, Stopwatch>();
 
         public PluginManager(GameController gameController, Graphics graphics, MultiThreadManager multiThreadManager)
         {
@@ -39,8 +38,10 @@ namespace Shared
             RootDirectory = AppDomain.CurrentDomain.BaseDirectory;
             Directories["Temp"] = Path.Combine(RootDirectory, PluginsDirectory, "Temp");
             Directories[PluginsDirectory] = Path.Combine(RootDirectory, PluginsDirectory);
+
             Directories[CompiledPluginsDirectory] =
                 Path.Combine(Directories[PluginsDirectory], CompiledPluginsDirectory);
+
             Directories[SourcePluginsDirectory] = Path.Combine(Directories[PluginsDirectory], SourcePluginsDirectory);
             _gameController.EntityListWrapper.EntityAdded += EntityListWrapperOnEntityAdded;
             _gameController.EntityListWrapper.EntityRemoved += EntityListWrapperOnEntityRemoved;
@@ -51,11 +52,13 @@ namespace Shared
             bool parallelLoading = _gameController.Settings.CoreSettings.MultiThreadLoadPlugins;
 
             foreach (var directory in Directories)
+            {
                 if (!Directory.Exists(directory.Value))
                 {
                     DebugWindow.LogMsg($"{directory.Value} doesn't exists, but don't worry i created it for you.");
                     Directory.CreateDirectory(directory.Value);
                 }
+            }
 
             var (compiledPlugins, sourcePlugins) = SearchPlugins();
             List<(Assembly asm, bool source)> assemblies = new List<(Assembly, bool)>();
@@ -64,19 +67,23 @@ namespace Shared
             var task = Task.Run(() =>
             {
                 var compilePluginsFromSource = CompilePluginsFromSource(sourcePlugins);
+
                 lock (locker)
                 {
                     compilePluginsFromSource.ForEach(assembly => assemblies.Add((assembly, true)));
                 }
             });
+
             var task2 = Task.Run(() =>
             {
-                var compiledAssemblies = GetCompiledAssemblies(compiledPlugins,parallelLoading);
+                var compiledAssemblies = GetCompiledAssemblies(compiledPlugins, parallelLoading);
+
                 lock (locker)
                 {
                     compiledAssemblies.Where(x => x != null).ForEach(assembly => assemblies.Add((assembly, false)));
                 }
             });
+
             Task.WaitAll(task, task2);
 
             if (parallelLoading)
@@ -86,6 +93,7 @@ namespace Shared
 
             Plugins = Plugins.OrderBy(x => x.Order).ThenByDescending(x => x.CanBeMultiThreading).ThenBy(x => x.Name)
                 .ToList();
+
             if (parallelLoading)
             {
                 //Pre init some general objects because with multi threading load they can null sometimes for some plugin
@@ -95,13 +103,15 @@ namespace Shared
                 Parallel.ForEach(Plugins, wrapper => InitPlugin(wrapper.Plugin));
             }
             else
-            {
                 Plugins.ForEach(wrapper => InitPlugin(wrapper.Plugin));
-            }
 
             AreaOnOnAreaChange(gameController.Area.CurrentArea);
             AllPluginsLoaded = true;
         }
+
+        public bool AllPluginsLoaded { get; }
+        public string RootDirectory { get; }
+        public List<PluginWrapper> Plugins { get; } = new List<PluginWrapper>();
 
         private List<Assembly> GetCompiledAssemblies(DirectoryInfo[] compiledPlugins, bool parallel)
         {
@@ -112,6 +122,7 @@ namespace Shared
                 Parallel.ForEach(compiledPlugins, info =>
                 {
                     var loadedAssembly = LoadAssembly(info);
+
                     lock (lockerLoadAsm)
                     {
                         results.Add(loadedAssembly);
@@ -130,15 +141,12 @@ namespace Shared
             return results;
         }
 
-        private Dictionary<string, Stopwatch> PluginLoadTime = new Dictionary<string, Stopwatch>();
-
-        private object lockerLoadAsm = new object();
-
         private Assembly LoadAssembly(DirectoryInfo dir)
         {
             try
             {
                 var directoryInfo = new DirectoryInfo(dir.FullName);
+
                 if (!directoryInfo.Exists)
                 {
                     LogError($"Directory - {dir} not found.");
@@ -147,6 +155,7 @@ namespace Shared
 
                 var dll = directoryInfo.GetFiles($"{directoryInfo.Name}*.dll", SearchOption.TopDirectoryOnly)
                     .FirstOrDefault();
+
                 if (dll == null)
                 {
                     LogError($"Not found plugin dll. (Dll {dir.Name} should be like folder)");
@@ -161,15 +170,14 @@ namespace Shared
                 var dllBytes = File.ReadAllBytes(dll.FullName);
 
                 Assembly asm;
+
                 if (pdbExists)
                 {
                     var pdbBytes = File.ReadAllBytes(pdbPath);
                     asm = Assembly.Load(dllBytes, pdbBytes);
                 }
                 else
-                {
                     asm = Assembly.Load(dllBytes);
-                }
 
                 return asm;
             }
@@ -180,63 +188,76 @@ namespace Shared
             }
         }
 
-
         private List<Assembly> CompilePluginsFromSource(DirectoryInfo[] sourcePlugins, bool parallel = true)
         {
             using (CodeDomProvider provider =
-                new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider())
+                new CSharpCodeProvider())
             using (new PerformanceTimer("Compile and load source plugins"))
             {
                 var _compilerSettings = provider.GetType()
                     .GetField("_compilerSettings", BindingFlags.Instance | BindingFlags.NonPublic)
                     .GetValue(provider);
+
                 var _compilerFullPath = _compilerSettings
                     .GetType().GetField("_compilerFullPath", BindingFlags.Instance | BindingFlags.NonPublic);
+
                 _compilerFullPath.SetValue(_compilerSettings,
                     ((string) _compilerFullPath.GetValue(_compilerSettings)).Replace(@"bin\roslyn\", @"roslyn\"));
-                var rootDirInfo = new DirectoryInfo(RootDirectory);
-                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.TopDirectoryOnly)
-                    .WhereF(x => !x.Name.Equals("cimgui.dll") && x.Name.Count(c => c=='-' || c=='_') != 5)
-                    .SelectF(x => x.FullName).ToArray();
 
+                var rootDirInfo = new DirectoryInfo(RootDirectory);
+
+                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.AllDirectories)
+                    .WhereF(x => !x.Name.Equals("cimgui.dll") && x.Name.Count(c => c == '-' || c == '_') != 5)
+                    .SelectF(x => x.FullName).ToArray();
 
                 var results = new List<Assembly>(sourcePlugins.Length);
 
                 if (parallel)
                 {
-                    object innerLocker = new object();;
+                    var innerLocker = new object();
+                    ;
+
                     Parallel.ForEach(sourcePlugins, info =>
                     {
                         using (new PerformanceTimer($"Compile and load source plugin: {info.Name}"))
                         {
                             var csFiles = info.GetFiles("*.cs", SearchOption.AllDirectories).Select(x => x.FullName)
                                 .ToArray();
+
                             var parameters = new CompilerParameters
                             {
                                 GenerateExecutable = false, GenerateInMemory = true,
                                 CompilerOptions = "/optimize /unsafe"
                             };
+
                             parameters.ReferencedAssemblies.AddRange(dllFiles);
                             var csprojPath = Path.Combine(info.FullName, $"{info.Name}.csproj");
+
                             if (File.Exists(csprojPath))
                             {
                                 var readAllLines = File.ReadAllLines(csprojPath);
+
                                 var refer = readAllLines
                                     .WhereF(x =>
                                         x.TrimStart().StartsWith("<Reference Include=") && x.TrimEnd().EndsWith("/>"));
+
                                 var refer2 = readAllLines.Where(x =>
                                     x.TrimStart().StartsWith("<Reference Include=") && x.TrimEnd().EndsWith("\">") &&
                                     x.Contains(","));
+
                                 foreach (var r in refer)
                                 {
                                     var arr = new int[2] {0, 0};
                                     var j = 0;
+
                                     for (var i = 0; i < r.Length; i++)
+                                    {
                                         if (r[i] == '"')
                                         {
                                             arr[j] = i;
                                             j++;
                                         }
+                                    }
 
                                     if (arr[1] != 0)
                                     {
@@ -244,10 +265,12 @@ namespace Shared
                                         parameters.ReferencedAssemblies.Add(dll);
                                     }
                                 }
+
                                 foreach (var r in refer2)
                                 {
                                     var arr = new int[2] {0, 0};
                                     var j = 0;
+
                                     for (var i = 0; i < r.Length; i++)
                                     {
                                         if (r[i] == '"' && j == 0)
@@ -274,6 +297,7 @@ namespace Shared
                             }
 
                             var libsFolder = Path.Combine(info.FullName, "libs");
+
                             if (Directory.Exists(libsFolder))
                             {
                                 var libsDll = Directory.GetFiles(libsFolder, "*.dll");
@@ -287,13 +311,15 @@ namespace Shared
                             if (result.Errors.HasErrors)
                             {
                                 var AllErrors = "";
+
                                 foreach (CompilerError compilerError in result.Errors)
                                 {
                                     AllErrors += compilerError + Environment.NewLine;
-                                    Logger.Log.Error($"{info.Name} -> {compilerError.ToString()}");
+                                    Logger.Log.Error($"{info.Name} -> {compilerError}");
                                 }
 
                                 File.WriteAllText(Path.Combine(info.FullName, "Errors.txt"), AllErrors);
+
                                 // throw new Exception("Offsets file corrupted");
                             }
                             else
@@ -309,36 +335,46 @@ namespace Shared
                 else
                 {
                     foreach (var info in sourcePlugins)
+                    {
                         using (new PerformanceTimer($"Compile and load source plugin: {info.Name}"))
                         {
                             var csFiles = info.GetFiles("*.cs", SearchOption.AllDirectories).Select(x => x.FullName)
                                 .ToArray();
+
                             var parameters = new CompilerParameters
                             {
                                 GenerateExecutable = false, GenerateInMemory = true,
                                 CompilerOptions = "/optimize /unsafe"
                             };
+
                             parameters.ReferencedAssemblies.AddRange(dllFiles);
                             var csprojPath = Path.Combine(info.FullName, $"{info.Name}.csproj");
+
                             if (File.Exists(csprojPath))
                             {
                                 var readAllLines = File.ReadAllLines(csprojPath);
+
                                 var refer = readAllLines
                                     .WhereF(x =>
                                         x.TrimStart().StartsWith("<Reference Include=") && x.TrimEnd().EndsWith("/>"));
+
                                 var refer2 = readAllLines.Where(x =>
                                     x.TrimStart().StartsWith("<Reference Include=") && x.TrimEnd().EndsWith("\">") &&
                                     x.Contains(","));
+
                                 foreach (var r in refer)
                                 {
                                     var arr = new int[2] {0, 0};
                                     var j = 0;
+
                                     for (var i = 0; i < r.Length; i++)
+                                    {
                                         if (r[i] == '"')
                                         {
                                             arr[j] = i;
                                             j++;
                                         }
+                                    }
 
                                     if (arr[1] != 0)
                                     {
@@ -346,10 +382,12 @@ namespace Shared
                                         parameters.ReferencedAssemblies.Add(dll);
                                     }
                                 }
+
                                 foreach (var r in refer2)
                                 {
                                     var arr = new int[2] {0, 0};
                                     var j = 0;
+
                                     for (var i = 0; i < r.Length; i++)
                                     {
                                         if (r[i] == '"' && j == 0)
@@ -376,6 +414,7 @@ namespace Shared
                             }
 
                             var libsFolder = Path.Combine(info.FullName, "libs");
+
                             if (Directory.Exists(libsFolder))
                             {
                                 var libsDll = Directory.GetFiles(libsFolder, "*.dll");
@@ -389,18 +428,21 @@ namespace Shared
                             if (result.Errors.HasErrors)
                             {
                                 var AllErrors = "";
+
                                 foreach (CompilerError compilerError in result.Errors)
                                 {
                                     AllErrors += compilerError + Environment.NewLine;
-                                    Logger.Log.Error($"{info.Name} -> {compilerError.ToString()}");
+                                    Logger.Log.Error($"{info.Name} -> {compilerError}");
                                 }
 
                                 File.WriteAllText(Path.Combine(info.FullName, "Errors.txt"), AllErrors);
+
                                 // throw new Exception("Offsets file corrupted");
                             }
                             else
                                 results.Add(result.CompiledAssembly);
                         }
+                    }
                 }
 
                 return results;
@@ -412,11 +454,14 @@ namespace Shared
             try
             {
                 var dir = asm.ManifestModule.ScopeName.Replace(".dll", "");
+
                 var fullPath =
                     Path.Combine(
                         fromSource ? Directories[SourcePluginsDirectory] : Directories[CompiledPluginsDirectory], dir);
+
                 PluginLoadTime[fullPath] = Stopwatch.StartNew();
                 var types = asm.GetTypes();
+
                 if (types.Length == 0)
                 {
                     LogError($"Not found any types in plugin {fullPath}");
@@ -425,6 +470,7 @@ namespace Shared
 
                 var classesWithIPlugin = types.WhereF(type => typeof(IPlugin).IsAssignableFrom(type));
                 var settings = types.FirstOrDefaultF(type => typeof(ISettings).IsAssignableFrom(type));
+
                 if (settings == null)
                 {
                     LogError("Not found setting class");
@@ -434,6 +480,7 @@ namespace Shared
                 foreach (var type in classesWithIPlugin)
                 {
                     if (type.IsAbstract) continue;
+
                     if (Activator.CreateInstance(type) is IPlugin instance)
                     {
                         var pluginWrapper = new PluginWrapper(instance);
@@ -451,9 +498,6 @@ namespace Shared
                 LogError($"Error when load plugin ({asm.ManifestModule.ScopeName}): {e})");
             }
         }
-
-        private object initLoadLocker = new object();
-
 
         private void OnLoad(IPlugin plugin)
         {
@@ -484,6 +528,7 @@ namespace Shared
                     }
 
                     if (plugin.Initialized) return true;
+
                     plugin._Settings.Enable.OnValueChanged += (obj, value) =>
                     {
                         if (plugin.Initialized)
@@ -507,6 +552,7 @@ namespace Shared
                     {
                         if (plugin.Initialized) return true;
                         plugin.Initialized = plugin.Initialise();
+
                         if (PluginLoadTime.TryGetValue(plugin.DirectoryFullName, out var sw))
                             DebugWindow.LogMsg($"{plugin.Name} loaded in {sw.Elapsed.TotalMilliseconds} ms.", 2);
                         else
@@ -528,6 +574,7 @@ namespace Shared
         private (DirectoryInfo[] CompiledDirectories, DirectoryInfo[] SourceDirectories) SearchPlugins()
         {
             var CompiledDirectories = new DirectoryInfo(Directories[CompiledPluginsDirectory]).GetDirectories();
+
             var SourceDirectories = new DirectoryInfo(Directories[SourcePluginsDirectory]).GetDirectories()
                 .ExceptBy(CompiledDirectories, info => info.Name)
                 .ToArray();
@@ -535,31 +582,39 @@ namespace Shared
             return (CompiledDirectories, SourceDirectories);
         }
 
-
         public void CloseAllPlugin()
         {
-            foreach (var plugin in Plugins) plugin.Close();
+            foreach (var plugin in Plugins)
+            {
+                plugin.Close();
+            }
         }
 
         private void AreaOnOnAreaChange(AreaInstance area)
         {
             foreach (var plugin in Plugins)
+            {
                 if (plugin.IsEnable)
                     plugin.AreaChange(area);
+            }
         }
 
         private void EntityListWrapperOnEntityIgnored(Entity entity)
         {
             foreach (var plugin in Plugins)
+            {
                 if (plugin.IsEnable)
                     plugin.EntityIgnored(entity);
+            }
         }
 
         private void EntityListWrapperOnEntityAddedAny(Entity entity)
         {
             foreach (var plugin in Plugins)
+            {
                 if (plugin.IsEnable)
                     plugin.EntityAddedAny(entity);
+            }
         }
 
         private void EntityListWrapperOnEntityAdded(Entity entity)
@@ -567,29 +622,37 @@ namespace Shared
             if (_gameController.Settings.CoreSettings.AddedMultiThread && _multiThreadManager.ThreadsCount > 0)
             {
                 var listJob = new List<Job>();
+
                 Plugins.WhereF(x => x.IsEnable).Batch(_multiThreadManager.ThreadsCount)
                     .ForEach(wrappers =>
                         listJob.Add(_multiThreadManager.AddJob(() => wrappers.ForEach(x => x.EntityAdded(entity)),
                             "Entity added")));
+
                 _multiThreadManager.Process(this);
                 SpinWait.SpinUntil(() => listJob.AllF(x => x.IsCompleted), 500);
             }
             else
             {
                 foreach (var plugin in Plugins)
+                {
                     if (plugin.IsEnable)
                         plugin.EntityAdded(entity);
+                }
             }
         }
 
         private void EntityListWrapperOnEntityRemoved(Entity entity)
         {
             foreach (var plugin in Plugins)
+            {
                 if (plugin.IsEnable)
                     plugin.EntityRemoved(entity);
+            }
         }
 
-
-        private void LogError(string msg) => DebugWindow.LogError(msg,5);
+        private void LogError(string msg)
+        {
+            DebugWindow.LogError(msg, 5);
+        }
     }
 }
