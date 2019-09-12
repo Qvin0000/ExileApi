@@ -244,7 +244,7 @@ namespace Loader
 
                 var rootDirInfo = new DirectoryInfo(rootDirectory);
 
-                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.AllDirectories)
+                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.TopDirectoryOnly)
                     .Where(x => !x.Name.Equals("cimgui.dll") && x.Name.Count(c => c == '-' || c == '_') != 5)
                     .Select(x => x.FullName).ToArray();
 
@@ -252,9 +252,9 @@ namespace Loader
 
                 Parallel.ForEach(directoryInfos, info =>
                 {
-                    var sw = Stopwatch.StartNew();
                     /*foreach (var info in directoryInfos)
                     {*/
+                    var sw = Stopwatch.StartNew();
                     var csFiles = info.GetFiles("*.cs", SearchOption.AllDirectories).Select(x => x.FullName)
                         .ToArray();
                     var csProj = info.GetFiles("*.csproj", SearchOption.AllDirectories).FirstOrDefault();

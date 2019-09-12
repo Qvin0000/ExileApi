@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOffsets", "GameOffsets\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassiveSkillTreePlanter", "Plugins\Source\PassiveSkillTreePlanter\PassiveSkillTreePlanter.csproj", "{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skill DPS", "Plugins\Source\Skill DPS\Skill DPS.csproj", "{1DF43765-FF6E-478D-8D85-55C07AE137DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +121,10 @@ Global
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +145,7 @@ Global
 		{D13CD5D2-F97F-43EB-962A-116E84B23017} = {CC061825-B447-4124-8467-9B830EB88F4C}
 		{8B098CA6-52E6-4D70-9F00-6802AA2E464F} = {CC061825-B447-4124-8467-9B830EB88F4C}
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E} = {CC061825-B447-4124-8467-9B830EB88F4C}
+		{1DF43765-FF6E-478D-8D85-55C07AE137DE} = {CC061825-B447-4124-8467-9B830EB88F4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5AD7BE45-2243-42A2-9D8F-2C212D20F7E9}
