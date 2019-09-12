@@ -64,7 +64,8 @@ namespace ExileCore
         private double NextCoroutineTime;
         private double NextRender;
         private int ticks;
-
+        private double _targetPcFrameTime;
+        private double _deltaTargetPcFrameTime;
         public Core(RenderForm form)
         {
             try
@@ -170,7 +171,17 @@ namespace ExileCore
         public static Runner MainRunner { get; set; }
         public static Runner ParallelRunner { get; set; }
         public static uint FramesCount { get; private set; }
-        public double TargetPcFrameTime { get; private set; }
+
+        public double TargetPcFrameTime
+        {
+            get => _targetPcFrameTime;
+            private set
+            {
+                _targetPcFrameTime = value;
+                _deltaTargetPcFrameTime =  value / 1000f;
+            }
+        }
+
         public MultiThreadManager MultiThreadManager { get; private set; }
         public static ObservableCollection<DebugInformation> DebugInformations { get; } =
             new ObservableCollection<DebugInformation>();
@@ -555,10 +566,10 @@ namespace ExileCore
                 _coroutineTickDebugInformation.Tick = (float) (_tickEnd - _tickStart);
             }
 
-            _dx11.ImGuiRender.InputUpdate();
 
             if (NextRender <= Time.TotalMilliseconds)
             {
+                _dx11.ImGuiRender.InputUpdate(_totalDebugInformation.Tick*_deltaTargetPcFrameTime);
                 _dx11.Render(TargetPcFrameTime, this);
                 NextRender += TargetPcFrameTime;
                 frameCounter++;

@@ -44,7 +44,7 @@ namespace Loader
 
                 using (var form = new AppForm())
                 {
-                    var CoreDll = Assembly.LoadFrom("ExileCore.dll");
+                    var CoreDll = Assembly.Load("ExileCore");
                     var coreType = CoreDll.GetType("ExileCore.Core", true, true);
                     if (coreType == null) throw new NullReferenceException("Core not found.");
                     var loggerType = CoreDll.GetType("ExileCore.Logger", true, true);
@@ -139,8 +139,20 @@ namespace Loader
             var dllInfo = new FileInfo(dllName);
             var dirInfo = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GameOffsets"));
 
+            if (!dllInfo.Exists && !dirInfo.Exists)
+            {
+                MessageBox.Show("Offsets dll and folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(0);
+                return;
+            }
             if (!dirInfo.Exists)
-                MessageBox.Show("Offsets folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            {
+                if (force)
+                {
+                    MessageBox.Show("Offsets folder not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return;
+            }
 
             var filesNames = dirInfo.GetFiles("*.cs", SearchOption.AllDirectories).Select(x => x.FullName).ToArray();
             var shouldCompile = force;
@@ -214,6 +226,10 @@ namespace Loader
             var pathToSources = Path.Combine(rootDirectory, "Plugins", "Source");
             var directoryInfos = new DirectoryInfo(pathToSources).GetDirectories();
 
+            if (directoryInfos.Length == 0)
+            {
+                MessageBox.Show("Plugins/Source/ is empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             using (CodeDomProvider provider = new CSharpCodeProvider())
             {
                 var _compilerSettings = provider.GetType()
@@ -228,17 +244,25 @@ namespace Loader
 
                 var rootDirInfo = new DirectoryInfo(rootDirectory);
 
-                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.TopDirectoryOnly)
+                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.AllDirectories)
                     .Where(x => !x.Name.Equals("cimgui.dll") && x.Name.Count(c => c == '-' || c == '_') != 5)
                     .Select(x => x.FullName).ToArray();
 
+             
+
                 Parallel.ForEach(directoryInfos, info =>
                 {
+                    var sw = Stopwatch.StartNew();
                     /*foreach (var info in directoryInfos)
                     {*/
                     var csFiles = info.GetFiles("*.cs", SearchOption.AllDirectories).Select(x => x.FullName)
                         .ToArray();
-
+                    var csProj = info.GetFiles("*.csproj", SearchOption.AllDirectories).FirstOrDefault();
+                    if (csProj == null)
+                    {
+                        MessageBox.Show($".csproj for plugin {info.Name} not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                     var compiledDir = info.FullName.Replace("\\Source\\", "\\Compiled\\");
 
                     if (!Directory.Exists(compiledDir))
@@ -344,7 +368,7 @@ namespace Loader
                         File.AppendAllText(Path.Combine(info.FullName, "Errors.txt"), AllErrors);
                     }
                     else
-                        MessageBox.Show($"{info.Name}  >>> Successful <<<");
+                        MessageBox.Show($"{info.Name}  >>> Successful <<< (Working time: {sw.ElapsedMilliseconds} ms.)");
 
                     //}
                 });

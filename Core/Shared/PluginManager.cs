@@ -206,7 +206,7 @@ namespace ExileCore.Shared
 
                 var rootDirInfo = new DirectoryInfo(RootDirectory);
 
-                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.TopDirectoryOnly)
+                var dllFiles = rootDirInfo.GetFiles("*.dll", SearchOption.AllDirectories)
                     .WhereF(x => !x.Name.Equals("cimgui.dll") && x.Name.Count(c => c == '-' || c == '_') != 5)
                     .SelectF(x => x.FullName).ToArray();
 

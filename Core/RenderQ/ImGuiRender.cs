@@ -208,7 +208,6 @@ namespace ExileCore.RenderQ
 
         private void InitializeInputSystem()
         {
-            // _form.MouseMove += (sender, args) => { io.MousePos = new Vector2Num(args.X, args.Y); };
             _form.MouseDown += (sender, args) =>
             {
                 io.MousePos = Input.MousePositionNum;
@@ -314,8 +313,10 @@ namespace ExileCore.RenderQ
         public event EventHandler GetFocus;
         public event EventHandler LostFocus;
 
-        public void InputUpdate()
+        public void InputUpdate(double tick)
         {
+            io = ImGui.GetIO();
+            io.DeltaTime = (float) (tick);
             io.MousePos = Input.MousePositionNum;
             var ioWantCaptureMouse = io.WantCaptureMouse;
             var ioWantCaptureKeyboard = io.WantCaptureKeyboard;

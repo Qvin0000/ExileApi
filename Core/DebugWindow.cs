@@ -50,8 +50,9 @@ namespace ExileCore
 
                     ImGui.SetNextWindowPos(new Vector2(10, 10), ImGuiCond.Appearing);
                     ImGui.SetNextWindowSize(new Vector2(600, 1000), ImGuiCond.Appearing);
-                    ImGui.Begin("Debug log");
-
+                    var openedWindow = settingsCoreSettings.ShowDebugLog.Value;
+                    ImGui.Begin("Debug log",ref openedWindow);
+                    settingsCoreSettings.ShowDebugLog.Value = openedWindow;
                     foreach (var msg in History)
                     {
                         if (msg == null) continue;

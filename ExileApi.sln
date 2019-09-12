@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteBar", "Plugins\Source\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PreloadAlert", "Plugins\Source\PreloadAlert\PreloadAlert.csproj", "{8B098CA6-52E6-4D70-9F00-6802AA2E464F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOffsets", "GameOffsets\GameOffsets.csproj", "{38084BC9-079D-487E-B774-D2F407DC8389}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassiveSkillTreePlanter", "Plugins\Source\PassiveSkillTreePlanter\PassiveSkillTreePlanter.csproj", "{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}"
 EndProject
 Global
@@ -109,6 +111,10 @@ Global
 		{8B098CA6-52E6-4D70-9F00-6802AA2E464F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B098CA6-52E6-4D70-9F00-6802AA2E464F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B098CA6-52E6-4D70-9F00-6802AA2E464F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38084BC9-079D-487E-B774-D2F407DC8389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38084BC9-079D-487E-B774-D2F407DC8389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38084BC9-079D-487E-B774-D2F407DC8389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38084BC9-079D-487E-B774-D2F407DC8389}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU

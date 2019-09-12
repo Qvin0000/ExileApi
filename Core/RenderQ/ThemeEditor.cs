@@ -8,6 +8,9 @@ using ExileCore.Shared.Interfaces;
 using ExileCore.Shared.Nodes;
 using ImGuiNET;
 using Newtonsoft.Json;
+using SharpDX;
+using Vector2 = System.Numerics.Vector2;
+using Vector4 = System.Numerics.Vector4;
 
 namespace ExileCore.RenderQ
 {
