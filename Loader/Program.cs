@@ -277,7 +277,7 @@ namespace Loader
                     };
 
                     parameters.ReferencedAssemblies.AddRange(dllFiles);
-                    var csprojPath = Path.Combine(info.FullName, $"{info.Name}.csproj");
+                    var csprojPath = csProj.FullName;
 
                     if (File.Exists(csprojPath))
                     {
