@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using GameOffsets.Native;
 
 namespace GameOffsets
@@ -15,6 +14,5 @@ namespace GameOffsets
         [FieldOffset(0x11C)] public long LabDataPtr;
         [FieldOffset(0x490)] public long EntityList;
         [FieldOffset(0x498)] public long EntitiesCount;
-
     }
 }

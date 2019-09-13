@@ -18,8 +18,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public float Cooldown => M.Read<int>(Address + 0x58) / 100f; //Converted milliseconds to seconds
         public int SoulsPerUse => M.Read<int>(Address + 0x68);
         public int TotalVaalUses => M.Read<int>(Address + 0x6c);
-        public bool IsOnSkillBar => SkillBarSlot != -1;
-        public int SkillBarSlot => TheGame.IngameState.ServerData.SkillBarIds.IndexOf(Id);
+        public bool IsOnSkillBar => SkillSlotIndex != -1;
+        public int SkillSlotIndex => TheGame.IngameState.ServerData.SkillBarIds.IndexOf(Id);
 
         public string Name
         {
@@ -68,23 +68,6 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
                     return name;
                 }
-            }
-        }
-
-        public int SkillSlotIndex
-        {
-            get
-            {
-                var skillBarIds = TheGame.IngameState.ServerData.SkillBarIds;
-                var id = Id;
-
-                for (var i = 0; i < 8; i++)
-                {
-                    if (skillBarIds[i] == id)
-                        return i;
-                }
-
-                return -1;
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace GameOffsets.Native
 {
@@ -8,7 +7,7 @@ namespace GameOffsets.Native
     {
         public override string ToString()
         {
-            return string.Format("Head: 0x{0}, Size: 0x{1}", this.Head.ToString("X"), this.Size);
+            return string.Format("Head: 0x{0}, Size: 0x{1}", Head.ToString("X"), Size);
         }
 
         public readonly long Head;

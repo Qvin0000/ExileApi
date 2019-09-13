@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using GameOffsets.Native;
 
 namespace GameOffsets
@@ -7,7 +6,6 @@ namespace GameOffsets
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ModsRecordOffsets
     {
-
         [FieldOffset(0x0)] public NativeStringU Key;
         [FieldOffset(0x8)] public long Unknown8;
         [FieldOffset(0x1C)] public int MinLevel;
@@ -34,7 +32,5 @@ namespace GameOffsets
         [FieldOffset(0xB0)] public long tc;
         [FieldOffset(0x1AC)] public byte IsEssence;
         [FieldOffset(0x1C5)] public long Tier;
-
-
     }
 }

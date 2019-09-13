@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using GameOffsets.Native;
 using SharpDX;
 
@@ -10,7 +9,7 @@ namespace GameOffsets
     {
         public const int OffsetBuffers = 0x6EC;
 
-       // [FieldOffset(0x0)] public int vTable;
+        // [FieldOffset(0x0)] public int vTable;
         /* [FieldOffset(0x3c + OffsetBuffers)] public long ChildStart;
         [FieldOffset(0x44 + OffsetBuffers)] public long ChildEnd;
         [FieldOffset(0x94 + OffsetBuffers)] public bool IsVisibleLocal;
@@ -37,7 +36,6 @@ namespace GameOffsets
         [FieldOffset(0x220 )] public float Height;
         [FieldOffset(0x264)] public bool isHighlighted;
         */
-
         [FieldOffset(0x18)] public long SelfPointer; //Usefull for valid check
         [FieldOffset(0x38)] public long ChildStart;
         [FieldOffset(0x38)] public NativePtrArray Childs;
@@ -48,14 +46,16 @@ namespace GameOffsets
         [FieldOffset(0x98)] public Vector2 Position;
         [FieldOffset(0x98)] public float X;
         [FieldOffset(0x9C)] public float Y;
-       // [FieldOffset(0x338)] public long Tooltip;
+
+        // [FieldOffset(0x338)] public long Tooltip;
         [FieldOffset(0x108)] public float Scale;
         [FieldOffset(0x130)] public float Width;
         [FieldOffset(0x134)] public float Height;
-        [FieldOffset(0x178)] public bool isHighlighted; 
-      //  [FieldOffset(0x3CB)] public byte isShadow; //0
-      //  [FieldOffset(0x3C9)] public byte isShadow2; //1
+        [FieldOffset(0x178)] public bool isHighlighted;
 
-      //  [FieldOffset(0x3B0)] public NativeStringU TestString;
+        //  [FieldOffset(0x3CB)] public byte isShadow; //0
+        //  [FieldOffset(0x3C9)] public byte isShadow2; //1
+
+        //  [FieldOffset(0x3B0)] public NativeStringU TestString;
     }
 }

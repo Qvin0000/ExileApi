@@ -85,18 +85,27 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                if (Address == 0) return null;
-                var res = new List<ushort>();
-
+                if (Address == 0) return new List<ushort>();
+                
                 var readAddr = _cachedValue.Value.SkillBarIds;
-                res.Add(readAddr.SkillBar1);
-                res.Add(readAddr.SkillBar2);
-                res.Add(readAddr.SkillBar3);
-                res.Add(readAddr.SkillBar4);
-                res.Add(readAddr.SkillBar5);
-                res.Add(readAddr.SkillBar6);
-                res.Add(readAddr.SkillBar7);
-                res.Add(readAddr.SkillBar8);
+
+                var res = new List<ushort>
+                {
+                    readAddr.SkillBar1,
+                    readAddr.SkillBar2,
+                    readAddr.SkillBar3,
+                    readAddr.SkillBar4,
+                    readAddr.SkillBar5,
+                    readAddr.SkillBar6,
+                    readAddr.SkillBar7,
+                    readAddr.SkillBar8,
+                    readAddr.SkillBar9,
+                    readAddr.SkillBar10,
+                    readAddr.SkillBar11,
+                    readAddr.SkillBar12,
+                    readAddr.SkillBar13
+                };
+
                 return res;
             }
         }
@@ -108,11 +117,11 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 if (Address == 0) return null;
                 var fisrPtr = ServerDataStruct.PassiveSkillIds.First;
                 var endPtr = ServerDataStruct.PassiveSkillIds.Last;
-                var total_stats = (int) (endPtr - fisrPtr);
-                var bytes = M.ReadMem(fisrPtr, total_stats);
+                var totalStats = (int) (endPtr - fisrPtr);
+                var bytes = M.ReadMem(fisrPtr, totalStats);
                 var res = new List<ushort>();
 
-                if (total_stats < 0 || total_stats > 500)
+                if (totalStats < 0 || totalStats > 500)
                     return null;
 
                 for (var i = 0; i < bytes.Length; i += 2)

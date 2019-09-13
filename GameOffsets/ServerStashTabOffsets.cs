@@ -3,7 +3,7 @@ using GameOffsets.Native;
 
 namespace GameOffsets
 {
-    [StructLayout(LayoutKind.Explicit,Pack = 1)]
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ServerStashTabOffsets
     {
         [FieldOffset(0x8)] public NativeStringU Name;

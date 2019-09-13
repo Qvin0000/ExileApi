@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using SharpDX.Windows;
 
@@ -35,7 +36,7 @@ namespace Loader
                 FixImguiCapture?.Invoke();
             };
 
-            Icon = Icon.ExtractAssociatedIcon("textures\\poehud.ico");
+            Icon = Icon.ExtractAssociatedIcon(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "textures\\icon.ico"));
             notifyIcon.Icon = Icon;
             StartPosition = FormStartPosition.Manual;
             Location = new Point(0, 0);
