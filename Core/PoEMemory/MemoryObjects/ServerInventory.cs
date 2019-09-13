@@ -28,11 +28,11 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public int ServerRequestCounter => M.Read<int>(Address + 0xA8);
 
         //   public IEnumerable<InventSlotItem> InventorySlotItems => ReadHashMap(Address + 0x48).Values.ToList();
-        public IList<InventSlotItem> InventorySlotItems => ReadHashMap(Struct.InventorySlotItemsPtr).Values.ToList();
+        public IList<InventSlotItem> InventorySlotItems => ReadHashMap(Struct.InventorySlotItemsPtr, 500).Values.ToList();
         public long Hash => M.Read<long>(Struct.InventorySlotItemsPtr + 0x10);
 
         //  public IList<Entity> Items => ReadHashMap(Address + 0x48).Values.Select(x => x.Item).ToList();
-        public IList<Entity> Items => ReadHashMap(Struct.InventorySlotItemsPtr).Values.Select(x => x.Item).ToList();
+        public IList<Entity> Items => ReadHashMap(Struct.InventorySlotItemsPtr, 500).Values.Select(x => x.Item).ToList();
 
         public InventSlotItem this[int x, int y]
         {
@@ -49,7 +49,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
             }
         }
 
-        public Dictionary<int, InventSlotItem> ReadHashMap(long pointer)
+        public Dictionary<int, InventSlotItem> ReadHashMap(long pointer, int limitMax)
         {
             var result = new Dictionary<int, InventSlotItem>();
 
@@ -74,6 +74,12 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
                 if (!next.IsNull)
                     stack.Push(next);
+
+                if (limitMax-- < 0)
+                {
+                    DebugWindow.LogError("Fixed possible memory leak (ServerInventory.ReadHashMap)");
+                    break;
+                }
             }
 
             return result;
