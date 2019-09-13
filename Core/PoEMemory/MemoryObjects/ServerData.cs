@@ -73,12 +73,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public int TotalAscendencyPoints => ServerDataStruct.TotalAscendencyPoints;
         public int SpentAscendencyPoints => ServerDataStruct.SpentAscendencyPoints;
         public PartyAllocation PartyAllocationType => (PartyAllocation) ServerDataStruct.PartyAllocationType;
-        public string League =>
-            Cache.StringCache.Read($"{nameof(ServerData)}{Address + 0x63F8}", () => NativeStringReader.ReadString(Address + 0x63F8, M));
-        public string League2 => ServerDataStruct.League2.ToString(M);
-        public PartyStatus PartyStatusType => (PartyStatus) M.Read<byte>(Address + 0x65A8);
+        public string League => ServerDataStruct.League.ToString(M);
+        public PartyStatus PartyStatusType => (PartyStatus) this.ServerDataStruct.PartyStatusType;
         public bool IsInGame => NetworkState == NetworkStateE.Connected;
-        public NetworkStateE NetworkState => (NetworkStateE) M.Read<byte>(Address + NetworkStateOff);
+        public NetworkStateE NetworkState => (NetworkStateE) this.ServerDataStruct.NetworkState;
         public int Latency => ServerDataStruct.Latency;
         public string Guild => NativeStringReader.ReadString(M.Read<long>(Address + 0x65B8), M);
         public BetrayalData BetrayalData => GetObject<BetrayalData>(M.Read<long>(Address + 0x3C8, 0x718));
@@ -144,8 +142,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
             if (Address == 0) return null;
             var firstAddr = M.Read<long>(Address + offsetBegin);
             var lastAddr = M.Read<long>(Address + offsetEnd);
-            var len = firstAddr - lastAddr;
-
+            var len = lastAddr - firstAddr;
             if (len <= 0 || len > 2048 || firstAddr <= 0 || lastAddr <= 0)
                 return new List<ServerStashTab>();
 
