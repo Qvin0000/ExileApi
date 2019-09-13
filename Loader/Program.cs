@@ -127,7 +127,12 @@ namespace Loader
                         $"{stringWith15MinusChars} Close hud at {DateTime.Now} {stringWith15MinusChars}");
                 }
                 else
-                    File.WriteAllText("Logs\\Loader.txt", e.ToString());
+                {
+                    var logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+                    var dirinfo = new DirectoryInfo(logDir);
+                    if (!dirinfo.Exists) Directory.CreateDirectory(logDir);
+                    File.WriteAllText(Path.Combine(logDir, "Loader.txt"), e.ToString());
+                }
 
                 MessageBox.Show(e.ToString(), "Error while launching program");
             }
@@ -248,7 +253,7 @@ namespace Loader
                     .Where(x => !x.Name.Equals("cimgui.dll") && x.Name.Count(c => c == '-' || c == '_') != 5)
                     .Select(x => x.FullName).ToArray();
 
-             
+
 
                 Parallel.ForEach(directoryInfos, info =>
                 {

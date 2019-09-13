@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassiveSkillTreePlanter", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skill DPS", "Plugins\Source\Skill DPS\Skill DPS.csproj", "{1DF43765-FF6E-478D-8D85-55C07AE137DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicFlaskRoutine", "Plugins\Source\BasicFlaskRoutine\BasicFlaskRoutine.csproj", "{4EBA974C-AC8C-42A5-B8EE-5AD318B6D961}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,10 @@ Global
 		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DF43765-FF6E-478D-8D85-55C07AE137DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EBA974C-AC8C-42A5-B8EE-5AD318B6D961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EBA974C-AC8C-42A5-B8EE-5AD318B6D961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EBA974C-AC8C-42A5-B8EE-5AD318B6D961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EBA974C-AC8C-42A5-B8EE-5AD318B6D961}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -146,6 +152,7 @@ Global
 		{8B098CA6-52E6-4D70-9F00-6802AA2E464F} = {CC061825-B447-4124-8467-9B830EB88F4C}
 		{CAA01498-5C8A-429F-8BB8-57E29DD05E6E} = {CC061825-B447-4124-8467-9B830EB88F4C}
 		{1DF43765-FF6E-478D-8D85-55C07AE137DE} = {CC061825-B447-4124-8467-9B830EB88F4C}
+		{4EBA974C-AC8C-42A5-B8EE-5AD318B6D961} = {CC061825-B447-4124-8467-9B830EB88F4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5AD7BE45-2243-42A2-9D8F-2C212D20F7E9}
