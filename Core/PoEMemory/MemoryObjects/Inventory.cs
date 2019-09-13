@@ -141,6 +141,14 @@ namespace ExileCore.PoEMemory.MemoryObjects
                         }
 
                         break;
+                    case InventoryType.DelveStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<DelveInventoryItem>());
+                        }
+
+                        break;
                 }
 
                 return list;
@@ -217,6 +225,9 @@ namespace ExileCore.PoEMemory.MemoryObjects
                     if (TotalBoxesInInventoryRow == 24) _cacheInventoryType = InventoryType.QuadStash;
                     _cacheInventoryType = InventoryType.NormalStash;
                     break;
+                case 0x21:
+                    _cacheInventoryType = InventoryType.DelveStash;
+                    break;
                 default:
                     _cacheInventoryType = InventoryType.InvalidInventory;
                     break;
@@ -236,6 +247,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 case InventoryType.CurrencyStash:
                 case InventoryType.EssenceStash:
                 case InventoryType.FragmentStash:
+                case InventoryType.DelveStash:
                     return AsObject<Element>().Parent;
                 case InventoryType.DivinationStash:
                     return GetObject<Element>(M.Read<long>(Address + OffsetBuffers + 0x24, 0x08));

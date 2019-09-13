@@ -226,6 +226,7 @@
     <Compile Include="PoEMemory\Elements\HPbarElement.cs" />
     <Compile Include="PoEMemory\Elements\IncursionWindow.cs" />
     <Compile Include="PoEMemory\Elements\InventoryElement.cs" />
+    <Compile Include="PoEMemory\Elements\InventoryElements\DelveInventoryItem.cs" />
     <Compile Include="PoEMemory\Elements\InventoryElements\CurrencyInventoryItem.cs" />
     <Compile Include="PoEMemory\Elements\InventoryElements\DivinationInventoryItem.cs" />
     <Compile Include="PoEMemory\Elements\InventoryElements\EssenceInventoryItem.cs" />
