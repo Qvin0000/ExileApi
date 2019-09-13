@@ -25,7 +25,7 @@ namespace ExileCore.PoEMemory.Components
         public WorldArea Area => _area.Value;
 
         //   public int Tier => M.Read<int>(Address + 0x10, 0x90);
-        public byte Tier => MapInformation.Tier;
+        public byte Tier => mapBase.Value.Tier;
 
         //   public InventoryTabMapSeries MapSeries => (InventoryTabMapSeries)M.Read<byte>(Address + 0x10, 0x9c);
         public InventoryTabMapSeries MapSeries => (InventoryTabMapSeries) MapInformation.MapSeries;

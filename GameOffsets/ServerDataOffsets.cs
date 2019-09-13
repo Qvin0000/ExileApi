@@ -43,10 +43,16 @@ namespace GameOffsets
         [FieldOffset(0x6C48)] public NativePtrArray GuildStashTabs;
         [FieldOffset(0x6690 - Skip)] public NativePtrArray NearestPlayers;
         [FieldOffset(0x6F30 - Skip)] public NativePtrArray PlayerInventories;
-        [FieldOffset(0x6828 - Skip)] public NativePtrArray NPCInventories;
-        [FieldOffset(0x68E0 - Skip)] public NativePtrArray GuildInventories;
+        [FieldOffset(0x6FF0 - Skip)] public NativePtrArray NPCInventories;
+        [FieldOffset(0x70B0 - Skip)] public NativePtrArray GuildInventories;
         [FieldOffset(0x71F0 - Skip)] public ushort TradeChatChannel;
         [FieldOffset(0x71F8 - Skip)] public ushort GlobalChatChannel;
+        [FieldOffset(0x72C0 - Skip)] public long CompletedMaps;
+        [FieldOffset(0x7340 - Skip)] public long BonusCompletedAreas;
+        [FieldOffset(0x73C0 - Skip)] public long ElderInfluencedAreas;
+        [FieldOffset(0)] public long MasterAreas;
+        [FieldOffset(0)] public long ElderGuardiansAreas;
+        [FieldOffset(0)] public long ShapedAreas;
         [FieldOffset(0x6E77 - Skip)] public ushort LastActionId;
         [FieldOffset(0x7DDC - Skip)] public byte MonsterLevel;
         [FieldOffset(0x7DDD - Skip)] public byte MonstersRemaining;

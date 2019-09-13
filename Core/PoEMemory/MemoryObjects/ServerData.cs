@@ -148,9 +148,11 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         private IList<ServerStashTab> GetStashTabs(int offsetBegin, int offsetEnd)
         {
-            if (Address == 0) return null;
             var firstAddr = M.Read<long>(Address + offsetBegin);
             var lastAddr = M.Read<long>(Address + offsetEnd);
+
+            if (firstAddr <= 0 || lastAddr <= 0) return null;
+            
             var len = lastAddr - firstAddr;
             if (len <= 0 || len > 2048 || firstAddr <= 0 || lastAddr <= 0)
                 return new List<ServerStashTab>();
@@ -172,9 +174,9 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                if (Address == 0) return null;
                 var firstAddr = ServerDataStruct.PlayerInventories.First;
                 var lastAddr = ServerDataStruct.PlayerInventories.Last;
+                if (firstAddr == 0) return null;
 
                 //Sometimes wrong offsets and read 10000000+ objects
                 if (firstAddr == 0 || (lastAddr - firstAddr) / InventoryHolder.StructSize > 1024)
@@ -188,9 +190,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                if (Address == 0) return null;
                 var firstAddr = ServerDataStruct.NPCInventories.First;
                 var lastAddr = ServerDataStruct.NPCInventories.Last;
+                if (firstAddr == 0) return null;
+        
 
                 //Sometimes wrong offsets and read 10000000+ objects
                 if (firstAddr == 0 || (lastAddr - firstAddr) / InventoryHolder.StructSize > 1024)
@@ -204,9 +207,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                if (Address == 0) return null;
                 var firstAddr = ServerDataStruct.GuildInventories.First;
                 var lastAddr = ServerDataStruct.GuildInventories.Last;
+                if (firstAddr == 0) return null;
+           
 
                 //Sometimes wrong offsets and read 10000000+ objects
                 if (firstAddr == 0 || (lastAddr - firstAddr) / InventoryHolder.StructSize > 1024)
@@ -257,26 +261,21 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         #region Completed Areas
 
-        public IList<WorldArea> UnknownAreas => GetAreas(0x6A88);
-        public IList<WorldArea> CompletedAreas => GetAreas(0x6AC8);
-        public IList<WorldArea> ShapedMaps => GetAreas(0x6B08);
-        public IList<WorldArea> BonusCompletedAreas => GetAreas(0x6B48);
-        public IList<WorldArea> ElderGuardiansAreas => GetAreas(0x6B88);
-        public IList<WorldArea> MasterAreas => GetAreas(0x6BC8);
-        public IList<WorldArea> ShaperElderAreas => GetAreas(0x6C08);
+        public IList<WorldArea> CompletedAreas => GetAreas(ServerDataStruct.CompletedMaps);
+        public IList<WorldArea> ShapedMaps => GetAreas(ServerDataStruct.ShapedAreas);
+        public IList<WorldArea> BonusCompletedAreas => GetAreas(ServerDataStruct.BonusCompletedAreas);
+        public IList<WorldArea> ElderGuardiansAreas => GetAreas(ServerDataStruct.ElderGuardiansAreas);
+        public IList<WorldArea> MasterAreas => GetAreas(ServerDataStruct.MasterAreas);
+        public IList<WorldArea> ShaperElderAreas => GetAreas(ServerDataStruct.ElderInfluencedAreas);
 
-        //   public IList<WorldArea> _UniqCompletedMaps => GetAreas(0x6460); //Dunno what is this
-
-        private IList<WorldArea> GetAreas(int offset)
+        private IList<WorldArea> GetAreas(long address)
         {
-            if (Address == 0) return null;
+            if (Address == 0 || address == 0)
+                return null;
+
             var res = new List<WorldArea>();
-
-            if (Address == 0 || offset == 0)
-                return res;
-
-            var size = M.Read<int>(Address + offset - 0x8);
-            var listStart = M.Read<long>(Address + offset);
+            var size = M.Read<int>(address - 0x8);
+            var listStart = M.Read<long>(address);
             var error = 0;
 
             if (listStart == 0 || size == 0)

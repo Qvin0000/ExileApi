@@ -133,8 +133,8 @@ namespace ExileCore
 
             if (size < 0 || size > 100000)
             {
-                // DebugWindow.LogError($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {size}", 3);
-                throw new OverflowException($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {size}");
+                DebugWindow.LogError($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {size}", 3);
+                //throw new OverflowException($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {size}");
                 return result;
             }
 
@@ -146,9 +146,8 @@ namespace ExileCore
                 if (i > 100000)
 
                 {
-                    throw new OverflowException($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {size}");
-
-                    //   Logger.Log.Error($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {i}");
+                    //throw new OverflowException($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {size}");
+                    Logger.Log.Error($"Maybe overflow memory in {nameof(ReadStructsArray)} so much structs {i}");
                 }
             }
 
