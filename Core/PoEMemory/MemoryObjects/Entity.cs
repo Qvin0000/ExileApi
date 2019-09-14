@@ -191,7 +191,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
             }
         }
 
-        public MonsterRarity Rarity => _rarity ??= GetComponent<ObjectMagicProperties>()?.Rarity ?? MonsterRarity.White;
+        public MonsterRarity Rarity => _rarity ?? GetComponent<ObjectMagicProperties>()?.Rarity ?? MonsterRarity.White;
 
         public bool IsOpened
         {
@@ -374,8 +374,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
             }
         }
 
-        public uint Id => (uint) (_id ??= M.Read<uint>(Address + 0x50));
-        public uint InventoryId => _inventoryId ??= M.Read<uint>(Address + 0x68);
+        public uint Id => (uint) (_id ?? M.Read<uint>(Address + 0x50));
+        public uint InventoryId => _inventoryId ?? M.Read<uint>(Address + 0x68);
 
         //public bool IsValid => M.Read<int>(EntityOffsets.Head.MainObject+0x18,0) == 0x65004D;
         public Dictionary<string, long> CacheComp => _cacheComponents2 ?? (_cacheComponents2 = GetComponents());
