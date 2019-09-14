@@ -179,9 +179,9 @@ namespace ExileCore
             DrawFrame(p1.ToVector2Num(), p2.ToVector2Num(), color, 0, thickness, 0);
         }
 
-        public void InitImage(string name, bool textures = true)
+        public bool InitImage(string name, bool textures = true)
         {
-            SpritesRender.LoadPng(textures ? $"textures/{name}" : name);
+            return SpritesRender.LoadPng(textures ? $"textures/{name}" : name)!=null;
         }
 
         public void DisposeTexture(string name)

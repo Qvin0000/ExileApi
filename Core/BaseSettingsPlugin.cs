@@ -99,7 +99,7 @@ namespace ExileCore
 
         public virtual bool Initialise()
         {
-            return false;
+            return true;
         }
 
         public void LogMsg(string msg)

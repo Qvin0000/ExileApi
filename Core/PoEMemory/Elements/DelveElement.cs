@@ -53,7 +53,7 @@ namespace ExileCore.PoEMemory.Elements
 
         public IList<DelveCell> Cells => _cachedValue.Value;
         public long TypePtr => type ?? (type = M.Read<long>(Address + 0x150)).Value;
-        public override string Text => text ??= M.ReadStringU(M.Read<long>(TypePtr + 0x0));
+        public override string Text => text = text ?? M.ReadStringU(M.Read<long>(TypePtr + 0x0));
     }
 
     public class DelveCell : Element
@@ -63,7 +63,7 @@ namespace ExileCore.PoEMemory.Elements
         public string Mods => mods.ToString(M);
         private NativeStringU mines => M.Read<NativeStringU>(M.Read<long>(Address + 0x150) + 0x38);
         public string MinesText => mines.ToString(M);
-        public DelveCellInfoStrings Info => info ??= ReadObjectAt<DelveCellInfoStrings>(0x640);
+        public DelveCellInfoStrings Info => info = info ?? ReadObjectAt<DelveCellInfoStrings>(0x640);
         public string Type => M.ReadStringU(M.Read<long>(Address + 0x650, 0x0));
         public string TypeHuman => M.ReadStringU(M.Read<long>(Address + 0x650, 0x8));
         public override string Text => $"{Info.TestString} [{Info.TestString5}]";
@@ -78,11 +78,11 @@ namespace ExileCore.PoEMemory.Elements
         private string _testString4;
         private string _testString5;
         private string _testStringGood;
-        public string TestString => _testString ??= M.ReadStringU(M.Read<long>(Address));
-        public string TestStringGood => _testStringGood ??= _testString.InsertBeforeUpperCase(Environment.NewLine);
-        public string TestString2 => _testString2 ??= M.ReadStringU(M.Read<long>(Address + 0x8));
-        public string TestString3 => _testString3 ??= M.ReadStringU(M.Read<long>(Address + 0x40));
-        public string TestString4 => _testString4 ??= M.ReadStringU(M.Read<long>(Address + 0x58));
+        public string TestString => _testString = _testString ?? M.ReadStringU(M.Read<long>(Address));
+        public string TestStringGood => _testStringGood = _testStringGood ?? _testString.InsertBeforeUpperCase(Environment.NewLine);
+        public string TestString2 => _testString2 = _testString2 ?? M.ReadStringU(M.Read<long>(Address + 0x8));
+        public string TestString3 => _testString3 = _testString3 ?? M.ReadStringU(M.Read<long>(Address + 0x40));
+        public string TestString4 => _testString4 = _testString4 ?? M.ReadStringU(M.Read<long>(Address + 0x58));
 
         public string TestString5
         {

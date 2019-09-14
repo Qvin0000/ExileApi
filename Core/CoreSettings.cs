@@ -77,5 +77,6 @@ namespace ExileCore
         public ToggleNode ShowDemoWindow { get; set; } = new ToggleNode(false);
         public RangeNode<int> Volume { get; set; } = new RangeNode<int>(100, 0, 100);
         public ToggleNode Enable { get; set; } = new ToggleNode(true);
+        public ToggleNode ForceForeground { get; set; } = new ToggleNode(false);
     }
 }

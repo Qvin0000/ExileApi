@@ -14,7 +14,7 @@
     <AssemblyName>ExileCore</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>8</LangVersion>
+    <LangVersion>default</LangVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -163,6 +163,7 @@
     <Compile Include="AreaController.cs" />
     <Compile Include="AreaInstance.cs" />
     <Compile Include="BaseSettingsPlugin.cs" />
+    <Compile Include="CommandExecutor.cs" />
     <Compile Include="DebugWindow.cs" />
     <Compile Include="EntityListWrapper.cs" />
     <Compile Include="MultiThreadManager.cs" />

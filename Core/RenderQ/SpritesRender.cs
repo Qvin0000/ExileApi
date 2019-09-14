@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SharpDX;
@@ -175,15 +176,21 @@ namespace ExileCore.RenderQ
             return texture;
         }
 
-        public Texture2D LoadPng(string fileName)
+        public ShaderResourceView LoadPng(string fileName)
         {
+            if (_dx11.HasTexture(fileName))
+                return _dx11.GetTexture(fileName);
+            if (!File.Exists(fileName))
+            {
+                DebugWindow.LogError($"{fileName} not found.");
+                return null;
+            }
             var texture = TextureLoader.CreateTexture2DFromBitmap(_dx11.D11Device,
                 TextureLoader.LoadBitmap(imagingFactory2, fileName));
-
             Texture = new ShaderResourceView(_dx11.D11Device, texture);
             _dx11.AddOrUpdateTexture(fileName.Split('/').Last().Split('\\').Last(), Texture);
             texture.Dispose();
-            return texture;
+            return Texture;
         }
 
         public void CreateStates()

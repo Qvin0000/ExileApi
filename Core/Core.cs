@@ -101,11 +101,11 @@ namespace ExileCore
 
                 if (Environment.OSVersion.Version.Major == 6 && Environment.OSVersion.Version.Minor == 1)
                 {
+                    Logger.Information($"SoundController init skipped because win7 issue.");
                 }
                 else
                 {
                     _soundController = new SoundController("Sounds");
-                    Logger.Information($"SoundController init skipped because win7 issue.");
                 }
                 _coreSettings.Volume.OnValueChanged += (sender, i) => { _soundController.SetVolume(i / 100f); };
                 _coreSettings.VSync.OnValueChanged += (obj, b) => { _dx11.VSync = _coreSettings.VSync.Value; };
@@ -159,6 +159,10 @@ namespace ExileCore
                 CoroutineRunnerParallel.Run(coroutine);
                 NextCoroutineTime = Time.TotalMilliseconds;
                 NextRender = Time.TotalMilliseconds;
+                if (pluginManager.Plugins.Count == 0)
+                {
+                    _coreSettings.Enable.Value = true;
+                }
             }
             catch (Exception e)
             {
@@ -242,11 +246,11 @@ namespace ExileCore
                 }
                 else
                 {
-                    var gameControllerIsForeGroundCache = WinApi.IsForegroundWindow(_memory.Process.MainWindowHandle) ||
-                                                          WinApi.IsForegroundWindow(FormHandle);
+                    var isForegroundWindow = WinApi.IsForegroundWindow(_memory.Process.MainWindowHandle) ||
+                                                          WinApi.IsForegroundWindow(FormHandle) || _coreSettings.ForceForeground;
 
-                    IsForeground = gameControllerIsForeGroundCache;
-                    GameController.IsForeGroundCache = gameControllerIsForeGroundCache;
+                    IsForeground = isForegroundWindow;
+                    GameController.IsForeGroundCache = isForegroundWindow;
                 }
 
                 yield return _mainControl2;
