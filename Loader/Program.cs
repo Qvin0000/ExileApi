@@ -42,6 +42,32 @@ namespace Loader
                     }
                 }
 
+                var currentProcess = Process.GetCurrentProcess();
+                var processes = Process.GetProcessesByName(currentProcess.ProcessName);
+
+                if (processes.Length > 1)
+                {
+                    var msgBoxResult = MessageBox.Show("Kill already running HUD process? (program configs will not be saved)",
+                        "Hud process is already running",
+                        MessageBoxButtons.OKCancel);
+
+                    if (msgBoxResult == DialogResult.OK)
+                    {
+                        foreach (var process in processes)
+                        {
+                            if (process.Id != currentProcess.Id)
+                            {
+                                process.Kill();
+                            }
+                        }
+                    }
+                    else if (msgBoxResult == DialogResult.Cancel)
+                    {
+                        Application.Exit();
+                        return;
+                    }
+                }
+
                 using (var form = new AppForm())
                 {
                     var CoreDll = Assembly.Load("ExileCore");
