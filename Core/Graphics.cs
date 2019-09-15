@@ -119,6 +119,11 @@ namespace ExileCore
             ImGuiRender.LowLevelApi.AddRectFilled(p1, p2, color.ToImgui(), rounding);
         }
 
+        public void DrawBox(Vector2 p1, Vector2 p2, Color color, float rounding = 0)
+        {
+            ImGuiRender.LowLevelApi.AddRectFilled(p1.ToVector2Num(), p2.ToVector2Num(), color.ToImgui(), rounding);
+        }
+
         public void DrawImage(string fileName, RectangleF rectangle)
         {
             DrawImage(fileName, rectangle, DefaultUV, Color.White);
@@ -167,6 +172,11 @@ namespace ExileCore
         public void DrawFrame(RectangleF rect, Color color, int thickness)
         {
             DrawFrame(rect.TopLeft.ToVector2Num(), rect.BottomRight.ToVector2Num(), color, 0, thickness, 0);
+        }
+
+        public void DrawFrame(Vector2 p1, Vector2 p2, Color color, int thickness)
+        {
+            DrawFrame(p1.ToVector2Num(), p2.ToVector2Num(), color, 0, thickness, 0);
         }
 
         public void InitImage(string name, bool textures = true)
