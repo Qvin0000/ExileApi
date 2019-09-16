@@ -10,6 +10,7 @@ namespace ExileCore.Shared.Enums
         EssenceStash,
         DivinationStash,
         MapStash,
-        FragmentStash
+        FragmentStash,
+        DelveStash
     }
 }
