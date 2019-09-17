@@ -23,7 +23,7 @@ namespace ExileCore.Shared
         {
             Running = autoStart;
             Started = DateTime.Now;
-
+            Owner = owner;
             switch (condition)
             {
                 case WaitTime _:
@@ -91,6 +91,7 @@ namespace ExileCore.Shared
             Started = DateTime.Now;
             TimeoutForAction = "Not simple -1";
             _enumerator = enumerator;
+            Owner = owner;
         }
 
         public bool IsDone { get; private set; }

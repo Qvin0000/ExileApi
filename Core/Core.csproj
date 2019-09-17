@@ -14,7 +14,7 @@
     <AssemblyName>ExileCore</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>8</LangVersion>
+    <LangVersion>default</LangVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -163,6 +163,7 @@
     <Compile Include="AreaController.cs" />
     <Compile Include="AreaInstance.cs" />
     <Compile Include="BaseSettingsPlugin.cs" />
+    <Compile Include="CommandExecutor.cs" />
     <Compile Include="DebugWindow.cs" />
     <Compile Include="EntityListWrapper.cs" />
     <Compile Include="MultiThreadManager.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="PoEMemory\Components\AttributeRequirements.cs" />
     <Compile Include="PoEMemory\Components\Base.cs" />
     <Compile Include="PoEMemory\Components\Beam.cs" />
+    <Compile Include="PoEMemory\Components\BlightTower.cs" />
     <Compile Include="PoEMemory\Components\Buff.cs" />
     <Compile Include="PoEMemory\Components\Charges.cs" />
     <Compile Include="PoEMemory\Components\Chest.cs" />
@@ -319,6 +321,9 @@
     <Compile Include="PoEMemory\Offsets.cs" />
     <Compile Include="PoEMemory\Pattern.cs" />
     <Compile Include="PoEMemory\RemoteMemoryObject.cs" />
+    <Compile Include="Shared\AtlasHelper\AtlasConfigData.cs" />
+    <Compile Include="Shared\AtlasHelper\AtlasTexture.cs" />
+    <Compile Include="Shared\AtlasHelper\AtlasTexturesProcessor.cs" />
     <Compile Include="Shared\Cache\ValidCache.cs" />
     <Compile Include="Shared\CoroutineTask.cs" />
     <Compile Include="Shared\Enums\AnimationE.cs" />
@@ -453,6 +458,7 @@
     <Compile Include="Shared\WinApi.cs" />
     <Compile Include="SoundController.cs" />
     <Compile Include="Time.cs" />
+    <Compile Include="WorldPositionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -460,7 +466,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PoEMemory\Wrappers\" />
-    <Folder Include="Shared\Structs\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cimgui.dll">
@@ -472,6 +477,107 @@
       <Project>{38084bc9-079d-487e-b774-d2f407dc8389}</Project>
       <Name>GameOffsets</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="textures\bgQ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\cell.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\chest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\circlebg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\css_sprites%285%29.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\currency.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\debuff_panel.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\directions.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\esbar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\esMonster.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\esQ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\gemcutter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\healthbar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\healthbar_bg.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\healthbar_increment.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\hpMonsterSprite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\hpMonsterSpriteMagic.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\hpMonsterSpriteRare.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\hpMonsterSpriteUnique.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\hpQ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\Icons.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\item_icons.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\manaQ.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\menu-background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\menu-colors.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\missing_texture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\openFile.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\preload-end.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\preload-new.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\preload-start.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\sprites.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="textures\tooltip.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -22,7 +22,10 @@ namespace ExileCore.Shared
                 TicksAverage[i] = 0;
             }
 
-            Core.DebugInformations.Add(this);
+            lock (Core.SyncLocker)
+            {
+                Core.DebugInformations.Add(this);
+            }
         }
 
         public DebugInformation(string name, string description, bool main = true) : this(name, main)

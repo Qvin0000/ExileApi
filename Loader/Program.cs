@@ -21,26 +21,18 @@ namespace Loader
             ILogger logger = null;
             var sw = Stopwatch.StartNew();
             var stringWith15MinusChars = new string('-', 15);
-
             try
             {
-                for (var i = 0; i < a.Length; i++)
+                var CoreDll = Assembly.Load("ExileCore");
+                var CommandExecutorType = CoreDll.GetType("ExileCore.CommandExecutor");
+                var ExecuteMethod = CommandExecutorType.GetMethod("Execute");
+                if (a.Length > 0)
                 {
-                    var arg = a[i].ToLower();
-
-                    switch (arg)
-                    {
-                        case "offset":
-                        case "offsets":
-                            CreateOffsets(true);
-                            Application.Exit();
-                            return;
-                        case "compile_plugins":
-                            CompilePluginsIntoDll();
-                            Application.Exit();
-                            return;
-                    }
+                    var arg = a.Aggregate((s, s1) => $"{s.ToLower()} {s1.ToLower()}");
+                    ExecuteMethod.Invoke(null, new object[] {arg});
+                    return;
                 }
+
 
                 var currentProcess = Process.GetCurrentProcess();
                 var processes = Process.GetProcessesByName(currentProcess.ProcessName);
@@ -70,7 +62,7 @@ namespace Loader
 
                 using (var form = new AppForm())
                 {
-                    var CoreDll = Assembly.Load("ExileCore");
+
                     var coreType = CoreDll.GetType("ExileCore.Core", true, true);
                     if (coreType == null) throw new NullReferenceException("Core not found.");
                     var loggerType = CoreDll.GetType("ExileCore.Logger", true, true);
@@ -107,7 +99,7 @@ namespace Loader
                     var instanceCreateNewOffsets =
                         Activator.CreateInstance(performanceTimerType, "Create new offsets", 0, null, true);
 
-                    CreateOffsets();
+                    ExecuteMethod.Invoke(null, new object[] {"loader_offsets"});
                     methodPerfomanceTimerDispose.Invoke(instanceCreateNewOffsets, null);
                     var instanceFormLoad = Activator.CreateInstance(performanceTimerType, "Form Load", 0, null, true);
                     methodPerfomanceTimerDispose.Invoke(instanceFormLoad, null);

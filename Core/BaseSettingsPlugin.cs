@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.AtlasHelper;
 using ExileCore.Shared.Interfaces;
 using Newtonsoft.Json;
 using SharpDX;
@@ -10,8 +13,9 @@ namespace ExileCore
     public abstract class BaseSettingsPlugin<TSettings> : IPlugin where TSettings : ISettings, new()
     {
         private TSettings settings;
+        private AtlasTexturesProcessor _atlasTextures;
 
-        public BaseSettingsPlugin()
+        protected BaseSettingsPlugin()
         {
             InternalName = GetType().Namespace;
             if (string.IsNullOrWhiteSpace(Name)) Name = InternalName;
@@ -73,19 +77,19 @@ namespace ExileCore
             }
         }
 
-        public virtual void EntityAdded(Entity Entity)
+        public virtual void EntityAdded(Entity entity)
         {
         }
 
-        public virtual void EntityAddedAny(Entity Entity)
+        public virtual void EntityAddedAny(Entity entity)
         {
         }
 
-        public virtual void EntityIgnored(Entity Entity)
+        public virtual void EntityIgnored(Entity entity)
         {
         }
 
-        public virtual void EntityRemoved(Entity Entity)
+        public virtual void EntityRemoved(Entity entity)
         {
         }
 
@@ -99,7 +103,7 @@ namespace ExileCore
 
         public virtual bool Initialise()
         {
-            return false;
+            return true;
         }
 
         public void LogMsg(string msg)
@@ -154,5 +158,51 @@ namespace ExileCore
             GameController = gameController;
             Graphics = graphics;
         }
+
+        #region Atlas Images
+
+        public AtlasTexture GetAtlasTexture(string textureName)
+        {
+            if (_atlasTextures == null)
+            {
+                var atlasDirectory = Path.Combine(DirectoryFullName, "textures");
+                var atlasConfigNames = Directory.GetFiles(atlasDirectory, "*.json");
+
+                if (atlasConfigNames.Length == 0)
+                {
+                    LogError($"Plugin '{Name}': Can't find atlas json config file in '{atlasDirectory}' " +
+                             "(expecting config 'from Free texture packer' program)", 20);
+
+                    _atlasTextures = new AtlasTexturesProcessor("%AtlasNotFound%");
+                    return null;
+                }
+
+                var atlasName = Path.GetFileNameWithoutExtension(atlasConfigNames[0]);
+
+                if (atlasConfigNames.Length > 1)
+                {
+                    LogError($"Plugin '{Name}': Found multiple atlas configs in folder '{atlasDirectory}', " +
+                             $"selecting the first one ''{atlasName}''", 20);
+                }
+
+                var atlasTexturePath = Path.Combine(DirectoryFullName, $"textures\\{atlasName}.png");
+
+                if (!File.Exists(atlasTexturePath))
+                {
+                    LogError($"Plugin '{Name}': Can't find atlas png texture file in '{atlasTexturePath}' ", 20);
+                    _atlasTextures = new AtlasTexturesProcessor(atlasName);
+                    return null;
+                }
+
+                _atlasTextures = new AtlasTexturesProcessor(atlasConfigNames[0], atlasTexturePath);
+                Graphics.InitImage(atlasTexturePath, false);
+            }
+
+            var texture = _atlasTextures.GetTextureByName(textureName);
+
+            return texture;
+        }
+
+        #endregion
     }
 }
