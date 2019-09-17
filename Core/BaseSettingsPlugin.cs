@@ -77,19 +77,19 @@ namespace ExileCore
             }
         }
 
-        public virtual void EntityAdded(Entity Entity)
+        public virtual void EntityAdded(Entity entity)
         {
         }
 
-        public virtual void EntityAddedAny(Entity Entity)
+        public virtual void EntityAddedAny(Entity entity)
         {
         }
 
-        public virtual void EntityIgnored(Entity Entity)
+        public virtual void EntityIgnored(Entity entity)
         {
         }
 
-        public virtual void EntityRemoved(Entity Entity)
+        public virtual void EntityRemoved(Entity entity)
         {
         }
 

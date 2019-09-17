@@ -323,6 +323,7 @@ namespace ExileCore.Shared
             plugin.DirectoryName = Plugin.DirectoryName;
             plugin.DirectoryFullName = Plugin.DirectoryFullName;
             plugin._LoadSettings();
+            Plugin.OnPluginDestroyForHotReload();
             Plugin = plugin;
             Onload();
             Initialise(gameController);

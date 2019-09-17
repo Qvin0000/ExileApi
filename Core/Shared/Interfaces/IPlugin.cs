@@ -32,5 +32,6 @@ namespace ExileCore.Shared.Interfaces
         void _LoadSettings();
         void _SaveSettings();
         void LogMsg(string msg);
+        void OnPluginDestroyForHotReload();
     }
 }
