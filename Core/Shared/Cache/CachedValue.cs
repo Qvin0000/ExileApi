@@ -16,8 +16,6 @@ namespace ExileCore.Shared.Cache
         public delegate void CacheUpdateEvent(T t);
 
         protected static Stopwatch sw = Stopwatch.StartNew();
-        public static long GetFromCache;
-        public static long ReadingFromMemory;
         private readonly Func<T> _func;
         private bool _force;
         private T _value;
@@ -42,17 +40,23 @@ namespace ExileCore.Shared.Cache
                         _force = false;
                         _value = _func();
                     }
-
                     OnUpdate?.Invoke(_value);
-                    ReadingFromMemory++;
+                    _updated = true;
+                    return _value;
                 }
                 else
-                    GetFromCache++;
-
+                {
+                    if (!_updated)
+                    {
+                        return _func();
+                    }
+                    
+                }
                 return _value;
             }
         }
 
+        private bool _updated = false;
         public T RealValue => _func();
         public event CacheUpdateEvent OnUpdate;
 

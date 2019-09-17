@@ -4,7 +4,7 @@ namespace ExileCore.Shared.Cache
 {
     public class TimeCache<T> : CachedValue<T>
     {
-        private readonly long _waitMilliseconds;
+        private long _waitMilliseconds;
         private long time;
 
         public TimeCache(Func<T> func, long waitMilliseconds) : base(func)
@@ -13,6 +13,11 @@ namespace ExileCore.Shared.Cache
             _waitMilliseconds = waitMilliseconds;
         }
 
+        public void NewTime(long newTime)
+        {
+            _waitMilliseconds = newTime;
+            time = _waitMilliseconds + sw.ElapsedMilliseconds;
+        }
         protected override bool Update(bool force)
         {
             var nowTime = sw.ElapsedMilliseconds;
