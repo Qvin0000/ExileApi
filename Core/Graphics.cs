@@ -1,4 +1,5 @@
 using ExileCore.RenderQ;
+using ExileCore.Shared.AtlasHelper;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
 using SharpDX;
@@ -142,6 +143,16 @@ namespace ExileCore
         public void DrawImage(string fileName, RectangleF rectangle, RectangleF uv)
         {
             DrawImage(fileName, rectangle, uv, Color.White);
+        }
+
+        public void DrawImage(AtlasTexture atlasTexture, RectangleF rectangle)
+        {
+            DrawImage(atlasTexture, rectangle, Color.White);
+        }
+
+        public void DrawImage(AtlasTexture atlasTexture, RectangleF rectangle, Color color)
+        {
+            SpritesRender.DrawImage(atlasTexture.AtlasFileName, rectangle, atlasTexture.TextureUV, color);
         }
 
         public void DrawImageGui(string fileName, RectangleF rectangle, RectangleF uv)

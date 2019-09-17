@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.AtlasHelper;
 using ExileCore.Shared.Interfaces;
 using Newtonsoft.Json;
 using SharpDX;
@@ -10,8 +13,9 @@ namespace ExileCore
     public abstract class BaseSettingsPlugin<TSettings> : IPlugin where TSettings : ISettings, new()
     {
         private TSettings settings;
+        private AtlasTexturesProcessor _atlasTextures;
 
-        public BaseSettingsPlugin()
+        protected BaseSettingsPlugin()
         {
             InternalName = GetType().Namespace;
             if (string.IsNullOrWhiteSpace(Name)) Name = InternalName;
@@ -154,5 +158,43 @@ namespace ExileCore
             GameController = gameController;
             Graphics = graphics;
         }
+
+        #region Atlas Images
+
+        public AtlasTexture GetAtlasTexture(string textureName)
+        {
+            var atlasTexturePath = Path.Combine(DirectoryFullName, "textures\\atlas.png");
+
+            if (!File.Exists(atlasTexturePath))
+            {
+                LogError($"Plugin '{Name}': Can't find atlas texture file in '{atlasTexturePath}'", 20);
+                return null;
+            }
+
+            var atlasConfigPath = Path.Combine(DirectoryFullName, "textures\\atlas.json");
+
+            if (!File.Exists(atlasConfigPath))
+            {
+                LogError($"Plugin '{Name}': Can't find atlas json config file in '{atlasConfigPath}' (expecting config 'from Free texture packer' program)", 20);
+                return null;
+            }
+
+            if (_atlasTextures == null)
+            {
+                _atlasTextures = new AtlasTexturesProcessor(atlasConfigPath, atlasTexturePath);
+                Graphics.InitImage(atlasTexturePath, false);
+            }
+
+            var texture = _atlasTextures.GetTextureByName(textureName);
+
+            if (texture == null)
+            {
+                LogError($"Plugin '{Name}': Texture with name'{textureName}' is not found in texture atlas.", 20);
+            }
+
+            return texture;
+        }
+
+        #endregion
     }
 }

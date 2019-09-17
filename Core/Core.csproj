@@ -175,6 +175,7 @@
     <Compile Include="PoEMemory\Components\AttributeRequirements.cs" />
     <Compile Include="PoEMemory\Components\Base.cs" />
     <Compile Include="PoEMemory\Components\Beam.cs" />
+    <Compile Include="PoEMemory\Components\BlightTower.cs" />
     <Compile Include="PoEMemory\Components\Buff.cs" />
     <Compile Include="PoEMemory\Components\Charges.cs" />
     <Compile Include="PoEMemory\Components\Chest.cs" />
@@ -320,6 +321,9 @@
     <Compile Include="PoEMemory\Offsets.cs" />
     <Compile Include="PoEMemory\Pattern.cs" />
     <Compile Include="PoEMemory\RemoteMemoryObject.cs" />
+    <Compile Include="Shared\AtlasHelper\AtlasConfigData.cs" />
+    <Compile Include="Shared\AtlasHelper\AtlasTexture.cs" />
+    <Compile Include="Shared\AtlasHelper\AtlasTexturesProcessor.cs" />
     <Compile Include="Shared\Cache\ValidCache.cs" />
     <Compile Include="Shared\CoroutineTask.cs" />
     <Compile Include="Shared\Enums\AnimationE.cs" />
@@ -454,6 +458,7 @@
     <Compile Include="Shared\WinApi.cs" />
     <Compile Include="SoundController.cs" />
     <Compile Include="Time.cs" />
+    <Compile Include="WorldPositionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -461,7 +466,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PoEMemory\Wrappers\" />
-    <Folder Include="Shared\Structs\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cimgui.dll">

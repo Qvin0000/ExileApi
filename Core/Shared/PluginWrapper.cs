@@ -320,10 +320,17 @@ namespace ExileCore.Shared
 
             Close();
             plugin.SetApi(gameController,graphics);
+            plugin.DirectoryName = Plugin.DirectoryName;
+            plugin.DirectoryFullName = Plugin.DirectoryFullName;
             plugin._LoadSettings();
             Plugin = plugin;
             Onload();
             Initialise(gameController);
+
+            foreach (var gameControllerEntity in gameController.Entities)
+            {
+                EntityAdded(gameControllerEntity);
+            }
         }
 
         public override string ToString()

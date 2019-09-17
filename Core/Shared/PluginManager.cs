@@ -371,6 +371,7 @@ namespace ExileCore.Shared
                     return;
                 }
 
+
                 foreach (var type in classesWithIPlugin)
                 {
                     if (type.IsAbstract) continue;
@@ -419,7 +420,7 @@ namespace ExileCore.Shared
                 }
 
                 //TODO DOUBLE LOAD
-                if (Math.Abs((DateTime.UtcNow-wrapper.LastWrite).TotalSeconds)<3)
+                if (Math.Abs((DateTime.UtcNow-wrapper.LastWrite).TotalSeconds)<2)
                     return;
                 wrapper.LastWrite = DateTime.UtcNow;
                 Core.MainRunner.Run(new Coroutine(() =>
@@ -445,7 +446,7 @@ namespace ExileCore.Shared
 
                     if (settings == null)
                     {
-                        LogError("Not found setting class");
+                        LogError($"Not found setting class in plugin {fullPath}");
                         return;
                     }
 
