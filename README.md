@@ -14,9 +14,12 @@ Difference with main fork:
 * .NET 4.8 installed https://dotnet.microsoft.com/download/thank-you/net48
 
 # For developers:
-Build requirements:
-Visual Studio 2019 (with 2017 could be a problems, at least need packages downgrade)
-.NET 4.8 Developer Pack should be installed https://dotnet.microsoft.com/download/thank-you/net48-developer-pack (don't click on languages/packages at the bottom of page, this is language packages, not the main .NET 4.8 DevPack!)
+
+Build requirements
+
+Visual Studio 2019 (with 2017 could be a problems, at least need packages downgrade).
+
+.NET 4.8 Developer Pack should be installed https://dotnet.microsoft.com/download/thank-you/net48-developer-pack (don't click on languages/packages at the bottom of page, this is language packages, not the main .NET 4.8 DevPack!).
 
 Compilation:
 * Create a new folder (HUD for example)
