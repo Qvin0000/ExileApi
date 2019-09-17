@@ -173,7 +173,7 @@ namespace ExileCore
                     LogError($"Plugin '{Name}': Can't find atlas json config file in '{atlasDirectory}' " +
                              "(expecting config 'from Free texture packer' program)", 20);
 
-                    _atlasTextures = new AtlasTexturesProcessor();
+                    _atlasTextures = new AtlasTexturesProcessor("%AtlasNotFound%");
                     return null;
                 }
 
@@ -190,7 +190,7 @@ namespace ExileCore
                 if (!File.Exists(atlasTexturePath))
                 {
                     LogError($"Plugin '{Name}': Can't find atlas png texture file in '{atlasTexturePath}' ", 20);
-                    _atlasTextures = new AtlasTexturesProcessor();
+                    _atlasTextures = new AtlasTexturesProcessor(atlasName);
                     return null;
                 }
 
@@ -199,11 +199,6 @@ namespace ExileCore
             }
 
             var texture = _atlasTextures.GetTextureByName(textureName);
-
-            if (texture == null)
-            {
-                LogError($"Plugin '{Name}': Texture with name'{textureName}' is not found in texture atlas.", 20);
-            }
 
             return texture;
         }

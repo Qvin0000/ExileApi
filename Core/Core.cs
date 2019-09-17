@@ -163,6 +163,8 @@ namespace ExileCore
                 {
                     _coreSettings.Enable.Value = true;
                 }
+
+                Graphics.InitImage("missing_texture.png");
             }
             catch (Exception e)
             {

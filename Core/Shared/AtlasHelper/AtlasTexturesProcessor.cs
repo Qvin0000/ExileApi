@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 using Newtonsoft.Json;
 using SharpDX;
@@ -8,13 +9,22 @@ namespace ExileCore.Shared.AtlasHelper
     internal sealed class AtlasTexturesProcessor
     {
         private readonly Dictionary<string, AtlasTexture> _atlasTextures = new Dictionary<string, AtlasTexture>();
+        private static AtlasTexture _missingTexture;
+        private readonly string _atlasPath;
 
-        public AtlasTexturesProcessor()
+        static AtlasTexturesProcessor()
         {
+            _missingTexture = new AtlasTexture("missing_texture.png", new RectangleF(0, 0, 1, 1), "missing_texture.png");
+        }
+
+        public AtlasTexturesProcessor(string atlasPath)
+        {
+            _atlasPath = atlasPath;
         }
 
         public AtlasTexturesProcessor(string configPath, string atlasPath)
         {
+            _atlasPath = atlasPath;
             LoadConfig(configPath, atlasPath);
         }
 
@@ -56,7 +66,13 @@ namespace ExileCore.Shared.AtlasHelper
 
         public AtlasTexture GetTextureByName(string textureName)
         {
-            return _atlasTextures.TryGetValue(textureName.Replace(".png", string.Empty), out var texture) ? texture : null;
+            if (!_atlasTextures.TryGetValue(textureName.Replace(".png", string.Empty), out var texture))
+            {
+                DebugWindow.LogError($"Texture with name'{textureName}' is not found in texture atlas {_atlasPath}.", 20);
+                texture = _missingTexture;
+            }
+
+            return texture;
         }
     }
 }
