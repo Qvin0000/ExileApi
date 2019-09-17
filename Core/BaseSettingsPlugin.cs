@@ -163,25 +163,38 @@ namespace ExileCore
 
         public AtlasTexture GetAtlasTexture(string textureName)
         {
-            var atlasTexturePath = Path.Combine(DirectoryFullName, "textures\\atlas.png");
-
-            if (!File.Exists(atlasTexturePath))
-            {
-                LogError($"Plugin '{Name}': Can't find atlas texture file in '{atlasTexturePath}'", 20);
-                return null;
-            }
-
-            var atlasConfigPath = Path.Combine(DirectoryFullName, "textures\\atlas.json");
-
-            if (!File.Exists(atlasConfigPath))
-            {
-                LogError($"Plugin '{Name}': Can't find atlas json config file in '{atlasConfigPath}' (expecting config 'from Free texture packer' program)", 20);
-                return null;
-            }
-
             if (_atlasTextures == null)
             {
-                _atlasTextures = new AtlasTexturesProcessor(atlasConfigPath, atlasTexturePath);
+                var atlasDirectory = Path.Combine(DirectoryFullName, "textures");
+                var atlasConfigNames = Directory.GetFiles(atlasDirectory, "*.json");
+
+                if (atlasConfigNames.Length == 0)
+                {
+                    LogError($"Plugin '{Name}': Can't find atlas json config file in '{atlasDirectory}' " +
+                             "(expecting config 'from Free texture packer' program)", 20);
+
+                    _atlasTextures = new AtlasTexturesProcessor();
+                    return null;
+                }
+
+                var atlasName = Path.GetFileNameWithoutExtension(atlasConfigNames[0]);
+
+                if (atlasConfigNames.Length > 1)
+                {
+                    LogError($"Plugin '{Name}': Found multiple atlas configs in folder '{atlasDirectory}', " +
+                             $"selecting the first one ''{atlasName}''", 20);
+                }
+
+                var atlasTexturePath = Path.Combine(DirectoryFullName, $"textures\\{atlasName}.png");
+
+                if (!File.Exists(atlasTexturePath))
+                {
+                    LogError($"Plugin '{Name}': Can't find atlas png texture file in '{atlasTexturePath}' ", 20);
+                    _atlasTextures = new AtlasTexturesProcessor();
+                    return null;
+                }
+
+                _atlasTextures = new AtlasTexturesProcessor(atlasConfigNames[0], atlasTexturePath);
                 Graphics.InitImage(atlasTexturePath, false);
             }
 

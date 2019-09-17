@@ -9,6 +9,10 @@ namespace ExileCore.Shared.AtlasHelper
     {
         private readonly Dictionary<string, AtlasTexture> _atlasTextures = new Dictionary<string, AtlasTexture>();
 
+        public AtlasTexturesProcessor()
+        {
+        }
+
         public AtlasTexturesProcessor(string configPath, string atlasPath)
         {
             LoadConfig(configPath, atlasPath);
