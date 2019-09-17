@@ -8,7 +8,7 @@ Difference with main fork:
 * Plugins can compile from source
 * A lot diagnostic information for easy found performance problem
 * No hooks mouse and keyboard for prevent lag when debug
-* All "standart" plugins cut. (Now they should be like another plugins)
+* All "standard" plugins cut. (Now they should be like another plugins)
 
 # Requirements:
 * .NET 4.8 installed https://dotnet.microsoft.com/download/thank-you/net48
