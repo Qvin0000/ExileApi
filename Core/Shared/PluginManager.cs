@@ -380,7 +380,7 @@ namespace ExileCore.Shared
                         instance.DirectoryName = dir;
                         instance.DirectoryFullName = fullPath;
                         var pluginWrapper = new PluginWrapper(instance);
-                        pluginWrapper.SetApi(_gameController, _graphics);
+                        pluginWrapper.SetApi(_gameController, _graphics, this);
                         pluginWrapper.LoadSettings();
                         pluginWrapper.Onload();
                         var sw = PluginLoadTime[tuple.directoryInfo.FullName];
@@ -455,7 +455,7 @@ namespace ExileCore.Shared
 
                         if (Activator.CreateInstance(type) is IPlugin instance)
                         {
-                            wrapper.ReloadPlugin(instance, _gameController, _graphics);
+                            wrapper.ReloadPlugin(instance, _gameController, _graphics, this);
                         }
                     }
                 }, new WaitTime(1000), null, $"Reload: {firstF}", false){SyncModWork = true});
@@ -570,6 +570,15 @@ namespace ExileCore.Shared
         private void LogError(string msg)
         {
             DebugWindow.LogError(msg, 5);
+        }
+        
+        public void ReceivePluginEvent(string eventId, object args, IPlugin owner)
+        {
+            foreach (var pluginWrapper in Plugins)
+            {
+                if (pluginWrapper.IsEnable && pluginWrapper.Plugin != owner)
+                    pluginWrapper.ReceiveEvent(eventId, args);
+            }
         }
     }
 }

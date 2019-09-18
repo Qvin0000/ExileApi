@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared;
 using ExileCore.Shared.AtlasHelper;
 using ExileCore.Shared.Interfaces;
 using Newtonsoft.Json;
@@ -13,6 +14,7 @@ namespace ExileCore
     {                
         const string TEXTURES_FOLDER = "textures";
         private AtlasTexturesProcessor _atlasTextures;
+        private PluginManager _pluginManager;
 
         protected BaseSettingsPlugin()
         {
@@ -115,6 +117,15 @@ namespace ExileCore
             _SaveSettings();
         }
 
+        public virtual void ReceiveEvent(string eventId, object args)
+        {
+        }
+
+        public void PublishEvent(string eventId, object args)
+        {
+            _pluginManager.ReceivePluginEvent(eventId, args, this);
+        }
+
         public virtual void OnPluginSelectedInMenu()
         {
         }
@@ -147,10 +158,11 @@ namespace ExileCore
         {
         }
 
-        public void SetApi(GameController gameController, Graphics graphics)
+        public void SetApi(GameController gameController, Graphics graphics, PluginManager pluginManager)
         {
             GameController = gameController;
             Graphics = graphics;
+            _pluginManager = pluginManager;
         }
 
         #region Atlas Images

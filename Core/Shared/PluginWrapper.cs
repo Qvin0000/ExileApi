@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Interfaces;
 using ExileCore.Shared.Nodes;
@@ -224,10 +225,10 @@ namespace ExileCore.Shared
             }
         }
 
-        private void LogError(Exception e)
+        private void LogError(Exception e, [CallerMemberName] string methodName = null)
         {
-            var msg = $"{Plugin.Name} -> {e}";
-            DebugWindow.LogError(msg,3);
+            var msg = $"{Plugin.Name}, {methodName} -> {e}";
+            DebugWindow.LogError(msg, 3);
         }
 
         public void EntityIgnored(Entity entity)
@@ -278,9 +279,21 @@ namespace ExileCore.Shared
             }
         }
 
-        public void SetApi(GameController gameController, Graphics graphics)
+        public void ReceiveEvent(string eventId, object args)
         {
-            Plugin.SetApi(gameController, graphics);
+            try
+            {
+                Plugin.ReceiveEvent(eventId, args);
+            }
+            catch (Exception e)
+            {
+                LogError(e);
+            }
+        }
+
+        public void SetApi(GameController gameController, Graphics graphics, PluginManager pluginManager)
+        {
+            Plugin.SetApi(gameController, graphics, pluginManager);
         }
 
         public void LoadSettings()
@@ -308,7 +321,7 @@ namespace ExileCore.Shared
             Plugin.DrawSettings();
         }
 
-        public void ReloadPlugin(IPlugin plugin, GameController gameController, Graphics graphics)
+        public void ReloadPlugin(IPlugin plugin, GameController gameController, Graphics graphics, PluginManager pluginManager)
         {
             var mainRunner = Core.MainRunner;
             var parallelRunner = Core.ParallelRunner;
@@ -319,7 +332,7 @@ namespace ExileCore.Shared
             }
 
             Close();
-            plugin.SetApi(gameController,graphics);
+            plugin.SetApi(gameController,graphics, pluginManager);
             plugin.DirectoryName = Plugin.DirectoryName;
             plugin.DirectoryFullName = Plugin.DirectoryFullName;
             plugin._LoadSettings();
