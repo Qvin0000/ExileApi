@@ -62,7 +62,6 @@ namespace ExileCore.Shared
 
             var (compiledPlugins, sourcePlugins) = SearchPlugins();
             List<(Assembly asm, DirectoryInfo directoryInfo)> assemblies = new List<(Assembly, DirectoryInfo)>();
-            var locker = new object();
 
             Task task = null;
             if (sourcePlugins.Length > 0)

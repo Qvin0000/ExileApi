@@ -9,12 +9,12 @@ namespace ExileCore.Shared.AtlasHelper
     internal sealed class AtlasTexturesProcessor
     {
         private readonly Dictionary<string, AtlasTexture> _atlasTextures = new Dictionary<string, AtlasTexture>();
-        private static AtlasTexture _missingTexture;
+        private static readonly AtlasTexture MISSING_TEXTURE;
         private readonly string _atlasPath;
 
         static AtlasTexturesProcessor()
         {
-            _missingTexture = new AtlasTexture("missing_texture.png", new RectangleF(0, 0, 1, 1), "missing_texture.png");
+            MISSING_TEXTURE = new AtlasTexture("missing_texture.png", new RectangleF(0, 0, 1, 1), "missing_texture.png");
         }
 
         public AtlasTexturesProcessor(string atlasPath)
@@ -69,7 +69,7 @@ namespace ExileCore.Shared.AtlasHelper
             if (!_atlasTextures.TryGetValue(textureName.Replace(".png", string.Empty), out var texture))
             {
                 DebugWindow.LogError($"Texture with name'{textureName}' is not found in texture atlas {_atlasPath}.", 20);
-                texture = _missingTexture;
+                texture = MISSING_TEXTURE;
             }
 
             return texture;
