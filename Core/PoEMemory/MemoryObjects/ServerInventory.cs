@@ -115,7 +115,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public class InventSlotItem : RemoteMemoryObject
         {
             public Vector2 InventoryPosition => Location.InventoryPosition;
-            private ItemMinMaxLocation Location => M.Read<ItemMinMaxLocation>(Address + 0x08, 0x0C * sizeof(int));
+            private ItemMinMaxLocation Location => M.Read<ItemMinMaxLocation>(Address + 0x08);
             public Entity Item => ReadObject<Entity>(Address);
             public int PosX => M.Read<int>(Address + 0x8);
             public int PosY => M.Read<int>(Address + 0xc);
