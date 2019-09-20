@@ -1,4 +1,5 @@
 using ExileCore.RenderQ;
+using ExileCore.Shared.AtlasHelper;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
 using SharpDX;
@@ -144,6 +145,16 @@ namespace ExileCore
             DrawImage(fileName, rectangle, uv, Color.White);
         }
 
+        public void DrawImage(AtlasTexture atlasTexture, RectangleF rectangle)
+        {
+            DrawImage(atlasTexture, rectangle, Color.White);
+        }
+
+        public void DrawImage(AtlasTexture atlasTexture, RectangleF rectangle, Color color)
+        {
+            SpritesRender.DrawImage(atlasTexture.AtlasFileName, rectangle, atlasTexture.TextureUV, color);
+        }
+
         public void DrawImageGui(string fileName, RectangleF rectangle, RectangleF uv)
         {
             ImGuiRender.DrawImage(fileName, rectangle, uv);
@@ -179,9 +190,9 @@ namespace ExileCore
             DrawFrame(p1.ToVector2Num(), p2.ToVector2Num(), color, 0, thickness, 0);
         }
 
-        public void InitImage(string name, bool textures = true)
+        public bool InitImage(string name, bool textures = true)
         {
-            SpritesRender.LoadPng(textures ? $"textures/{name}" : name);
+            return SpritesRender.LoadPng(textures ? $"textures/{name}" : name)!=null;
         }
 
         public void DisposeTexture(string name)

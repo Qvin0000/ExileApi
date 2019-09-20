@@ -38,9 +38,10 @@ namespace ExileCore
         private readonly Stack<Entity> Simple = new Stack<Entity>(512);
         private readonly Coroutine updateEntity;
         private readonly EntityCollectSettingsContainer entityCollectSettingsContainer;
-
+        private static EntityListWrapper _instance;
         public EntityListWrapper(GameController gameController, CoreSettings settings, MultiThreadManager multiThreadManager)
         {
+            _instance = this;
             this.gameController = gameController;
             _settings = settings;
 
@@ -322,9 +323,9 @@ namespace ExileCore
 
         public event EventHandler<Entity> PlayerUpdate;
 
-        public Entity GetEntityById(uint id)
+        public static Entity GetEntityById(uint id)
         {
-            return entityCache.TryGetValue(id, out var result) ? result : null;
+            return _instance.entityCache.TryGetValue(id, out var result) ? result : null;
         }
 
         public string GetLabelForEntity(Entity entity)

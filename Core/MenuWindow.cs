@@ -41,6 +41,8 @@ namespace ExileCore
         private readonly ThemeEditor themeEditor;
         private readonly Array WindowsName;
 
+        public static bool IsOpened;
+
         public MenuWindow(Core core, SettingsContainer settingsContainer, Dictionary<string, FontContainer> fonts)
         {
             this.core = core;
@@ -211,6 +213,8 @@ namespace ExileCore
                 }
             }
 
+
+            IsOpened = _CoreSettings.Enable;
             if (!_CoreSettings.Enable) return;
 
             ImGui.PushFont(core.Graphics.Font.Atlas);

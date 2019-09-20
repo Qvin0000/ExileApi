@@ -25,39 +25,39 @@ namespace GameOffsets
     public struct ServerDataOffsets
     {
         public const int Skip = 0x5000;
-        [FieldOffset(0x6BA8 - Skip)] public NativeStringU League;
-        [FieldOffset(0x6AF0 - Skip)] public NativePtrArray PassiveSkillIds;
-        [FieldOffset(0x6B60 - Skip)] public byte PlayerClass;
-        [FieldOffset(0x6B44 - Skip)] public int CharacterLevel;
-        [FieldOffset(0x6B48 - Skip)] public int PassiveRefundPointsLeft;
-        [FieldOffset(0x6B4C - Skip)] public int QuestPassiveSkillPoints;
-        [FieldOffset(0x63D0 - Skip)] public int FreePassiveSkillPointsLeft;
-        [FieldOffset(0x6B54 - Skip)] public int TotalAscendencyPoints;
-        [FieldOffset(0x6B58 - Skip)] public int SpentAscendencyPoints;
-        [FieldOffset(0x6D58 - Skip)] public byte PartyStatusType;
-        [FieldOffset(0x6B80 - Skip)] public byte NetworkState;
-        [FieldOffset(0x6D78 - Skip)] public byte PartyAllocationType;
-        [FieldOffset(0x6C18 - Skip)] public float TimeInGame;
-        [FieldOffset(0x6C20 - Skip)] public int Latency;
-        [FieldOffset(0x6C30)] public NativePtrArray PlayerStashTabs;
-        [FieldOffset(0x6C48)] public NativePtrArray GuildStashTabs;
-        [FieldOffset(0x6690 - Skip)] public NativePtrArray NearestPlayers;
-        [FieldOffset(0x6F30 - Skip)] public NativePtrArray PlayerInventories;
-        [FieldOffset(0x6FF0 - Skip)] public NativePtrArray NPCInventories;
-        [FieldOffset(0x70B0 - Skip)] public NativePtrArray GuildInventories;
-        [FieldOffset(0x71F0 - Skip)] public ushort TradeChatChannel;
-        [FieldOffset(0x71F8 - Skip)] public ushort GlobalChatChannel;
-        [FieldOffset(0x72C0 - Skip)] public long CompletedMaps;
-        [FieldOffset(0x7340 - Skip)] public long BonusCompletedAreas;
-        [FieldOffset(0x73C0 - Skip)] public long ElderInfluencedAreas;
+        [FieldOffset(0x6C28 - Skip)] public NativeStringU League;
+        [FieldOffset(0x6B70 - Skip)] public NativePtrArray PassiveSkillIds;
+        [FieldOffset(0x6BC0 - Skip)] public byte PlayerClass;
+        [FieldOffset(0x6BC4 - Skip)] public int CharacterLevel;
+        [FieldOffset(0x6BC8 - Skip)] public int PassiveRefundPointsLeft;
+        [FieldOffset(0x6BCC - Skip)] public int QuestPassiveSkillPoints;
+        [FieldOffset(0x63D0 - Skip)] public int FreePassiveSkillPointsLeft;//TODO: 3.8.1 fix me
+        [FieldOffset(0x6BD4 - Skip)] public int TotalAscendencyPoints;
+        [FieldOffset(0x6BD8 - Skip)] public int SpentAscendencyPoints;
+        [FieldOffset(0x6DD8 - Skip)] public byte PartyStatusType;
+        [FieldOffset(0x6C00 - Skip)] public byte NetworkState;
+        [FieldOffset(0x6DF8 - Skip)] public byte PartyAllocationType;
+        [FieldOffset(0x6C98 - Skip)] public float TimeInGame;
+        [FieldOffset(0x6CA0 - Skip)] public int Latency;
+        [FieldOffset(0x6CB0 - Skip)] public NativePtrArray PlayerStashTabs;
+        [FieldOffset(0x6CC8 - Skip)] public NativePtrArray GuildStashTabs;
+        [FieldOffset(0x6EC0 - Skip)] public NativePtrArray NearestPlayers;
+        [FieldOffset(0x6FB0 - Skip)] public NativePtrArray PlayerInventories;
+        [FieldOffset(0x7070 - Skip)] public NativePtrArray NPCInventories;
+        [FieldOffset(0x7130 - Skip)] public NativePtrArray GuildInventories;
+        [FieldOffset(0x7270 - Skip)] public ushort TradeChatChannel;
+        [FieldOffset(0x7278 - Skip)] public ushort GlobalChatChannel;
+        [FieldOffset(0x7340 - Skip)] public long CompletedMaps;
+        [FieldOffset(0x73C0 - Skip)] public long BonusCompletedAreas;
+        [FieldOffset(0x7440 - Skip)] public long ElderInfluencedAreas;
         [FieldOffset(0)] public long MasterAreas;
-        [FieldOffset(0)] public long ElderGuardiansAreas;
-        [FieldOffset(0)] public long ShapedAreas;
-        [FieldOffset(0x6E77 - Skip)] public ushort LastActionId;
-        [FieldOffset(0x7DDC - Skip)] public byte MonsterLevel;
-        [FieldOffset(0x7DDD - Skip)] public byte MonstersRemaining;
-        [FieldOffset(0x7644 - Skip)] public ushort CurrentSulphiteAmount;
-        [FieldOffset(0x7650 - Skip)] public int CurrentAzuriteAmount;
-        [FieldOffset(0x6DE8 - Skip)] public SkillBarIdsStruct SkillBarIds;
+        [FieldOffset(0x7400 - Skip)] public long ElderGuardiansAreas; //Maybe wrong not tested
+        [FieldOffset(0x7380 - Skip)] public long ShapedAreas; //Maybe wrong not tested
+        [FieldOffset(0x6E77 - Skip)] public ushort LastActionId;//Do we need this?
+        [FieldOffset(0x7E5C - Skip)] public byte MonsterLevel;
+        [FieldOffset(0x7E5D - Skip)] public byte MonstersRemaining;
+        [FieldOffset(0x7F10 - Skip)] public ushort CurrentSulphiteAmount; //Maybe wrong not tested
+        [FieldOffset(0x7F00 - Skip)] public int CurrentAzuriteAmount;
+        [FieldOffset(0x6E68 - Skip)] public SkillBarIdsStruct SkillBarIds;
     }
 }

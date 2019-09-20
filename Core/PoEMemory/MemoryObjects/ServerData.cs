@@ -274,7 +274,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 return null;
 
             var res = new List<WorldArea>();
-            var size = M.Read<int>(address - 0x8);
+            var size = M.Read<int>(Address - 0x8);
             var listStart = M.Read<long>(address);
             var error = 0;
 

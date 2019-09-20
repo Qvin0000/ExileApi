@@ -1,17 +1,23 @@
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Cache;
+using GameOffsets;
+
 namespace ExileCore.PoEMemory.Components
 {
-    public class DeployedObject
+    public class DeployedObject : RemoteMemoryObject
     {
-        internal DeployedObject(uint objId, ushort objectKey)
+        private readonly FrameCache<ActorDeployedObject> cacheValue;
+        private Entity _entity;
+        public DeployedObject()
         {
-            ObjectId = objId;
-            ObjectKey = objectKey;
+            cacheValue = new FrameCache<ActorDeployedObject>(() => M.Read<ActorDeployedObject>(Address));
         }
 
-        public uint ObjectId { get; }
-        public ushort ObjectKey { get; }
+        private ActorDeployedObject Struct => cacheValue.Value;
+        public ushort ObjectId => Struct.ObjectId;
+        public ushort SkillKey => Struct.SkillId;
 
-        // public Entity Entity => ObjectManager.Instance.GameController.EntityListWrapper.GetEntityById(ObjectKey);
+        public Entity Entity => _entity ?? (_entity = EntityListWrapper.GetEntityById(ObjectId));
         //public ActorSkill Skill => ObjectManager.Instance.GameController.Player.GetComponent<Actor>().ActorSkills.Find(x => x.Id == ObjectKey);
     }
 }

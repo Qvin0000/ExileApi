@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="ActionWrapperOffsets.cs" />
     <Compile Include="ActorComponentOffsets.cs" />
+    <Compile Include="ActorDeployedObject.cs" />
     <Compile Include="BuffOffsets.cs" />
     <Compile Include="BuffStringOffsets.cs" />
     <Compile Include="CameraOffsets.cs" />

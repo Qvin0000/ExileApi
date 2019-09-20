@@ -48,7 +48,7 @@ namespace ExileCore.PoEMemory
                 AllFiles = FilesFromMemory.GetAllFiles();
             }
 
-            Task.Run(() =>
+            /*Task.Run(() =>
             {
                 using (new PerformanceTimer("Preload stats and mods"))
                 {
@@ -56,7 +56,7 @@ namespace ExileCore.PoEMemory
                     var test2 = Mods.records.Count;
                     ParseFiles(AllFiles);
                 }
-            });
+            });*/
         }
 
         public ItemClasses ItemClasses { get; }

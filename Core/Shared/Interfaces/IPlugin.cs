@@ -22,15 +22,16 @@ namespace ExileCore.Shared.Interfaces
         Job Tick();
         void Render();
         void OnClose();
-        void SetApi(object gameController, object graphics);
-        void OnPluginSelectedInMenu();
-        void EntityAdded(Entity Entity);
-        void EntityRemoved(Entity Entity);
-        void EntityAddedAny(Entity Entity);
-        void EntityIgnored(Entity Entity);
+        void SetApi(GameController gameController, Graphics graphics, PluginManager pluginManager);
+        void OnPluginSelectedInMenu();//TODO: Implement me
+        void EntityAdded(Entity entity);
+        void EntityRemoved(Entity entity);
+        void EntityAddedAny(Entity entity);
+        void EntityIgnored(Entity entity);
         void AreaChange(AreaInstance area);
+        void ReceiveEvent(string eventId, object args);
         void _LoadSettings();
         void _SaveSettings();
-        void LogMsg(string msg);
+        void OnPluginDestroyForHotReload();
     }
 }

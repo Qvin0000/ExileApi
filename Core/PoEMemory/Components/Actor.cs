@@ -60,11 +60,14 @@ namespace ExileCore.PoEMemory.Components
             {
                 var result = new List<DeployedObject>();
 
+                if ((Struct.DeployedObjectArray.Last - Struct.DeployedObjectArray.First) / 8 > 300)
+                {
+                    return result;
+                }
+
                 for (var addr = Struct.DeployedObjectArray.First; addr < Struct.DeployedObjectArray.Last; addr += 8)
                 {
-                    var objectId = M.Read<uint>(addr);
-                    var objectKey = M.Read<ushort>(addr + 4); //in list of entities
-                    result.Add(new DeployedObject(objectId, objectKey));
+                    result.Add(GetObject<DeployedObject>(addr));
                 }
 
                 return result;
