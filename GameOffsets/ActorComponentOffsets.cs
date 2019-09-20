@@ -25,6 +25,7 @@ namespace GameOffsets
         // Broken Offset, remove comment on fixup.
         // [FieldOffset(0x418)] public NativePtrArray ActorVaalSkills;
         // [FieldOffset(0x438)] public NativePtrArray HasMinionArray;
+
         [FieldOffset(0x450)] public NativePtrArray DeployedObjectArray;
     }
 }
