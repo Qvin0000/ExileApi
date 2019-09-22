@@ -47,11 +47,6 @@ namespace ExileCore
         public static Vector2 MousePosition { get; private set; }
         public static System.Numerics.Vector2 MousePositionNum => MousePosition.ToVector2Num();
 
-        public static bool IsKeyDown(int nVirtKey)
-        {
-            return IsKeyDown((Keys) nVirtKey);
-        }
-
         public static bool IsKeyDown(Keys nVirtKey)
         {
 #if DebugKeys
@@ -64,7 +59,7 @@ namespace ExileCore
 
         public static bool GetKeyState(Keys key)
         {
-            return WinApi.GetKeyState(key) < 0;
+            return WinApi.GetKeyState(key) != WinApi.KeyState.Unpressed;
         }
 
         public static void RegisterKey(Keys key)
@@ -83,6 +78,8 @@ namespace ExileCore
 
         public static void Update(IntPtr windowPtr)
         {
+            var result = WinApi.GetKeyState(System.Windows.Forms.Keys.LButton);
+            DebugWindow.LogMsg($"Pressed state: {result}, ushort: {(ushort)result}");
             MousePosition = WinApi.GetCursorPosition(windowPtr);
 
             try

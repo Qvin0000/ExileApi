@@ -123,7 +123,7 @@ namespace ExileCore.Shared
         public static extern bool ScreenToClient(IntPtr hWnd, ref Point lpPoint);
 
         [DllImport("USER32.dll")]
-        public static extern short GetKeyState(Keys vKey);
+        internal static extern KeyState GetKeyState(Keys vKey);
 
         [DllImport("user32.dll")]
         public static extern short GetAsyncKeyState(Keys vKey);
@@ -204,6 +204,14 @@ namespace ExileCore.Shared
             {
                 return new Rectangle(point.X, point.Y, right - left, bottom - top);
             }
+        }
+
+        [Flags]
+        internal enum KeyState : ushort
+        {
+            Unpressed = 0,
+            Toggle = 1,
+            Pressed = 0xFF80
         }
     }
 }
