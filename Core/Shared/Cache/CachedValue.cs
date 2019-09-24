@@ -21,7 +21,7 @@ namespace ExileCore.Shared.Cache
         private T _value;
 
         //private object obj;
-        public CachedValue(Func<T> func)
+        protected CachedValue(Func<T> func)
         {
             _func = func ?? throw new ArgumentNullException(nameof(func), "Cached Value ctor null function");
             Interlocked.Increment(ref TotalCount);

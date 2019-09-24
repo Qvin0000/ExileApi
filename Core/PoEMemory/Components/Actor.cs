@@ -132,9 +132,9 @@ namespace ExileCore.PoEMemory.Components
             public float DestinationX => Struct.Destination.X;
             public float DestinationY => Struct.Destination.Y;
             public Vector2 Destination => Struct.Destination;
-            public Entity Target => ReadObject<Entity>(Struct.Target);
+            public Entity Target => GetObject<Entity>(Struct.Target);
             public Vector2 CastDestination => new Vector2(DestinationX, DestinationY);
-            public ActorSkill Skill => ReadObject<ActorSkill>(Struct.Skill);
+            public ActorSkill Skill => GetObject<ActorSkill>(Struct.Skill);
         }
     }
 }
