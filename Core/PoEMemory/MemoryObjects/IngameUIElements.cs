@@ -35,8 +35,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
             _DelveWindow ?? (_DelveWindow = GetObject<SubterraneanChart>(IngameUIElementsStruct.DelveWindow));
         public SkillBarElement SkillBar => GetObject<SkillBarElement>(IngameUIElementsStruct.SkillBar);
         public SkillBarElement HiddenSkillBar => GetObject<SkillBarElement>(IngameUIElementsStruct.HiddenSkillBar);
-        public PoeChatElement ChatBox => GetObject<PoeChatElement>(M.Read<long>(Address + 0x3F8, 0x2C8, 0xE20, 0x350));
-        public IList<string> ChatMessages => ChatBox.Children.Select(x => x.Text).ToList();
+        public PoeChatElement ChatBox => GetObject<PoeChatElement>(M.Read<long>(Address + 0x3F8));
         public Element QuestTracker => GetObject<Element>(IngameUIElementsStruct.QuestTracker);
         public Element OpenLeftPanel => GetObject<Element>(IngameUIElementsStruct.OpenLeftPanel);
         public Element OpenRightPanel => GetObject<Element>(IngameUIElementsStruct.OpenRightPanel);

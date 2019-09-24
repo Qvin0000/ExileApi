@@ -59,7 +59,7 @@ namespace ExileCore
 
         public static bool GetKeyState(Keys key)
         {
-            return WinApi.GetKeyState(key) != WinApi.KeyState.Unpressed;
+            return (WinApi.GetKeyState(key) & WinApi.KeyState.Pressed) == WinApi.KeyState.Pressed;
         }
 
         public static void RegisterKey(Keys key)
@@ -78,8 +78,6 @@ namespace ExileCore
 
         public static void Update(IntPtr windowPtr)
         {
-            var result = WinApi.GetKeyState(System.Windows.Forms.Keys.LButton);
-            DebugWindow.LogMsg($"Pressed state: {result}, ushort: {(ushort)result}");
             MousePosition = WinApi.GetCursorPosition(windowPtr);
 
             try
