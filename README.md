@@ -30,3 +30,11 @@ Known build errors:
 * (check project references) References error in some project: unload then load project to solution (right mouse button on project in solution).
 * Error with MsBuildMajorVersion: Update your VS2019 (maybe you have VS 2019 Preview or something)
 * MsBuild 15 < 16 error: expecting VS 2019 installed. On VS 2017 try downgrade Fody package to version 4.2.1.
+
+## Troubleshooting
+
+When download your `7z` from releases maybe this comes with screwed permissions.
+
+> For those who can't launch (Close as soon as it's opened) :
+> Right click on the Zip of the HUD (The one you get from the link in the first post) and Right click > Properties > Unlock, then you can unzip it where you want. Otherwise all the files extracted will be security locked...
+> Worked for a friend, it's a security from Windows that deny access to files from another PC, once done everything was good for him
