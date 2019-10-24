@@ -11,7 +11,9 @@ namespace GameOffsets.Components
         [FieldOffset(0x0018)] public NativePtrArray EntitiesAroundPlayerPtr;
         [FieldOffset(0x0058)] public NativeUnicodeText CharactorName;
         //[FieldOffset(0x0078)] public int Unknown0;
-        //[FieldOffset(0x007C)] public int Unknown1;
+        // Get 2 people (including you) in the game, find an item belonging to the other person
+        // Open WorldItem component of that item. Find a 4 byte uint that matches from there to here.
+        [FieldOffset(0x007C)] public uint LootAllocationId;
         [FieldOffset(0x0080)] public int Experience;
         [FieldOffset(0x0084)] public int Strength;
         [FieldOffset(0x0088)] public int Dexterity;
