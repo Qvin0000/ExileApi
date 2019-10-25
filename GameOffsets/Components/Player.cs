@@ -27,7 +27,7 @@ namespace GameOffsets.Components
         //[FieldOffset(0x009C)] public int Unknown5;
         [FieldOffset(0x00F8)] public long HideoutPtr; // Ptr to Hideout.dat row
         [FieldOffset(0x0112)] public PropheciesStruct Prophecies;
-        //[FieldOffset(0x0138)] public long UnknownPtr6;
+        [FieldOffset(0x0138)] public long ServerDataPtr;
 
         // This WorldPosition is different from position component WorldPosition
         // as this one is updated slowly. This might be part of a teleport detection
