@@ -78,7 +78,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public bool IsInGame => NetworkState == NetworkStateE.Connected;
         public NetworkStateE NetworkState => (NetworkStateE) this.ServerDataStruct.NetworkState;
         public int Latency => ServerDataStruct.Latency;
-        public string Guild => NativeStringReader.ReadString(M.Read<long>(Address + 0x65B8), M);
+        public string Guild => NativeStringReader.ReadString(M.Read<long>(Address + 0x70E0), M);
         public BetrayalData BetrayalData => GetObject<BetrayalData>(M.Read<long>(Address + 0x3C8, 0x718));
 
         public IList<ushort> SkillBarIds
@@ -114,7 +114,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                if (Address == 0) return null;
+                if (Address == 0) 
+                    return null;
                 var fisrPtr = ServerDataStruct.PassiveSkillIds.First;
                 var endPtr = ServerDataStruct.PassiveSkillIds.Last;
                 var totalStats = (int) (endPtr - fisrPtr);
@@ -122,7 +123,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 var res = new List<ushort>();
 
                 if (totalStats < 0 || totalStats > 500)
-                    return null;
+                    return new List<ushort>();
 
                 for (var i = 0; i < bytes.Length; i += 2)
                 {

@@ -370,7 +370,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 if (_componentLookup != null)
                     return _componentLookup.Value;
 
-                return (long) (_componentLookup = M.Read<long>(Address + 0x8, 0x40, 0x30));
+                return (long) (_componentLookup = M.Read<long>(Address + 0x8, 0x38, 0x30));
             }
         }
 

@@ -25,7 +25,7 @@ namespace GameOffsets
     public struct ServerDataOffsets
     {
         public const int Skip = 0x5000;
-        [FieldOffset(0x6C28 - Skip)] public NativeStringU League;
+        [FieldOffset(0x6E98 - Skip)] public NativeStringU League;
         [FieldOffset(0x6B70 - Skip)] public NativePtrArray PassiveSkillIds;
         [FieldOffset(0x6BC0 - Skip)] public byte PlayerClass;
         [FieldOffset(0x6BC4 - Skip)] public int CharacterLevel;
@@ -40,9 +40,9 @@ namespace GameOffsets
         [FieldOffset(0x6C98 - Skip)] public float TimeInGame;
         [FieldOffset(0x6CA0 - Skip)] public int Latency;
         [FieldOffset(0x6CB0 - Skip)] public NativePtrArray PlayerStashTabs;
-        [FieldOffset(0x6CC8 - Skip)] public NativePtrArray GuildStashTabs;
+        [FieldOffset(0x73E0 - Skip)] public NativePtrArray GuildStashTabs;
         [FieldOffset(0x6EC0 - Skip)] public NativePtrArray NearestPlayers;
-        [FieldOffset(0x6FB0 - Skip)] public NativePtrArray PlayerInventories;
+        [FieldOffset(0x7240 - Skip)] public NativePtrArray PlayerInventories;
         [FieldOffset(0x7070 - Skip)] public NativePtrArray NPCInventories;
         [FieldOffset(0x7130 - Skip)] public NativePtrArray GuildInventories;
         [FieldOffset(0x7270 - Skip)] public ushort TradeChatChannel;
@@ -58,6 +58,6 @@ namespace GameOffsets
         [FieldOffset(0x7E5D - Skip)] public byte MonstersRemaining;
         [FieldOffset(0x7F10 - Skip)] public ushort CurrentSulphiteAmount; //Maybe wrong not tested
         [FieldOffset(0x7F00 - Skip)] public int CurrentAzuriteAmount;
-        [FieldOffset(0x6E68 - Skip)] public SkillBarIdsStruct SkillBarIds;
+        [FieldOffset(0x70E8 - Skip)] public SkillBarIdsStruct SkillBarIds;
     }
 }
