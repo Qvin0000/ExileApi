@@ -40,9 +40,9 @@ namespace GameOffsets
         [FieldOffset(0x6C98 - Skip)] public float TimeInGame;
         [FieldOffset(0x6CA0 - Skip)] public int Latency;
         [FieldOffset(0x6CB0 - Skip)] public NativePtrArray PlayerStashTabs;
-        [FieldOffset(0x6CC8 - Skip)] public NativePtrArray GuildStashTabs;
+        [FieldOffset(0x73E0 - Skip)] public NativePtrArray GuildStashTabs;
         [FieldOffset(0x6EC0 - Skip)] public NativePtrArray NearestPlayers;
-        [FieldOffset(0x6D58 - Skip)] public NativePtrArray PlayerInventories;
+        [FieldOffset(0x7240 - Skip)] public NativePtrArray PlayerInventories;
         [FieldOffset(0x7070 - Skip)] public NativePtrArray NPCInventories;
         [FieldOffset(0x7130 - Skip)] public NativePtrArray GuildInventories;
         [FieldOffset(0x7270 - Skip)] public ushort TradeChatChannel;
