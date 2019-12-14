@@ -14,11 +14,11 @@ namespace GameOffsets.Components
         // Get 2 people (including you) in the game, find an item belonging to the other person
         // Open WorldItem component of that item. Find a 4 byte uint that matches from there to here.
         [FieldOffset(0x007C)] public uint LootAllocationId;
-        [FieldOffset(0x0080)] public int Experience;
-        [FieldOffset(0x0084)] public int Strength;
-        [FieldOffset(0x0088)] public int Dexterity;
-        [FieldOffset(0x008C)] public int Intelligence;
-        [FieldOffset(0x0090)] public byte Level;
+        [FieldOffset(0x007C)] public int Experience;
+        [FieldOffset(0x0080)] public int Strength;
+        [FieldOffset(0x0084)] public int Dexterity;
+        [FieldOffset(0x0088)] public int Intelligence;
+        [FieldOffset(0x00A8)] public byte Level;
         //[FieldOffset(0x0091)] public byte Unknown2;
         //[FieldOffset(0x0092)] public byte Unknown3;
         [FieldOffset(0x0093)] public byte MinorPantheonSkillId;

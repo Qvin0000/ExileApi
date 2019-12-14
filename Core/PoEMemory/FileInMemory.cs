@@ -17,7 +17,7 @@ namespace ExileCore.PoEMemory
 
         public IMemory M { get; }
         public long Address { get; }
-        private int NumberOfRecords => M.Read<int>(fAddress() + 0x40, 0x20);
+        private int NumberOfRecords => M.Read<int>(fAddress() + 0x38, 0x20);
 
         protected IEnumerable<long> RecordAddresses()
         {
@@ -35,8 +35,8 @@ namespace ExileCore.PoEMemory
                 yield break;
             }
 
-            var firstRec = M.Read<long>(fAddress() + 0x40, 0x0);
-            var lastRec = M.Read<long>(fAddress() + 0x40, 0x8);
+            var firstRec = M.Read<long>(fAddress() + 0x38, 0x0);
+            var lastRec = M.Read<long>(fAddress() + 0x38, 0x8);
 
             var recLen = (lastRec - firstRec) / cnt;
 

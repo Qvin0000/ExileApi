@@ -12,11 +12,11 @@ namespace ExileCore.PoEMemory.Components
     public class Player : Component
     {
         public string PlayerName => NativeStringReader.ReadString(Address + 0x58, M);
-        public uint XP => Address != 0 ? M.Read<uint>(Address + 0x80) : 0;
-        public int Strength => Address != 0 ? M.Read<int>(Address + 0x84) : 0;
-        public int Dexterity => Address != 0 ? M.Read<int>(Address + 0x88) : 0;
-        public int Intelligence => Address != 0 ? M.Read<int>(Address + 0x8C) : 0;
-        public int Level => Address != 0 ? M.Read<byte>(Address + 0x90) : 1;
+        public uint XP => Address != 0 ? M.Read<uint>(Address + 0x7C) : 0;
+        public int Strength => Address != 0 ? M.Read<int>(Address + 0x80) : 0;
+        public int Dexterity => Address != 0 ? M.Read<int>(Address + 0x84) : 0;
+        public int Intelligence => Address != 0 ? M.Read<int>(Address + 0x88) : 0;
+        public int Level => Address != 0 ? M.Read<byte>(Address + 0xA8) : 1;
         public int AllocatedLootId => Address != 0 ? M.Read<byte>(Address + 0x7C) : 1;
         public int HideoutLevel => M.Read<byte>(Address + 0x28E);
         public byte PropheciesCount => M.Read<byte>(Address + 0x112);
