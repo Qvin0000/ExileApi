@@ -7,7 +7,7 @@ namespace GameOffsets
     public struct ActorComponentOffsets
     {
         [FieldOffset(0xA8)] public long ActionPtr;
-        [FieldOffset(0x130)] public short ActionId;
+        [FieldOffset(0x108)] public short ActionId;
 
         // [FieldOffset(0xFA)] public short TotalActionCounterA;
         // [FieldOffset(0xFC)] public int TotalActionCounterB;
