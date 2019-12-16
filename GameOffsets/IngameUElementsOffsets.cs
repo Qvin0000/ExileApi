@@ -30,7 +30,7 @@ namespace GameOffsets
         [FieldOffset(0x738)] public long UnveilWindow;
         [FieldOffset(0x760)] public long SynthesisWindow;
         [FieldOffset(0x7A8)] public long AreaInstanceUi;
-        [FieldOffset(0x8C8)] public long GemLvlUpPanel;
+        [FieldOffset(0x8E8)] public long GemLvlUpPanel;
         [FieldOffset(0x210)] public long GetQuests;
         [FieldOffset(0x0/*0xCC0*/)] public long WorldMap;//TOFO: Fixme. Cause reading errors
         [FieldOffset(0x0/*0xF18*/)] public long MapTabWindowStartPtr;//TOFO: Fixme. Cause reading errors

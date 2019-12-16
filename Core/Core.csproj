@@ -260,6 +260,9 @@
     <Compile Include="PoEMemory\FilesInMemory\BetrayalTarget.cs" />
     <Compile Include="PoEMemory\FilesInMemory\LabyrinthTrial.cs" />
     <Compile Include="PoEMemory\FilesInMemory\LabyrinthTrials.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\MetamorphosisMetaMonster.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\MetamorphosisMetaSkill.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\MetamorphosisMetaSkillType.cs" />
     <Compile Include="PoEMemory\FilesInMemory\ModsDat.cs" />
     <Compile Include="PoEMemory\FilesInMemory\MonsterVarieties.cs" />
     <Compile Include="PoEMemory\FilesInMemory\PassiveSkill.cs" />

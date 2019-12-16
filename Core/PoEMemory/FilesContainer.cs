@@ -18,6 +18,9 @@ namespace ExileCore.PoEMemory
         private UniversalFileWrapper<BetrayalChoiceAction> _betrayalChoiceActions;
         private UniversalFileWrapper<BetrayalChoice> _betrayalChoises;
         private UniversalFileWrapper<BetrayalDialogue> _betrayalDialogue;
+        private UniversalFileWrapper<MetamorphosisMetaSkill> _metamorphosisMetaSkills;
+        private UniversalFileWrapper<MetamorphosisMetaSkillType> _metamorphosisMetaSkillTypes;
+        private UniversalFileWrapper<MetamorphosisMetaMonster> _metamorphosisMetaMonsters;
         private UniversalFileWrapper<BetrayalJob> _betrayalJobs;
         private UniversalFileWrapper<BetrayalRank> _betrayalRanks;
         private UniversalFileWrapper<BetrayalReward> _betrayalRewards;
@@ -96,6 +99,28 @@ namespace ExileCore.PoEMemory
         public UniversalFileWrapper<BetrayalDialogue> BetrayalDialogue =>
             _betrayalDialogue ?? (_betrayalDialogue =
                 new UniversalFileWrapper<BetrayalDialogue>(_memory, () => FindFile("Data/BetrayalDialogue.dat")));
+
+        public UniversalFileWrapper<MetamorphosisMetaSkill> MetamorphosisMetaSkills =>
+            _metamorphosisMetaSkills ?? (_metamorphosisMetaSkills =
+                new UniversalFileWrapper<MetamorphosisMetaSkill>(_memory, () => FindFile("Data/MetamorphosisMetaSkills.dat")));
+
+
+        public UniversalFileWrapper<MetamorphosisMetaSkillType> MetamorphosisMetaSkillTypes =>
+            _metamorphosisMetaSkillTypes ?? (_metamorphosisMetaSkillTypes =
+                new UniversalFileWrapper<MetamorphosisMetaSkillType>(_memory, () => FindFile("Data/MetamorphosisMetaSkillTypes.dat")));
+
+        public UniversalFileWrapper<MetamorphosisMetaMonster> MetamorphosisMetaMonsters =>
+            _metamorphosisMetaMonsters ?? (_metamorphosisMetaMonsters =
+                new UniversalFileWrapper<MetamorphosisMetaMonster>(_memory, () => FindFile("Data/MetamorphosisMetaMonsters.dat")));
+
+
+
+
+
+
+
+
+
         public Dictionary<string, FileInformation> AllFiles { get; private set; }
         public Dictionary<string, FileInformation> Metadata { get; } = new Dictionary<string, FileInformation>();
         public Dictionary<string, FileInformation> Data { get; private set; } = new Dictionary<string, FileInformation>();
@@ -202,6 +227,7 @@ namespace ExileCore.PoEMemory
                 ? bestiaryFamilies
                 : bestiaryFamilies = new UniversalFileWrapper<BestiaryFamily>(_memory, () => FindFile("Data/BestiaryFamilies.dat"));
         private UniversalFileWrapper<BestiaryGenus> bestiaryGenuses;
+
         public UniversalFileWrapper<BestiaryGenus> BestiaryGenuses =>
             bestiaryGenuses != null
                 ? bestiaryGenuses

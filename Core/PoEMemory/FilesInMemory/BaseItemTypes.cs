@@ -16,6 +16,13 @@ namespace ExileCore.PoEMemory.FilesInMemory
         }
 
         public Dictionary<string, BaseItemType> Contents { get; } = new Dictionary<string, BaseItemType>();
+        public Dictionary<long, BaseItemType> ContentsAddr { get; } = new Dictionary<long, BaseItemType>();
+
+        public BaseItemType GetFromAddress(long address)
+        {
+            ContentsAddr.TryGetValue(address, out var type);
+            return type;
+        }
 
         public BaseItemType Translate(string metadata)
         {
@@ -40,6 +47,7 @@ namespace ExileCore.PoEMemory.FilesInMemory
 
                 var baseItemType = new BaseItemType
                 {
+                    Metadata = key,
                     ClassName = M.ReadStringU(M.Read<long>(i + 0x10, 0)),
                     Width = M.Read<int>(i + 0x18),
                     Height = M.Read<int>(i + 0x1C),
@@ -80,6 +88,8 @@ namespace ExileCore.PoEMemory.FilesInMemory
                     baseItemType.MoreTagsFromPath = new string[1];
                     baseItemType.MoreTagsFromPath[0] = "";
                 }
+
+                ContentsAddr.Add(i, baseItemType);
 
                 if (!Contents.ContainsKey(key)) Contents.Add(key, baseItemType);
             }

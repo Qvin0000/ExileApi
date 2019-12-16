@@ -38,7 +38,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         //public int ModKeysCount => M.Read<int>(Address + 0xcc);
         //public long ModKeysPtr => M.Read<long>(Address + 0xd4);
-        public string MonsterName => M.ReadStringU(M.Read<long>(Address + 0xf4));
+        public string MonsterName => M.ReadStringU(M.Read<long>(Address + 0x104));
         public int DamageMultiplier => M.Read<int>(Address + 0xfc);
         public int LifeMultiplier => M.Read<int>(Address + 0x100);
         public int AttackSpeed => M.Read<int>(Address + 0x104);
