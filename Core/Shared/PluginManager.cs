@@ -499,7 +499,7 @@ namespace ExileCore.Shared
             return (CompiledDirectories, SourceDirectories);
         }
 
-        public void CloseAllPlugin()
+        public void CloseAllPlugins()
         {
             foreach (var plugin in Plugins)
             {
