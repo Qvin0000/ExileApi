@@ -272,7 +272,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         private IList<WorldArea> GetAreas(long address)
         {
             if (Address == 0 || address == 0)
-                return null;
+                return new List<WorldArea>();
 
             var res = new List<WorldArea>();
             var size = M.Read<int>(Address - 0x8);
