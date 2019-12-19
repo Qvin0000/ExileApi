@@ -34,5 +34,6 @@ namespace GameOffsets
         [FieldOffset(0x210)] public long GetQuests;
         [FieldOffset(0x0/*0xCC0*/)] public long WorldMap;//TOFO: Fixme. Cause reading errors
         [FieldOffset(0x0/*0xF18*/)] public long MapTabWindowStartPtr;//TOFO: Fixme. Cause reading errors
+        [FieldOffset(0x770)] public long MetamorphWindow;
     }
 }

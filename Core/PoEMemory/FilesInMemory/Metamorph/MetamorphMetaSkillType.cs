@@ -1,8 +1,8 @@
 ﻿using ExileCore.PoEMemory.Models;
 
-namespace ExileCore.PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory.Metamorph
 {
-    public class MetamorphosisMetaSkillType : RemoteMemoryObject
+    public class MetamorphMetaSkillType : RemoteMemoryObject
     {
         public string Id => M.ReadStringU(M.Read<long>(Address + 0x0), 255);
         public string Name => M.ReadStringU(M.Read<long>(Address + 0x8), 255);

@@ -206,7 +206,7 @@ namespace ExileCore
             _mainMenu?.Dispose();
             GameController?.Dispose();
             _dx11?.Dispose();
-            pluginManager.CloseAllPlugins();
+            pluginManager?.CloseAllPlugins();
         }
 
         private IEnumerator MainControl()

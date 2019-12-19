@@ -260,9 +260,11 @@
     <Compile Include="PoEMemory\FilesInMemory\BetrayalTarget.cs" />
     <Compile Include="PoEMemory\FilesInMemory\LabyrinthTrial.cs" />
     <Compile Include="PoEMemory\FilesInMemory\LabyrinthTrials.cs" />
-    <Compile Include="PoEMemory\FilesInMemory\MetamorphosisMetaMonster.cs" />
-    <Compile Include="PoEMemory\FilesInMemory\MetamorphosisMetaSkill.cs" />
-    <Compile Include="PoEMemory\FilesInMemory\MetamorphosisMetaSkillType.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Metamorph\MetamorphMetaMonster.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Metamorph\MetamorphMetaSkill.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Metamorph\MetamorphMetaSkillType.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Metamorph\MetamorphRewardType.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Metamorph\MetamorphRewardTypeItemsClient.cs" />
     <Compile Include="PoEMemory\FilesInMemory\ModsDat.cs" />
     <Compile Include="PoEMemory\FilesInMemory\MonsterVarieties.cs" />
     <Compile Include="PoEMemory\FilesInMemory\PassiveSkill.cs" />
@@ -306,6 +308,7 @@
     <Compile Include="PoEMemory\MemoryObjects\ItemMod.cs" />
     <Compile Include="PoEMemory\MemoryObjects\LabyrinthData.cs" />
     <Compile Include="PoEMemory\MemoryObjects\MapStashTabElement.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\Metamorph\MetamorphWindowElement.cs" />
     <Compile Include="PoEMemory\MemoryObjects\MonsterVariety.cs" />
     <Compile Include="PoEMemory\MemoryObjects\NativeStringReader.cs" />
     <Compile Include="PoEMemory\MemoryObjects\Entity.cs" />

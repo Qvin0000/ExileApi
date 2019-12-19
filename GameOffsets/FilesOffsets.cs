@@ -22,9 +22,9 @@ namespace GameOffsets
     {
         [FieldOffset(0x10)] public NativeStringU String;
         [FieldOffset(0x20)] public long Size;
-        [FieldOffset(0x20)] public long Capacity;
-        [FieldOffset(0x28)] public int Test1;
-        [FieldOffset(0x30)] public int AreaCount;
-        [FieldOffset(0x4C)] public int Test2;
+        [FieldOffset(0x28)] public long Capacity;
+        [FieldOffset(0x38)] public int Test1;
+        [FieldOffset(0x40)] public int AreaCount;
+        [FieldOffset(0x48)] public int Test2;
     }
 }
