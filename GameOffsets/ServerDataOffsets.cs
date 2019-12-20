@@ -39,16 +39,17 @@ namespace GameOffsets
         [FieldOffset(0x6DF8 - Skip)] public byte PartyAllocationType;
         [FieldOffset(0x6C98 - Skip)] public float TimeInGame;
         [FieldOffset(0x6CA0 - Skip)] public int Latency;
+        [FieldOffset(0x7168 - Skip)] public SkillBarIdsStruct SkillBarIds;
         [FieldOffset(0x6CB0 - Skip)] public NativePtrArray PlayerStashTabs;
         [FieldOffset(0x73E0 - Skip)] public NativePtrArray GuildStashTabs;
-        [FieldOffset(0x6EC0 - Skip)] public NativePtrArray NearestPlayers;
+        [FieldOffset(0x71C0 - Skip)] public NativePtrArray NearestPlayers;
         [FieldOffset(0x72C0 - Skip)] public NativePtrArray PlayerInventories;
-        [FieldOffset(0x7070 - Skip)] public NativePtrArray NPCInventories;
-        [FieldOffset(0x7130 - Skip)] public NativePtrArray GuildInventories;
+        [FieldOffset(0x7390 - Skip)] public NativePtrArray NPCInventories;
+        [FieldOffset(0x7460 - Skip)] public NativePtrArray GuildInventories;
         [FieldOffset(0x7270 - Skip)] public ushort TradeChatChannel;
         [FieldOffset(0x7278 - Skip)] public ushort GlobalChatChannel;
-        [FieldOffset(0x75E0 - Skip)] public long CompletedMaps;
-        [FieldOffset(0x7620 - Skip)] public long BonusCompletedAreas;
+        [FieldOffset(0x7660 - Skip)] public long CompletedMaps;//search for a LONG value equals to your current amount of completed maps. Pointer will be under this offset
+        [FieldOffset(0x76A0 - Skip)] public long BonusCompletedAreas;
         [FieldOffset(0x7440 - Skip)] public long ElderInfluencedAreas;
         [FieldOffset(0)] public long MasterAreas;
         [FieldOffset(0x7660 - Skip)] public long ElderGuardiansAreas; //Maybe wrong not tested
@@ -58,6 +59,5 @@ namespace GameOffsets
         [FieldOffset(0x7E5D - Skip)] public byte MonstersRemaining;
         [FieldOffset(0x7F10 - Skip)] public ushort CurrentSulphiteAmount; //Maybe wrong not tested
         [FieldOffset(0x7F00 - Skip)] public int CurrentAzuriteAmount;
-        [FieldOffset(0x70E8 - Skip)] public SkillBarIdsStruct SkillBarIds;
     }
 }

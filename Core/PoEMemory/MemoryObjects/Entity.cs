@@ -386,7 +386,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         public override string ToString()
         {
-            return $"#{Id} <{Type}> ({Rarity}) {Metadata}: ({Address:X})";
+            return $"<{Type}> ({Rarity}) {Metadata}: ({Address:X})";
         }
 
         public float Distance(Entity entity)
