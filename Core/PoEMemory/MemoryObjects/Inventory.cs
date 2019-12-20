@@ -205,7 +205,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 case 0x3c:
                     _cacheInventoryType = InventoryType.CurrencyStash;
                     break;
-                case 0x4D:
+                case 0x55:
                     _cacheInventoryType = InventoryType.FragmentStash;
                     break;
                 case 0x5:
@@ -225,7 +225,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                     if (TotalBoxesInInventoryRow == 24) _cacheInventoryType = InventoryType.QuadStash;
                     _cacheInventoryType = InventoryType.NormalStash;
                     break;
-                case 0x21:
+                case 0x23:
                     _cacheInventoryType = InventoryType.DelveStash;
                     break;
                 default:

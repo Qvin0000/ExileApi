@@ -114,6 +114,26 @@ namespace ExileCore.PoEMemory
             return _childrens;
         }
 
+        public List<T> GetChildrenAs<T>() where T : Element, new()
+        {
+            var e = Elem;
+            if (Address == 0 || e.ChildStart == 0 || e.ChildEnd == 0 || ChildCount < 0) return new List<T>();
+
+            var pointers = M.ReadPointersArray(e.ChildStart, e.ChildEnd);
+
+            if (pointers.Count != ChildCount)
+                return new List<T>();
+
+            var results = new List<T>();
+
+            foreach (var pointer in pointers)
+            {
+                results.Add(GetObject<T>(pointer));
+            }
+
+            return results;
+        }
+
         private IList<Element> GetParentChain()
         {
             var list = new List<Element>();

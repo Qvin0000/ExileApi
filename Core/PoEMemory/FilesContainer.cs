@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExileCore.PoEMemory.FilesInMemory;
+using ExileCore.PoEMemory.FilesInMemory.Metamorph;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Helpers;
 using ExileCore.Shared.Interfaces;
@@ -33,7 +34,7 @@ namespace ExileCore.PoEMemory
         private PropheciesDat prophecies;
         private Quests quests;
         private QuestStates questStates;
-
+        
         //Will be loaded on first access:
         private WorldAreas worldAreas;
 
@@ -96,6 +97,37 @@ namespace ExileCore.PoEMemory
         public UniversalFileWrapper<BetrayalDialogue> BetrayalDialogue =>
             _betrayalDialogue ?? (_betrayalDialogue =
                 new UniversalFileWrapper<BetrayalDialogue>(_memory, () => FindFile("Data/BetrayalDialogue.dat")));
+
+        #region Metamorph
+
+        private UniversalFileWrapper<MetamorphMetaSkill> _metamorphMetaSkills;
+        private UniversalFileWrapper<MetamorphMetaSkillType> _metamorphMetaSkillTypes;
+        private UniversalFileWrapper<MetamorphMetaMonster> _metamorphMetaMonsters;
+        private UniversalFileWrapper<MetamorphRewardType> _metamorphRewardTypes;
+        private UniversalFileWrapper<MetamorphRewardTypeItemsClient> _metamorphRewardTypeItemsClient;
+
+        public UniversalFileWrapper<MetamorphMetaSkill> MetamorphMetaSkills =>
+            _metamorphMetaSkills ?? (_metamorphMetaSkills =
+                new UniversalFileWrapper<MetamorphMetaSkill>(_memory, () => FindFile("Data/MetamorphosisMetaSkills.dat")));
+
+        public UniversalFileWrapper<MetamorphMetaSkillType> MetamorphMetaSkillTypes =>
+            _metamorphMetaSkillTypes ?? (_metamorphMetaSkillTypes =
+                new UniversalFileWrapper<MetamorphMetaSkillType>(_memory, () => FindFile("Data/MetamorphosisMetaSkillTypes.dat")));
+
+        public UniversalFileWrapper<MetamorphMetaMonster> MetamorphMetaMonsters =>
+            _metamorphMetaMonsters ?? (_metamorphMetaMonsters =
+                new UniversalFileWrapper<MetamorphMetaMonster>(_memory, () => FindFile("Data/MetamorphosisMetaMonsters.dat")));
+
+        public UniversalFileWrapper<MetamorphRewardType> MetamorphRewardTypes =>
+            _metamorphRewardTypes ?? (_metamorphRewardTypes =
+                new UniversalFileWrapper<MetamorphRewardType>(_memory, () => FindFile("Data/MetamorphosisRewardTypes.dat")));
+
+        public UniversalFileWrapper<MetamorphRewardTypeItemsClient> MetamorphRewardTypeItemsClient =>
+            _metamorphRewardTypeItemsClient ?? (_metamorphRewardTypeItemsClient =
+                new UniversalFileWrapper<MetamorphRewardTypeItemsClient>(_memory, () => FindFile("Data/MetamorphosisRewardTypeItemsClient.dat")));
+
+        #endregion
+
         public Dictionary<string, FileInformation> AllFiles { get; private set; }
         public Dictionary<string, FileInformation> Metadata { get; } = new Dictionary<string, FileInformation>();
         public Dictionary<string, FileInformation> Data { get; private set; } = new Dictionary<string, FileInformation>();

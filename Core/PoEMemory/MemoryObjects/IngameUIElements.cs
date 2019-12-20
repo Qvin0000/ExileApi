@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExileCore.PoEMemory.Elements;
+using ExileCore.PoEMemory.MemoryObjects.Metamorph;
 using ExileCore.Shared.Cache;
 using GameOffsets;
 
@@ -67,6 +68,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public string DndMessage => M.ReadStringU(M.Read<long>(Address + 0xf98));
         public WorldMapElement AreaInstanceUi => GetObject<WorldMapElement>(IngameUIElementsStruct.AreaInstanceUi);
         public WorldMapElement WorldMap => GetObject<WorldMapElement>(IngameUIElementsStruct.WorldMap);
+        public MetamorphWindowElement MetamorphWindow => GetObject<MetamorphWindowElement>(IngameUIElementsStruct.MetamorphWindow);
 
         public IList<Tuple<Quest, int>> GetUncompletedQuests
         {

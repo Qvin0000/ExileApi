@@ -4,6 +4,7 @@ namespace ExileCore.PoEMemory.Models
 {
     public class BaseItemType
     {
+        public string Metadata { get; set; }
         public string ClassName { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
