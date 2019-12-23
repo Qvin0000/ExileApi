@@ -70,9 +70,8 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PoeFilterParser, Version=1.0.42.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\PoeFilterParser.1.0.42\lib\net471\PoeFilterParser.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="PoeFilterParser, Version=1.0.44.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PoeFilterParser.1.0.44\lib\net471\PoeFilterParser.dll</HintPath>
     </Reference>
     <Reference Include="ProcessMemoryUtilities, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\ProcessMemoryUtilities.Net.1.2.0\lib\net48\ProcessMemoryUtilities.dll</HintPath>
