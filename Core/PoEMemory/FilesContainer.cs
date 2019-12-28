@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExileCore.PoEMemory.FilesInMemory;
+using ExileCore.PoEMemory.FilesInMemory.Atlas;
 using ExileCore.PoEMemory.FilesInMemory.Metamorph;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Helpers;
@@ -125,6 +126,14 @@ namespace ExileCore.PoEMemory
         public UniversalFileWrapper<MetamorphRewardTypeItemsClient> MetamorphRewardTypeItemsClient =>
             _metamorphRewardTypeItemsClient ?? (_metamorphRewardTypeItemsClient =
                 new UniversalFileWrapper<MetamorphRewardTypeItemsClient>(_memory, () => FindFile("Data/MetamorphosisRewardTypeItemsClient.dat")));
+
+        #endregion
+
+        #region NewAtlas
+
+        private AtlasRegions _atlasRegions;
+        public AtlasRegions AtlasRegions =>
+            _atlasRegions ?? (_atlasRegions = new AtlasRegions(_memory, () => FindFile("Data/AtlasRegions.dat")));
 
         #endregion
 

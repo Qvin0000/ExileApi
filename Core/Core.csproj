@@ -249,7 +249,9 @@
     <Compile Include="PoEMemory\FileInMemory.cs" />
     <Compile Include="PoEMemory\FilesContainer.cs" />
     <Compile Include="PoEMemory\FilesFromMemory.cs" />
-    <Compile Include="PoEMemory\FilesInMemory\AtlasNodes.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Atlas\AtlasNodes.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Atlas\AtlasRegion.cs" />
+    <Compile Include="PoEMemory\FilesInMemory\Atlas\AtlasRegions.cs" />
     <Compile Include="PoEMemory\FilesInMemory\BaseItemTypes.cs" />
     <Compile Include="PoEMemory\FilesInMemory\BestiaryCapturableMonsters.cs" />
     <Compile Include="PoEMemory\FilesInMemory\BetrayalChoice.cs" />

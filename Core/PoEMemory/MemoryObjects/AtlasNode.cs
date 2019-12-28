@@ -1,3 +1,4 @@
+using ExileCore.PoEMemory.FilesInMemory.Atlas;
 using SharpDX;
 
 namespace ExileCore.PoEMemory.MemoryObjects
@@ -17,6 +18,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
         //Atlas region: 0x4D
 
         public string FlavourText => text != null ? text : text = M.ReadStringU(M.Read<long>(Address + 0x44));
+
+        public AtlasRegion AtlasRegion => TheGame.Files.AtlasRegions.GetByAddress(M.Read<long>(Address + 0x4D));
 
         public Vector2 GetPosByLayer(int layer)
         {

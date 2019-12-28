@@ -25,6 +25,7 @@ namespace GameOffsets
     public struct ServerDataOffsets
     {
         public const int Skip = 0x5000;
+        public const int ATLAS_REGION_UPGRADES = 0x7782;
         [FieldOffset(0x6E98 - Skip)] public NativeStringU League;
         [FieldOffset(0x6B70 - Skip)] public NativePtrArray PassiveSkillIds;
         [FieldOffset(0x6BC0 - Skip)] public byte PlayerClass;
@@ -48,8 +49,8 @@ namespace GameOffsets
         [FieldOffset(0x7460 - Skip)] public NativePtrArray GuildInventories;
         [FieldOffset(0x7270 - Skip)] public ushort TradeChatChannel;
         [FieldOffset(0x7278 - Skip)] public ushort GlobalChatChannel;
-        [FieldOffset(0x7660 - Skip)] public long CompletedMaps;//search for a LONG value equals to your current amount of completed maps. Pointer will be under this offset
-        [FieldOffset(0x76A0 - Skip)] public long BonusCompletedAreas;
+        [FieldOffset(0x76A0 - Skip)] public long CompletedMaps;//search for a LONG value equals to your current amount of completed maps. Pointer will be under this offset
+        [FieldOffset(0x7660 - Skip)] public long BonusCompletedAreas;
         [FieldOffset(0x7440 - Skip)] public long ElderInfluencedAreas;
         [FieldOffset(0)] public long MasterAreas;
         [FieldOffset(0x7660 - Skip)] public long ElderGuardiansAreas; //Maybe wrong not tested

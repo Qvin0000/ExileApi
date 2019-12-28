@@ -8,7 +8,7 @@ namespace ExileCore.PoEMemory.FilesInMemory
 {
     public class WorldAreas : UniversalFileWrapper<WorldArea>
     {
-        public int IndexCounter;
+        private int _indexCounter;
 
         public WorldAreas(IMemory m, Func<long> address) : base(m, address)
         {
@@ -32,7 +32,7 @@ namespace ExileCore.PoEMemory.FilesInMemory
 
         protected override void EntryAdded(long addr, WorldArea entry)
         {
-            entry.Index = IndexCounter++;
+            entry.Index = _indexCounter++;
             AreasIndexDictionary.Add(entry.Index, entry);
         }
     }

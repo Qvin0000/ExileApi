@@ -4,7 +4,7 @@ using System.Linq;
 using ExileCore.PoEMemory.MemoryObjects;
 using ExileCore.Shared.Interfaces;
 
-namespace ExileCore.PoEMemory.FilesInMemory
+namespace ExileCore.PoEMemory.FilesInMemory.Atlas
 {
     public class AtlasNodes : UniversalFileWrapper<AtlasNode>
     {

@@ -26,6 +26,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public bool IsAbyssArea =>
             Id.Equals("AbyssLeague") || Id.Equals("AbyssLeague2") || Id.Equals("AbyssLeagueBoss") || Id.Equals("AbyssLeagueBoss2") ||
             Id.Equals("AbyssLeagueBoss3");
+        public bool IsUnique => M.Read<bool>(Address + 0x1EC);
 
         public IList<WorldArea> Connections
         {

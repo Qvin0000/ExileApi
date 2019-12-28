@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExileCore.PoEMemory.Components;
+using ExileCore.PoEMemory.FilesInMemory.Atlas;
 using ExileCore.Shared.Cache;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
@@ -263,12 +264,11 @@ namespace ExileCore.PoEMemory.MemoryObjects
         #region Completed Areas
 
         public IList<WorldArea> CompletedAreas => GetAreas(ServerDataStruct.CompletedMaps);
-        public IList<WorldArea> ShapedMaps => GetAreas(ServerDataStruct.ShapedAreas);
+        public IList<WorldArea> ShapedMaps => new List<WorldArea>();// GetAreas(ServerDataStruct.ShapedAreas);
         public IList<WorldArea> BonusCompletedAreas => GetAreas(ServerDataStruct.BonusCompletedAreas);
-        public IList<WorldArea> ElderGuardiansAreas => GetAreas(ServerDataStruct.ElderGuardiansAreas);
-        public IList<WorldArea> MasterAreas => GetAreas(ServerDataStruct.MasterAreas);
-        public IList<WorldArea> ShaperElderAreas => GetAreas(ServerDataStruct.ElderInfluencedAreas);
-
+        public IList<WorldArea> ElderGuardiansAreas => new List<WorldArea>();// GetAreas(ServerDataStruct.ElderGuardiansAreas);
+        public IList<WorldArea> MasterAreas => new List<WorldArea>();// GetAreas(ServerDataStruct.MasterAreas);
+        public IList<WorldArea> ShaperElderAreas => new List<WorldArea>();// GetAreas(ServerDataStruct.ElderInfluencedAreas);
         private IList<WorldArea> GetAreas(long address)
         {
             if (Address == 0 || address == 0)
@@ -302,6 +302,20 @@ namespace ExileCore.PoEMemory.MemoryObjects
             }
 
             return res;
+        }
+
+        #endregion
+
+        #region Atlas
+
+        public byte GetAtlasRegionUpgradesByRegion(int regionId)
+        {
+            return M.Read<byte>(Address + ServerDataOffsets.ATLAS_REGION_UPGRADES + regionId);
+        }
+
+        public byte GetAtlasRegionUpgradesByRegion(AtlasRegion region)
+        {
+            return M.Read<byte>(Address + ServerDataOffsets.ATLAS_REGION_UPGRADES + region.Index);
         }
 
         #endregion
