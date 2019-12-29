@@ -31,6 +31,13 @@ namespace ExileCore.PoEMemory.MemoryObjects
             return new Vector2(x, y);
         }
 
+        public int GetTierByLayer(int layer)
+        {
+            const int TIER_START = 0xA5;
+
+            return M.Read<int>(Address + TIER_START + layer * sizeof(int));
+        }
+
         public bool IsUniqueMap
         {
             get
