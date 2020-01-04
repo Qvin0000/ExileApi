@@ -32,6 +32,7 @@ namespace GameOffsets
 		[FieldOffset(0x778)] public long MetamorphWindow;
 		[FieldOffset(0x7C8)] public long AreaInstanceUi;
 		[FieldOffset(0x8E8)] public long GemLvlUpPanel;
+		[FieldOffset(0x8A0)] public long InvitesPanel;
 		[FieldOffset(0x990)] public long ItemOnGroundTooltip;
 		[FieldOffset(0x0/*0xCC0*/)] public long WorldMap;//TOFO: Fixme. Cause reading errors
 		[FieldOffset(0x0/*0xF18*/)] public long MapTabWindowStartPtr;//TOFO: Fixme. Cause reading errors
