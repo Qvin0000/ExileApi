@@ -50,6 +50,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
             GetObject<ItemsOnGroundLabelElement>(IngameUIElementsStruct.itemsOnGroundLabelRoot);
         public IList<LabelOnGround> ItemsOnGroundLabels => ItemsOnGroundLabelElement.LabelsOnGround;
         public Element GemLvlUpPanel => GetObject<Element>(IngameUIElementsStruct.GemLvlUpPanel);
+        public Element InvitesPanel => GetObject<Element>(IngameUIElementsStruct.InvitesPanel);
         public ItemOnGroundTooltip ItemOnGroundTooltip => GetObject<ItemOnGroundTooltip>(IngameUIElementsStruct.ItemOnGroundTooltip);
         public MapStashTabElement MapStashTab => ReadObject<MapStashTabElement>(IngameUIElementsStruct.MapTabWindowStartPtr + 0xAA0);
         public Element Sulphit => GetObject<Element>(IngameUIElementsStruct.Map).GetChildAtIndex(0);
