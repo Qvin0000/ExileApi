@@ -43,5 +43,6 @@ When download your `7z` from releases maybe this comes with screwed permissions.
 
 * Rendering problems
 
-Big visual offsets in rendering minion dots and everything other):
+Big visual offsets in rendering minion dots and everything other:
+
 Windows Display options-> Scale and layout -> set to 100%
