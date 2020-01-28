@@ -107,6 +107,7 @@
     <Compile Include="AppForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Loader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
