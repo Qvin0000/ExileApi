@@ -21,6 +21,10 @@ namespace Loader
         private Type _coreType;
         private Type _performanceTimerType;
         private AppForm _form;
+        private object _coreTypeInstance;
+        private MethodInfo _renderMethodInfo;
+        private MethodInfo _logMsgMethodInfo;
+        private MethodInfo _logErrorMethodInfo;
 
         public void Load(string[] args)
         {
@@ -45,38 +49,20 @@ namespace Loader
                 LoadPerformanceTimerType();
 
                 CreateOffsets();
-
                 CreateForm();
 
-                var instanceCore = Activator.CreateInstance(_coreType, _form);
+                CreateCoreTypeInstance();
+                SetUpFormFixImguiCapture();
 
-                var debugWindowType = GetTypeFromCoreDll("ExileCore.DebugWindow");
+                LoadLogMsgMethod();
+                LoadLogErrorMethod();
+                LogHudLoadedMessage();
 
-                var methodLogMsg =
-                    debugWindowType.GetMethod("LogMsg", new[] { typeof(string), typeof(float), typeof(Color) });
+                LoadRenderMethod();
 
-                methodLogMsg.Invoke(null,
-                    new object[] { $"HUD loaded in {_stopwatch.Elapsed.TotalMilliseconds} ms.", 7, Color.GreenYellow });
+                RenderLoop.Run(_form, Render);
 
-                var methodCoreRender = _coreType.GetMethod("Render");
-                var methodInfo = _coreType.GetMethod("FixImGui");
-                _form.FixImguiCapture = () => methodInfo?.Invoke(instanceCore, null);
-
-                RenderLoop.Run(_form, () =>
-                {
-                    try
-                    {
-                        methodCoreRender.Invoke(instanceCore, null);
-                    }
-                    catch (Exception e)
-                    {
-                        var methodLogError = debugWindowType.GetMethod("LogError");
-                        methodLogError.Invoke(null, new object[] { e.ToString(), 2 });
-                    }
-                });
-
-                var coreDispose = _coreType.GetMethod("Dispose");
-                coreDispose.Invoke(instanceCore, null);
+                DisposeCoreTypeInstance();
 
                 LogCloseMessage();
             }
@@ -86,9 +72,11 @@ namespace Loader
             }
             finally
             {
-                (_form as IDisposable)?.Dispose();
+                _form?.Dispose();
             }
         }
+
+
 
         private void LoadCoreDll()
         {
@@ -130,6 +118,11 @@ namespace Loader
             MeasurePerformance("Form Load", () => _form = new AppForm());
         }
 
+        private void CreateCoreTypeInstance()
+        {
+            _coreTypeInstance = Activator.CreateInstance(_coreType, _form);
+        }
+
         private void MeasurePerformance(string actionName, Action action)
         {
             var methodPerformanceTimerDispose = _performanceTimerType.GetMethod("Dispose");
@@ -147,6 +140,58 @@ namespace Loader
         private object CreatePerformanceTimer(string debugText)
         {
             return Activator.CreateInstance(_performanceTimerType, debugText, 0, null, true);
+        }
+
+        private void SetUpFormFixImguiCapture()
+        {
+            var methodCoreFixImGui = _coreType.GetMethod("FixImGui");
+            _form.FixImguiCapture = () => methodCoreFixImGui?.Invoke(_coreTypeInstance, null);
+        }
+
+        private void LoadRenderMethod()
+        {
+            _renderMethodInfo = _coreType.GetMethod("Render");
+        }
+
+        private void Render()
+        {
+            try
+            {
+                _renderMethodInfo.Invoke(_coreTypeInstance, null);
+            }
+            catch (Exception e)
+            {
+                LogError(e);
+            }
+        }
+
+        private void LoadLogMsgMethod()
+        {
+            var debugWindowType = GetTypeFromCoreDll("ExileCore.DebugWindow");
+            _logMsgMethodInfo = debugWindowType.GetMethod("LogMsg", new[] { typeof(string), typeof(float), typeof(Color) });
+        }
+
+        private void LoadLogErrorMethod()
+        {
+            var debugWindowType = GetTypeFromCoreDll("ExileCore.DebugWindow");
+            _logErrorMethodInfo = debugWindowType.GetMethod("LogError");
+        }
+
+        private void LogHudLoadedMessage()
+        {
+            _logMsgMethodInfo.Invoke(null,
+                new object[] { $"HUD loaded in {_stopwatch.Elapsed.TotalMilliseconds} ms.", 7, Color.GreenYellow });
+        }
+
+        private void LogError(Exception e)
+        {
+            _logErrorMethodInfo.Invoke(null, new object[] { e.ToString(), 2 });
+        }
+
+        private void DisposeCoreTypeInstance()
+        {
+            var coreDispose = _coreType.GetMethod("Dispose");
+            coreDispose.Invoke(_coreTypeInstance, null);
         }
 
         private Type GetTypeFromCoreDll(string name)
