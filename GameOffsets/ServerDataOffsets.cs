@@ -27,7 +27,7 @@ namespace GameOffsets
         public const int Skip = 0x5000;
         public const int ATLAS_REGION_UPGRADES = 0x7782;
         [FieldOffset(0x6E98 - Skip)] public NativeStringU League;
-        [FieldOffset(0x6B70 - Skip)] public NativePtrArray PassiveSkillIds;
+        [FieldOffset(0x6E20 - Skip)] public NativePtrArray PassiveSkillIds;
         [FieldOffset(0x6BC0 - Skip)] public byte PlayerClass;
         [FieldOffset(0x6BC4 - Skip)] public int CharacterLevel;
         [FieldOffset(0x6BC8 - Skip)] public int PassiveRefundPointsLeft;
