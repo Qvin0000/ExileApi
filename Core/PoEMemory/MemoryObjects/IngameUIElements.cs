@@ -31,6 +31,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public IngameUElementsOffsets IngameUIElementsStruct => _cachedValue.Value;
         public Element GameUI => _gameUI ?? (_gameUI = GetObject<Element>(IngameUIElementsStruct.GameUI));
         public SellWindow SellWindow => GetObject<SellWindow>(IngameUIElementsStruct.SellWindow);
+        public TradeWindow TradeWindow => GetObject<TradeWindow>(IngameUIElementsStruct.TradeWindow);
         public Element PurchaseWindow => _purchaseWindow ?? (_purchaseWindow = GetObject<Element>(IngameUIElementsStruct.PurchaseWindow));
         public SubterraneanChart DelveWindow =>
             _DelveWindow ?? (_DelveWindow = GetObject<SubterraneanChart>(IngameUIElementsStruct.DelveWindow));

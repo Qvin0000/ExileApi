@@ -321,6 +321,7 @@
     <Compile Include="PoEMemory\MemoryObjects\ServerInventory.cs" />
     <Compile Include="PoEMemory\MemoryObjects\ServerStashTab.cs" />
     <Compile Include="PoEMemory\MemoryObjects\SkillGemWrapper.cs" />
+    <Compile Include="PoEMemory\MemoryObjects\TradeWindow.cs" />
     <Compile Include="PoEMemory\MemoryObjects\WorldArea.cs" />
     <Compile Include="PoEMemory\Models\BaseItemType.cs" />
     <Compile Include="PoEMemory\Models\ItemStats.cs" />

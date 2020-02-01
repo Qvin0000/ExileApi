@@ -21,6 +21,7 @@ namespace GameOffsets
 		[FieldOffset(0x5A8)] public long itemsOnGroundLabelRoot;
 		[FieldOffset(0x640)] public long PurchaseWindow;
 		[FieldOffset(0x648)] public long SellWindow;
+		[FieldOffset(0x650)] public long TradeWindow;
 		[FieldOffset(0x688)] public long MapDeviceWindow;
 		[FieldOffset(0x6E0)] public long IncursionWindow;
 		[FieldOffset(0x700)] public long DelveWindow;
