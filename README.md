@@ -1,5 +1,10 @@
 # ExileApi private fork of PoeHud
 
+# Current Status
+Basic version with all important(my vision) plugins in release tab.
+Current version can lags and crash because i didn't test that a lot time. Maybe on next week found time for test and publish source code.
+
+
 Dirty copy of my private fork.
 Difference with main fork:
 * Read memory  like structs (better for CPU, but used more memory)
