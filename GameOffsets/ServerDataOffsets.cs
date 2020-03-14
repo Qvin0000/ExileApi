@@ -26,7 +26,8 @@ namespace GameOffsets
     {
         public const int Skip = 0x5000;
         public const int ATLAS_REGION_UPGRADES = 0x7782;
-        [FieldOffset(0x7068 - Skip)] public NativePtrArray PassiveSkillIds;
+		[FieldOffset(0)] public long MasterAreas;
+		[FieldOffset(0x7068 - Skip)] public NativePtrArray PassiveSkillIds;
         [FieldOffset(0x7108 - Skip)] public byte PlayerClass;
         [FieldOffset(0x710C - Skip)] public int CharacterLevel;
         [FieldOffset(0x7110 - Skip)] public int PassiveRefundPointsLeft;
@@ -56,7 +57,6 @@ namespace GameOffsets
         [FieldOffset(0x7440 - Skip)] public long ElderInfluencedAreas;
         [FieldOffset(0x7660 - Skip)] public long ElderGuardiansAreas; //Maybe wrong not tested
         [FieldOffset(0x7930 - Skip)] public long ShapedAreas; //Maybe wrong not tested
-		[FieldOffset(0)] public long MasterAreas;
 		[FieldOffset(0x842C - Skip)] public byte MonsterLevel;
         [FieldOffset(0x842D - Skip)] public byte MonstersRemaining;
         [FieldOffset(0x84E0 - Skip)] public ushort CurrentSulphiteAmount; //Maybe wrong not tested

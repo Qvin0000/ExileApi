@@ -7,6 +7,6 @@ namespace GameOffsets
     public struct StatsComponentOffsets
     {
         [FieldOffset(0x8)] public long Owner;
-        [FieldOffset(0x98)] public NativePtrArray Stats;
+        [FieldOffset(0x118)] public NativePtrArray Stats;
     }
 }
