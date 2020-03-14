@@ -11,22 +11,22 @@ namespace ExileCore.PoEMemory.Components
 {
     public class Player : Component
     {
-        public string PlayerName => NativeStringReader.ReadString(Address + 0x58, M);
-        public uint XP => Address != 0 ? M.Read<uint>(Address + 0x7C) : 0;
-        public int Strength => Address != 0 ? M.Read<int>(Address + 0x80) : 0;
-        public int Dexterity => Address != 0 ? M.Read<int>(Address + 0x84) : 0;
-        public int Intelligence => Address != 0 ? M.Read<int>(Address + 0x88) : 0;
-        public int Level => Address != 0 ? M.Read<byte>(Address + 0xA8) : 1;
-        public int AllocatedLootId => Address != 0 ? M.Read<byte>(Address + 0x7C) : 1;
-        public int HideoutLevel => M.Read<byte>(Address + 0x28E);
-        public byte PropheciesCount => M.Read<byte>(Address + 0x112);
+        public string PlayerName => NativeStringReader.ReadString(Address + 0x158, M);
+        public uint XP => Address != 0 ? M.Read<uint>(Address + 0x17C) : 0;
+        public int Strength => Address != 0 ? M.Read<int>(Address + 0x180) : 0;
+        public int Dexterity => Address != 0 ? M.Read<int>(Address + 0x184) : 0;
+        public int Intelligence => Address != 0 ? M.Read<int>(Address + 0x188) : 0;
+        public int Level => Address != 0 ? M.Read<byte>(Address + 0x1A8) : 1;
+        public int AllocatedLootId => Address != 0 ? M.Read<byte>(Address + 0x16C) : 1;
+        public int HideoutLevel => M.Read<byte>(Address + 0x38E);
+        public byte PropheciesCount => M.Read<byte>(Address + 0x212);
 
         public IList<ProphecyDat> Prophecies
         {
             get
             {
                 var result = new List<ProphecyDat>();
-                var readAddr = Address + 0x114;
+                var readAddr = Address + 0x214;
 
                 for (var i = 0; i < 7; i++)
                 {
@@ -47,9 +47,9 @@ namespace ExileCore.PoEMemory.Components
             }
         }
 
-        public HideoutWrapper Hideout => ReadObject<HideoutWrapper>(Address + 0x268);
-        public PantheonGod PantheonMinor => (PantheonGod) M.Read<byte>(Address + 0x93);
-        public PantheonGod PantheonMajor => (PantheonGod) M.Read<byte>(Address + 0x94);
+        public HideoutWrapper Hideout => ReadObject<HideoutWrapper>(Address + 0x368);
+        public PantheonGod PantheonMinor => (PantheonGod) M.Read<byte>(Address + 0x193);
+        public PantheonGod PantheonMajor => (PantheonGod) M.Read<byte>(Address + 0x194);
 
         private IList<PassiveSkill> AllocatedPassivesM()
         {
@@ -113,7 +113,7 @@ namespace ExileCore.PoEMemory.Components
         {
             get
             {
-                var stateBuff = M.ReadBytes(Address + 0x1B4, 36); // (286+) bytes of info.
+                var stateBuff = M.ReadBytes(Address + 0x2B4, 36); // (286+) bytes of info.
                 return new BitArray(stateBuff);
             }
         }

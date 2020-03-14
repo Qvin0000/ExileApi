@@ -8,8 +8,8 @@ namespace GameOffsets
     {
         [FieldOffset(0x0)] public NativeStringU Key;
         [FieldOffset(0x8)] public long Unknown8;
-        [FieldOffset(0x1C)] public int MinLevel;
-        [FieldOffset(0x14)] public long TypeName;
+		[FieldOffset(0x14)] public long TypeName;
+		[FieldOffset(0x1C)] public int MinLevel;
         [FieldOffset(0x28)] public long StatNames1;
         [FieldOffset(0x38)] public long StatNames2;
         [FieldOffset(0x48)] public long StatNames3;
@@ -30,7 +30,12 @@ namespace GameOffsets
         [FieldOffset(0xA0)] public long ta;
         [FieldOffset(0xA8)] public int TagChances;
         [FieldOffset(0xB0)] public long tc;
-        [FieldOffset(0x1AC)] public byte IsEssence;
+		[FieldOffset(0xB8)] public long BuffDefinitionsPtr;
+		[FieldOffset(0xC0)] public long BuffDefinitions;
+		[FieldOffset(0xC8)] public int BuffValue;
+		[FieldOffset(0xCC)] public long tgcCount;
+		[FieldOffset(0xC4)] public long tgcPtr;
+		[FieldOffset(0x1AC)] public byte IsEssence;
         [FieldOffset(0x1C5)] public long Tier;
     }
 }
