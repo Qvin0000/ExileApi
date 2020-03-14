@@ -17,7 +17,7 @@ namespace ExileCore.PoEMemory
 
         public IMemory M { get; }
         public long Address { get; }
-        private int NumberOfRecords => M.Read<int>(fAddress() + 0x30, 0x18);
+        private int NumberOfRecords => M.Read<int>(fAddress() + 0x30, 0x20);
 
         protected IEnumerable<long> RecordAddresses()
         {
