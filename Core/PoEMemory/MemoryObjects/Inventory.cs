@@ -202,10 +202,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 case 0x6f:
                     _cacheInventoryType = InventoryType.EssenceStash;
                     break;
-                case 0x3c:
+                case 0x45:
                     _cacheInventoryType = InventoryType.CurrencyStash;
                     break;
-                case 0x55:
+                case 0x58:
                     _cacheInventoryType = InventoryType.FragmentStash;
                     break;
                 case 0x5:
