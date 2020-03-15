@@ -8,6 +8,7 @@ namespace ExileCore.Shared.Enums
         Breach,
         Perandus,
         Delve,
-        Legion
+        Legion,
+		Delirium
     }
 }

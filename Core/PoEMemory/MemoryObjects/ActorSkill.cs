@@ -9,15 +9,15 @@ namespace ExileCore.PoEMemory.MemoryObjects
     {
         public ushort Id => M.Read<ushort>(Address + 0x10);
         public GrantedEffectsPerLevel EffectsPerLevel => ReadObject<GrantedEffectsPerLevel>(Address + 0x20);
-        public bool CanBeUsedWithWeapon => M.Read<byte>(Address + 0x46) > 0;
-        public bool CanBeUsed => M.Read<byte>(Address + 0x47) == 0;
-        public int Cost => M.Read<byte>(Address + 0x4C);
+        public bool CanBeUsedWithWeapon => M.Read<byte>(Address + 0x50) > 0;
+        public bool CanBeUsed => M.Read<byte>(Address + 0x52) == 0;
+        public int Cost => M.Read<byte>(Address + 0x54);
 
         //public int Unknown_Old_MaxUses => M.Read<int>(Address + 0x4c);
-        public int TotalUses => M.Read<int>(Address + 0x50);
-        public float Cooldown => M.Read<int>(Address + 0x58) / 100f; //Converted milliseconds to seconds
-        public int SoulsPerUse => M.Read<int>(Address + 0x68);
-        public int TotalVaalUses => M.Read<int>(Address + 0x6c);
+        public int TotalUses => M.Read<int>(Address + 0x58);
+        public float Cooldown => M.Read<int>(Address + 0x60) / 100f; //Converted milliseconds to seconds
+        public int SoulsPerUse => M.Read<int>(Address + 0x70);
+        public int TotalVaalUses => M.Read<int>(Address + 0x74);
         public bool IsOnSkillBar => SkillSlotIndex != -1;
         public int SkillSlotIndex => TheGame.IngameState.ServerData.SkillBarIds.IndexOf(Id);
 
@@ -157,7 +157,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                var statsPtr = M.Read<long>(Address + 0x78);
+                var statsPtr = M.Read<long>(Address + 0x80);
                 var result = new Dictionary<GameStat, int>();
 
                 ReadStats(result, statsPtr);
@@ -171,8 +171,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         internal void ReadStats(Dictionary<GameStat, int> stats, long address)
         {
-            var statPtrStart = M.Read<long>(address + 0x68);
-            var statPtrEnd = M.Read<long>(address + 0x70);
+            var statPtrStart = M.Read<long>(address + 0x30);
+            var statPtrEnd = M.Read<long>(address + 0x38);
 
             var key = 0;
             var value = 0;

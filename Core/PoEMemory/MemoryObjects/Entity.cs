@@ -686,8 +686,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
             {
                 if (Path.StartsWith("Metadata/Monsters/LegionLeague/", StringComparison.Ordinal))
                     League = LeagueType.Legion;
-
-                return EntityType.Monster;
+				if (Path.StartsWith("Metadata/Monsters/LeagueAffliction/", StringComparison.Ordinal))
+					League = LeagueType.Delirium;
+	
+				return EntityType.Monster;
             }
 
             if (HasComponent<Shrine>())
