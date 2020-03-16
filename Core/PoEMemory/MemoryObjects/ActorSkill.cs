@@ -10,7 +10,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public ushort Id => M.Read<ushort>(Address + 0x10);
         public GrantedEffectsPerLevel EffectsPerLevel => ReadObject<GrantedEffectsPerLevel>(Address + 0x20);
         public bool CanBeUsedWithWeapon => M.Read<byte>(Address + 0x50) > 0;
-        public bool CanBeUsed => M.Read<byte>(Address + 0x52) == 0;
+        public bool CanBeUsed => M.Read<byte>(Address + 0x51) == 0;
         public int Cost => M.Read<byte>(Address + 0x54);
 
         //public int Unknown_Old_MaxUses => M.Read<int>(Address + 0x4c);
@@ -171,8 +171,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         internal void ReadStats(Dictionary<GameStat, int> stats, long address)
         {
-            var statPtrStart = M.Read<long>(address + 0x30);
-            var statPtrEnd = M.Read<long>(address + 0x38);
+            var statPtrStart = M.Read<long>(address + 0xE8);
+            var statPtrEnd = M.Read<long>(address + 0xF0);
 
             var key = 0;
             var value = 0;
