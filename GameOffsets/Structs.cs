@@ -2,10 +2,10 @@
 {
     public enum Offsets
     {
-        RenderComponentOffsetsPos = 0x78,
-        RenderComponentOffsetsBounds = 0x84,
-        RenderComponentOffsetsName = 0x98,
-        RenderComponentOffsetsRotation = 0xB8,
+        RenderComponentOffsetsPos = 0x80,
+        RenderComponentOffsetsBounds = 0x8c,
+        RenderComponentOffsetsName = 0xA0,
+        RenderComponentOffsetsRotation = 0xC0,
         RenderComponentOffsetsHeight = 0xD4
     }
 }

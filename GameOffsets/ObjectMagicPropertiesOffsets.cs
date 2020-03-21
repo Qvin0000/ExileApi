@@ -6,7 +6,7 @@ namespace GameOffsets
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct ObjectMagicPropertiesOffsets
     {
-        [FieldOffset(0x7C)] public int Rarity;
-        [FieldOffset(0x98)] public NativePtrArray Mods;
+        [FieldOffset(0x9C)] public int Rarity;
+        [FieldOffset(0xB8)] public NativePtrArray Mods;
     }
 }

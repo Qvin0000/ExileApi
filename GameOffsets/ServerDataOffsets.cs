@@ -44,7 +44,7 @@ namespace GameOffsets
         [FieldOffset(0x6CB0 - Skip)] public NativePtrArray PlayerStashTabs;
         [FieldOffset(0x73E0 - Skip)] public NativePtrArray GuildStashTabs;
         [FieldOffset(0x71C0 - Skip)] public NativePtrArray NearestPlayers;
-        [FieldOffset(0x72C0 - Skip)] public NativePtrArray PlayerInventories;
+        [FieldOffset(0x7548 - Skip)] public NativePtrArray PlayerInventories;
         [FieldOffset(0x7390 - Skip)] public NativePtrArray NPCInventories;
         [FieldOffset(0x7460 - Skip)] public NativePtrArray GuildInventories;
         [FieldOffset(0x7270 - Skip)] public ushort TradeChatChannel;
