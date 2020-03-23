@@ -9,7 +9,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
         public int Act => M.Read<int>(Address + 0x10);
         public bool IsTown => M.Read<byte>(Address + 0x14) == 1;
         public bool HasWaypoint => M.Read<byte>(Address + 0x15) == 1;
-        public int NominalLevel => M.Read<int>(Address + 0x16); //Not sure
+        public int NominalLevel => M.Read<int>(Address + 0x26); //Not sure
         public int MonsterLevel => M.Read<int>(Address + 0x26);
         public int WorldAreaId => M.Read<int>(Address + 0x2A);
         public int CorruptedAreasVariety => M.Read<int>(Address + 0xFB);
