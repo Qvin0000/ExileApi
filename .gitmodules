@@ -1,0 +1,4 @@
+[submodule "Plugins/Source/HealthBars"]
+	path = Plugins/Source/HealthBars
+	url = https://github.com/TehCheat/HealthBars
+	branch = master
