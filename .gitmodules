@@ -2,3 +2,27 @@
 	path = Plugins/Source/HealthBars
 	url = https://github.com/TehCheat/HealthBars
 	branch = master
+[submodule "Plugins/Source/IconsBuilder"]
+	path = Plugins/Source/IconsBuilder
+	url = https://github.com/TehCheat/IconsBuilder
+	branch = master
+[submodule "Plugins/Source/FullRareSetManager"]
+	path = Plugins/Source/FullRareSetManager
+	url = https://github.com/TehCheat/FullRareSetManager
+	branch = master
+[submodule "Plugins/Source/MineDetonator"]
+	path = Plugins/Source/MineDetonator
+	url = https://github.com/TehCheat/MineDetonator
+	branch = master
+[submodule "Plugins/Source/MapsExchange"]
+	path = Plugins/Source/MapsExchange
+	url = https://github.com/TehCheat/MapsExchange
+	branch = master
+[submodule "Plugins/Source/BuffUtil"]
+	path = Plugins/Source/BuffUtil
+	url = https://github.com/TehCheat/BuffUtil
+	branch = master
+[submodule "Plugins/Source/XpBar"]
+	path = Plugins/Source/XpBar
+	url = https://github.com/TehCheat/XpBar
+	branch = master
