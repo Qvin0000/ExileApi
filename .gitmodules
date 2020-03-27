@@ -46,3 +46,7 @@
 	path = Plugins/Source/AutoOpen
 	url = https://github.com/ravand1990/AutoOpen
 	branch = master
+[submodule "Plugins/Source/DPSMeter"]
+	path = Plugins/Source/DPSMeter
+	url = https://github.com/TehCheat/DPSMeter
+	branch = master
