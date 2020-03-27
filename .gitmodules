@@ -30,3 +30,7 @@
 	path = Plugins/Source/DevTree
 	url = https://github.com/TehCheat/DevTree
 	branch = master
+[submodule "Plugins/Source/AdvancedUberLabLayout"]
+	path = Plugins/Source/AdvancedUberLabLayout
+	url = https://github.com/TehCheat/AdvancedUberLabLayout
+	branch = master
