@@ -58,3 +58,7 @@
 	path = Plugins/Source/ItemAlert
 	url = https://github.com/TehCheat/ItemAlert
 	branch = master
+[submodule "Plugins/Source/KillCounter"]
+	path = Plugins/Source/KillCounter
+	url = https://github.com/TehCheat/KillCounter
+	branch = master
