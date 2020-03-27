@@ -82,3 +82,7 @@
 	path = Plugins/Source/PreloadAlert
 	url = https://github.com/TehCheat/PreloadAlert
 	branch = master
+[submodule "Plugins/Source/SkillDPS"]
+	path = Plugins/Source/SkillDPS
+	url = https://github.com/TehCheat/SkillDPS
+	branch = master
