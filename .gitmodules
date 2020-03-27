@@ -86,3 +86,7 @@
 	path = Plugins/Source/SkillDPS
 	url = https://github.com/TehCheat/SkillDPS
 	branch = master
+[submodule "Plugins/Source/Stashie"]
+	path = Plugins/Source/Stashie
+	url = https://github.com/TehCheat/Stashie
+	branch = master
