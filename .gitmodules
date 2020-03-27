@@ -34,3 +34,7 @@
 	path = Plugins/Source/AdvancedUberLabLayout
 	url = https://github.com/TehCheat/AdvancedUberLabLayout
 	branch = master
+[submodule "Plugins/Source/AdvancedTooltip"]
+	path = Plugins/Source/AdvancedTooltip
+	url = https://github.com/TehCheat/AdvancedTooltip
+	branch = master
