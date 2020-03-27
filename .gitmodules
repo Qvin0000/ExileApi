@@ -66,3 +66,7 @@
 	path = Plugins/Source/MinimapIcons
 	url = https://github.com/TehCheat/MinimapIcons
 	branch = master
+[submodule "Plugins/Source/MiscInformation"]
+	path = Plugins/Source/MiscInformation
+	url = https://github.com/TehCheat/MiscInformation
+	branch = master
