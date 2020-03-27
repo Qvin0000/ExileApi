@@ -38,3 +38,7 @@
 	path = Plugins/Source/AdvancedTooltip
 	url = https://github.com/TehCheat/AdvancedTooltip
 	branch = master
+[submodule "Plugins/Source/BasicFlaskRoutine"]
+	path = Plugins/Source/BasicFlaskRoutine
+	url = https://github.com/TehCheat/BasicFlaskRoutine
+	branch = master
