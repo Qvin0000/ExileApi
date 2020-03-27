@@ -54,3 +54,7 @@
 	path = Plugins/Source/EliteBar
 	url = https://github.com/TehCheat/EliteBar
 	branch = master
+[submodule "Plugins/Source/ItemAlert"]
+	path = Plugins/Source/ItemAlert
+	url = https://github.com/TehCheat/ItemAlert
+	branch = master
