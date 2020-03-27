@@ -62,3 +62,7 @@
 	path = Plugins/Source/KillCounter
 	url = https://github.com/TehCheat/KillCounter
 	branch = master
+[submodule "Plugins/Source/MinimapIcons"]
+	path = Plugins/Source/MinimapIcons
+	url = https://github.com/TehCheat/MinimapIcons
+	branch = master
