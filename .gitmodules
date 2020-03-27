@@ -74,3 +74,7 @@
 	path = Plugins/Source/PassiveSkillTreePlanter
 	url = https://github.com/TehCheat/PassiveSkillTreePlanter
 	branch = master
+[submodule "Plugins/Source/Pickit"]
+	path = Plugins/Source/Pickit
+	url = https://github.com/TehCheat/Pickit
+	branch = master
