@@ -42,3 +42,7 @@
 	path = Plugins/Source/BasicFlaskRoutine
 	url = https://github.com/TehCheat/BasicFlaskRoutine
 	branch = master
+[submodule "Plugins/Source/AutoOpen"]
+	path = Plugins/Source/AutoOpen
+	url = https://github.com/ravand1990/AutoOpen
+	branch = master
