@@ -78,3 +78,7 @@
 	path = Plugins/Source/Pickit
 	url = https://github.com/TehCheat/Pickit
 	branch = master
+[submodule "Plugins/Source/PreloadAlert"]
+	path = Plugins/Source/PreloadAlert
+	url = https://github.com/TehCheat/PreloadAlert
+	branch = master
