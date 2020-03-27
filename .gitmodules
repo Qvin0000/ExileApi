@@ -70,3 +70,7 @@
 	path = Plugins/Source/MiscInformation
 	url = https://github.com/TehCheat/MiscInformation
 	branch = master
+[submodule "Plugins/Source/PassiveSkillTreePlanter"]
+	path = Plugins/Source/PassiveSkillTreePlanter
+	url = https://github.com/TehCheat/PassiveSkillTreePlanter
+	branch = master
