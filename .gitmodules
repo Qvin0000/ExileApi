@@ -94,3 +94,7 @@
 	path = Plugins/Source/AutoQuit
 	url = https://github.com/TehCheat/AutoQuit
 	branch = master
+[submodule "Plugins/Source/DelveWalls"]
+	path = Plugins/Source/DelveWalls
+	url = https://github.com/TehCheat/DelveWalls
+	branch = master
