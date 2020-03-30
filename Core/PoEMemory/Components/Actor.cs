@@ -48,14 +48,14 @@ namespace ExileCore.PoEMemory.Components
 		/// WARNING: This memory location changes a lot,
 		/// put try catch if you are accessing this variable and the fields in it.
 		/// </summary>
-		public ActionWrapper CurrentAction => Struct.ActionPtr > 0 ? GetObject<ActionWrapper>(Struct.ActionPtr) : null;
-		public bool isMoving
-		{
-			get
-			{
+        public ActionWrapper CurrentAction => Struct.ActionPtr > 0 ? GetObject<ActionWrapper>(Struct.ActionPtr) : null;
+        public bool isMoving
+        {
+            get
+            {
                 if ((Action & ActionFlags.Moving) > 0) return true;
                 if (CurrentAction == null) return false;
-                if (ActorSkills.Find(m => m.Name == "Cyclone" && m.IsUsing == true) != null) return true;
+                if (CurrentAction.Skill.Name == "Cyclone") return true;
                 return false;
             }
         }
