@@ -16,11 +16,6 @@ namespace ExileCore.PoEMemory.Components
 			cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
 		}
 
-		public List<int> MovementSkillIDs = new List<int>()
-		{
-			33793, // Cyclone
-		};
-
 		private ActorComponentOffsets Struct => cacheValue.Value;
 		/// <summary>
 		/// Standing still = 2048 =bit 11 set
@@ -58,16 +53,15 @@ namespace ExileCore.PoEMemory.Components
 		{
 			get
 			{
-				if ((Action & ActionFlags.Moving) > 0) return true;
-				if (CurrentAction == null) return false;
-				if (CurrentAction.Skill == null) return false;
-				if (MovementSkillIDs.Contains(CurrentAction.Skill.Id)) return true;
-				return false;
-			}
-		}
+                if ((Action & ActionFlags.Moving) > 0) return true;
+                if (CurrentAction == null) return false;
+                if (ActorSkills.Find(m => m.Name == "Cyclone" && m.IsUsing == true) != null) return true;
+                return false;
+            }
+        }
 
-		// e.g minions, mines
-		public long DeployedObjectsCount => Struct.DeployedObjectArray.Size / 8;
+        // e.g minions, mines
+        public long DeployedObjectsCount => Struct.DeployedObjectArray.Size / 8;
 
         public List<DeployedObject> DeployedObjects
         {
