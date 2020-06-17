@@ -6,12 +6,12 @@ namespace GameOffsets
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct CameraOffsets
     {
-        [FieldOffset(0x4)] public int Width;
-        [FieldOffset(0x8)] public int Height;
+        [FieldOffset(0x8)] public int Width;
+        [FieldOffset(0xC)] public int Height;
 		//First value is changing when we change the screen size (ratio)
 		//4 bytes before the matrix doesn't change
-		[FieldOffset(0xA4)] public Matrix MatrixBytes;
-		[FieldOffset(0x11C)] public Vector3 Position;
+		[FieldOffset(0xA8)] public Matrix MatrixBytes;
+		[FieldOffset(0xD8)] public Vector3 Position;
 		[FieldOffset(0x210)] public float ZFar;
 
     }

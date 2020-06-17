@@ -11,6 +11,6 @@ namespace GameOffsets
 		[FieldOffset(0x8C)] public Vector3 Bounds;
 		[FieldOffset(0xA0)] public NativeStringU Name;
         [FieldOffset(0xC0)] public Vector3 Rotation;
-		[FieldOffset(0xE8)] public float Height;
+		[FieldOffset(0xE0)] public float Height;
 	}
 }

@@ -10,9 +10,9 @@ namespace GameOffsets
         [FieldOffset(0x78)] public byte CurrentAreaLevel;
         [FieldOffset(0xDC)] public uint CurrentAreaHash;
 		[FieldOffset(0xF0)] public NativePtrArray MapStats;
-		[FieldOffset(0x408)] public long LocalPlayer;
+		[FieldOffset(0x400)] public long LocalPlayer;
         [FieldOffset(0x11C)] public long LabDataPtr;
-        [FieldOffset(0x490)] public long EntityList;
-        [FieldOffset(0x498)] public long EntitiesCount;
+        [FieldOffset(0x488)] public long EntityList;
+        [FieldOffset(0x490)] public long EntitiesCount;
     }
 }

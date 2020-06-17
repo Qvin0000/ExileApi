@@ -7,9 +7,9 @@ namespace GameOffsets
     {
 		[FieldOffset(0x80)] public long IngameUi;
 		[FieldOffset(0xA0)] public long EntityLabelMap;
-		[FieldOffset(0x378)] public long Data;
-        [FieldOffset(0x380)] public long ServerData;
-        [FieldOffset(0x4A8)] public long UIRoot;
+		[FieldOffset(0x3F8)] public long Data;
+        [FieldOffset(0x400)] public long ServerData;
+        [FieldOffset(0x528)] public long UIRoot;
 		[FieldOffset(0x4E0)] public long UIHoverTooltip;
 		[FieldOffset(0x4E8)] public float CurentUElementPosX;
 		[FieldOffset(0x4EC)] public float CurentUElementPosY;
@@ -26,6 +26,6 @@ namespace GameOffsets
         [FieldOffset(0x7A0)] public long LatencyRectangle;
         [FieldOffset(0xC40)] public long FrameTimeRectangle;
         [FieldOffset(0xE90)] public long FPSRectangle;
-        [FieldOffset(0xFE4)] public int Camera;
+        [FieldOffset(0x1060)] public int Camera;
     }
 }
