@@ -7,10 +7,10 @@ namespace GameOffsets.Components
     public struct Life
     {
         [FieldOffset(0x0000)] public ComponentHeader Header;
-        [FieldOffset(0x0080)] public NativePtrArray BuffsPtr;
-        [FieldOffset(0x00B0)] public VitalStruct Mana;
-        [FieldOffset(0x00E8)] public VitalStruct EnergyShield;
-        [FieldOffset(0x0148)] public VitalStruct Health;
+        [FieldOffset(0x180)] public NativePtrArray BuffsPtr;
+        [FieldOffset(0x198)] public VitalStruct Mana;
+        [FieldOffset(0x1D0)] public VitalStruct EnergyShield;
+        [FieldOffset(0x230)] public VitalStruct Health;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
@@ -35,13 +35,13 @@ namespace GameOffsets.Components
         [FieldOffset(0x0000)] public long PtrToLifeComponent;
         //// This is greater than zero if Vital is regenerating
         //// For value = 0 or less than 0, Vital isn't regenerating
-        [FieldOffset(0x0008)] public float Regeneration;
-        [FieldOffset(0x000C)] public int Total;
+        [FieldOffset(0x20)] public float Regeneration;
+        [FieldOffset(0x24)] public int Total;
         //// e.g. ICICLE MINE reserve flat Vital
-        [FieldOffset(0x0010)] public int ReservedFlat;
-        [FieldOffset(0x0014)] public int Current;
+        [FieldOffset(0x28)] public int ReservedFlat;
+        [FieldOffset(0x2C)] public int Current;
         //// e.g. HERALD reserve % Vital.
         //// ReservedFlat does not change this value.
-        [FieldOffset(0x0018)] public int ReservedPercent;
+        [FieldOffset(0x30)] public int ReservedPercent;
     }
 }

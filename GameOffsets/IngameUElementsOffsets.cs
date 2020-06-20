@@ -11,8 +11,8 @@ namespace GameOffsets
         [FieldOffset(0x378)] public long SkillBar;
         [FieldOffset(0x380)] public long HiddenSkillBar;
         [FieldOffset(0x480)] public long QuestTracker;
-        [FieldOffset(0x4E8 /*4F8*/)] public long OpenLeftPanel;
-        [FieldOffset(0x4F0 /*500*/)] public long OpenRightPanel;
+        [FieldOffset(0x4E8)] public long OpenLeftPanel;
+        [FieldOffset(0x4F0)] public long OpenRightPanel;
         [FieldOffset(0x520)] public long InventoryPanel;
         [FieldOffset(0x528)] public long StashElement;
         [FieldOffset(0x550)] public long TreePanel;

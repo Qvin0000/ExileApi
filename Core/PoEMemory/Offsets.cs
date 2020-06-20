@@ -42,9 +42,9 @@ namespace ExileCore.PoEMemory
         private static readonly Pattern fileRootPattern =
             new Pattern(new byte[]
                 {
-                    0x48, 0x8D, 0x2D, 0x00, 0x00, 0x00, 0x00, 0x41, 0x8B, 0x00, 0x00, 0x39
+                    0x48, 0x8D, 0x2D , 0x00 , 0x00, 0x00, 0x00 , 0x41 , 0x8B , 0x00 , 0x00 , 0x39
 				}, "xxx????xx??x", "File Root",
-                14630000);
+                000000);
 
         /* Area Change
         00007FF63317CE40 | 48 83 EC 58                    | sub rsp,58                                      |

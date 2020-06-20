@@ -1,11 +1,11 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace GameOffsets
 {
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct IngameStateOffsets
     {
-		[FieldOffset(0x80)] public long IngameUi;
+		[FieldOffset(0x1550)] public long IngameUi;
 		[FieldOffset(0xA0)] public long EntityLabelMap;
 		[FieldOffset(0x478)] public long Data;
         [FieldOffset(0x480)] public long ServerData;

@@ -8,8 +8,8 @@ namespace GameOffsets.Components
         [FieldOffset(0x0000)] public ComponentHeader Header;
         [FieldOffset(0x0028)] public long UnknownPtr0;
         [FieldOffset(0x0030)] public byte IsTargetable;
-        [FieldOffset(0x0031)] public byte IsHighlightable;
-        [FieldOffset(0x0032)] public byte IsTargetted;
+        [FieldOffset(0x49)] public byte IsHighlightable;
+        [FieldOffset(0x4A)] public byte IsTargetted;
         [FieldOffset(0x0033)] public byte UnknownBool0;
         [FieldOffset(0x0034)] public byte UnknownBool1;
         [FieldOffset(0x0035)] public byte UnknownBool2;

@@ -14,20 +14,20 @@ namespace GameOffsets.Components
         // Get 2 people (including you) in the game, find an item belonging to the other person
         // Open WorldItem component of that item. Find a 4 byte uint that matches from there to here.
         [FieldOffset(0x007C)] public uint LootAllocationId;
-        [FieldOffset(0x007C)] public int Experience;
-        [FieldOffset(0x0080)] public int Strength;
-        [FieldOffset(0x0084)] public int Dexterity;
-        [FieldOffset(0x0088)] public int Intelligence;
-        [FieldOffset(0x00A8)] public byte Level;
+        [FieldOffset(0x17C)] public int Experience;
+        [FieldOffset(0x180)] public int Strength;
+        [FieldOffset(0x184)] public int Dexterity;
+        [FieldOffset(0x188)] public int Intelligence;
+        [FieldOffset(0x1A8)] public byte Level;
         //[FieldOffset(0x0091)] public byte Unknown2;
         //[FieldOffset(0x0092)] public byte Unknown3;
         [FieldOffset(0x0093)] public byte MinorPantheonSkillId;
-        [FieldOffset(0x0094)] public byte MajorPantheonSkillId;
+        [FieldOffset(0x1AC)] public byte MajorPantheonSkillId;
         //[FieldOffset(0x0098)] public int Unknown4;
         //[FieldOffset(0x009C)] public int Unknown5;
-        [FieldOffset(0x00F8)] public long HideoutPtr; // Ptr to Hideout.dat row
-        [FieldOffset(0x0112)] public PropheciesStruct Prophecies;
-        [FieldOffset(0x0138)] public long ServerDataPtr;
+        [FieldOffset(0x1F0)] public long HideoutPtr; // Ptr to Hideout.dat row
+        [FieldOffset(0x20C)] public PropheciesStruct Prophecies;
+        [FieldOffset(0x230)] public long ServerDataPtr;
 
         // This WorldPosition is different from position component WorldPosition
         // as this one is updated slowly. This might be part of a teleport detection

@@ -26,6 +26,6 @@ namespace GameOffsets
         [FieldOffset(0x540)] public NativePtrArray ActorVaalSkills;
         [FieldOffset(0x578)] public NativePtrArray HasMinionArray;
 
-        [FieldOffset(0x578)] public NativePtrArray DeployedObjectArray;
+        [FieldOffset(0x6A0)] public NativePtrArray DeployedObjectArray;
     }
 }
