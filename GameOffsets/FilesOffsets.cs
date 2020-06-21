@@ -6,15 +6,17 @@ namespace GameOffsets
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct FilesOffsets
     {
-        [FieldOffset(0x10)] public long String;
-
+        [FieldOffset(0x8)] public long ListPtr;
         [FieldOffset(0x18)] public long MoreInformation;
-        /*public string ToString(IMemory mem) {
-            var size = mem.Read<FileInformation>(MoreInformation);
-            if (size.Size < 512)
-                return mem.ReadStringU(String.ToInt64(), (int) (size.Size * 2));
-            return mem.ReadStringU(String.ToInt64());
-        }*/
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct FileNode
+    {
+        public long Next;
+        public long Prev;
+        public long Key;
+        public long Value;
     }
 
     [StructLayout(LayoutKind.Explicit, Pack = 1)]

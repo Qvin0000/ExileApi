@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
@@ -39,28 +40,46 @@ namespace ExileCore.PoEMemory
         {
             var files = new ConcurrentDictionary<string, FileInformation>();
             var fileRoot = mem.AddressOfProcess + mem.BaseOffsets[OffsetsName.FileRoot];
-            var start = mem.Read<long>(fileRoot + 0x8);
 
-            var filesPointer = mem.ReadListPointer(new IntPtr(start));
-
-            Parallel.ForEach(filesPointer, p =>
+            Parallel.For(0, 256, (i) =>
             {
-                var filesOffsets = mem.Read<FilesOffsets>(p);
-                var advancedInformation = mem.Read<GameOffsets.FileInformation>(filesOffsets.MoreInformation);
-                if (advancedInformation.String.buf == 0) return;
-                /*var str = RemoteMemoryObject.Cache.StringCache.Read($"{nameof(FilesFromMemory)}{advancedInformation.String.buf}",
-                                                                    () => advancedInformation.String.ToString(mem));*/
-                var str = advancedInformation.String.ToString(mem);
+                var addr = fileRoot + i * 0x40;
+                var fileChunkStruct = mem.Read<FilesOffsets>(addr);
 
-                if (str.Length <= 0) return;
-
-                files.TryAdd(
-                    str,
-                    new FileInformation(filesOffsets.MoreInformation, advancedInformation.AreaCount, advancedInformation.Test1,
-                        advancedInformation.Test2));
+                ReadDictionary(fileChunkStruct.ListPtr, files);
             });
 
             return files.ToDictionary();
+        }
+
+        public void ReadDictionary(long head, ConcurrentDictionary<string, FileInformation> dictionary)
+        {
+            var node = mem.Read<FileNode>(head);
+
+            var sw = Stopwatch.StartNew();
+            var headLong = head;
+
+            while (headLong != node.Next)
+            {
+                if (sw.ElapsedMilliseconds > 2000)
+                {
+                    Core.Logger.Error($"ReadDictionary error. Elapsed: {sw.ElapsedMilliseconds}");
+                    return;
+                }
+
+                var filesOffsets = mem.Read<FilesOffsets>(node.Value);
+                var advancedInformation = mem.Read<GameOffsets.FileInformation>(filesOffsets.MoreInformation);
+                if (advancedInformation.String.buf == 0) return;
+
+                var key = mem.ReadStringU(node.Key);
+
+                if (dictionary.ContainsKey(key))
+                    Core.Logger.Error($"ReadDictionary error. Already contains key: {key}. Value: {node.Value:X}");
+                else
+                    dictionary[key] = new FileInformation(node.Value, advancedInformation.AreaCount, advancedInformation.Test1, advancedInformation.Test2);
+
+                node = mem.Read<FileNode>(node.Next);
+            }
         }
 
         public Dictionary<string, FileInformation> GetAllFilesSync()
@@ -73,6 +92,7 @@ namespace ExileCore.PoEMemory
             foreach (var p in filesPointer)
             {
                 var filesOffsets = mem.Read<FilesOffsets>(p);
+                /*
                 var advancedInformation = mem.Read<GameOffsets.FileInformation>(filesOffsets.MoreInformation);
                 if (advancedInformation.String.buf == 0) continue;
 
@@ -83,6 +103,7 @@ namespace ExileCore.PoEMemory
 
                 files[str] = new FileInformation(filesOffsets.MoreInformation, advancedInformation.AreaCount, advancedInformation.Test1,
                     advancedInformation.Test2);
+                */
             }
 
             return files;
