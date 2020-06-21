@@ -42,12 +42,8 @@ namespace ExileCore.PoEMemory
         private static readonly Pattern fileRootPattern =
             new Pattern(new byte[]
                 {
-					0x65, 0x48, 0x8b, 0x04, 0x25, 0x00, 0x00, 0x00, 0x00,
-					0x48, 0x8b, 0x08,
-					0x48, 0x8d, 0x00, 0x00, 0x00, 0x00, 0x00,
-					0x8B, 0x04, 0x0E,
-					0x39, 0x05
-				}, "xxxxx????xxxxx?????xxxxx", "File Root",
+                    0x48, 0x8D, 0x2D, 0x00, 0x00, 0x00, 0x00, 0x41, 0x8B, 0x00, 0x00, 0x39
+				}, "xxx????xx??x", "File Root",
                 14630000);
 
         /* Area Change
@@ -138,7 +134,7 @@ namespace ExileCore.PoEMemory
             //  long InGameState = m.Read<long>(Base + BaseAddress, 0x8, 0xF8, 0x38);
             //  System.Console.WriteLine("InGameState: " + InGameState.ToString("x8"));
 
-            FileRoot = m.Read<int>(baseAddress + array[index] + 15) + array[index] + 19;
+            FileRoot = m.Read<int>(baseAddress + array[index] + 0x3) + array[index] + 0x7;
             index++;
 
             //   System.Console.WriteLine("FileRoot Pointer: " + (FileRoot + m.AddressOfProcess).ToString("x8"));
