@@ -76,7 +76,7 @@ namespace ExileCore.PoEMemory
                 if (dictionary.ContainsKey(key))
                     Core.Logger.Error($"ReadDictionary error. Already contains key: {key}. Value: {node.Value:X}");
                 else
-                    dictionary[key] = new FileInformation(node.Value, advancedInformation.AreaCount, advancedInformation.Test1, advancedInformation.Test2);
+                    dictionary[key] = new FileInformation(filesOffsets.MoreInformation, advancedInformation.AreaCount, advancedInformation.Test1, advancedInformation.Test2);
 
                 node = mem.Read<FileNode>(node.Next);
             }
@@ -92,7 +92,6 @@ namespace ExileCore.PoEMemory
             foreach (var p in filesPointer)
             {
                 var filesOffsets = mem.Read<FilesOffsets>(p);
-                /*
                 var advancedInformation = mem.Read<GameOffsets.FileInformation>(filesOffsets.MoreInformation);
                 if (advancedInformation.String.buf == 0) continue;
 
@@ -103,7 +102,6 @@ namespace ExileCore.PoEMemory
 
                 files[str] = new FileInformation(filesOffsets.MoreInformation, advancedInformation.AreaCount, advancedInformation.Test1,
                     advancedInformation.Test2);
-                */
             }
 
             return files;
