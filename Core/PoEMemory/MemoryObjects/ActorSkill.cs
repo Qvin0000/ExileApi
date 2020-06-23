@@ -171,8 +171,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
         internal void ReadStats(Dictionary<GameStat, int> stats, long address)
         {
-            var statPtrStart = M.Read<long>(address + 0xE8);
-            var statPtrEnd = M.Read<long>(address + 0xF0);
+            var statPtrStart = M.Read<long>(address + 0xF0);
+            var statPtrEnd = M.Read<long>(address + 0xF8);
 
             var key = 0;
             var value = 0;
