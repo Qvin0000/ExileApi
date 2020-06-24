@@ -8,21 +8,23 @@ namespace ExileCore.PoEMemory.Components
 {
     public class Stats : Component
     {
-        private readonly CachedValue<StatsComponentOffsets> _cachedValue;
+        private readonly CachedValue<StatsComponentOffsets> _statsValue;
+        private readonly CachedValue<SubStatsComponentOffsets> _substructStatsValue;
         private readonly CachedValue<Dictionary<GameStat, int>> _statDictionary;
         private readonly Dictionary<string, int> testHumanDictionary = new Dictionary<string, int>();
         private Dictionary<GameStat, int> testStatDictionary = new Dictionary<GameStat, int>();
 
         public Stats()
         {
-            _cachedValue = new FrameCache<StatsComponentOffsets>(() => M.Read<StatsComponentOffsets>(Address));
+            _statsValue = new FrameCache<StatsComponentOffsets>(() => M.Read<StatsComponentOffsets>(Address));
+            _substructStatsValue = new FrameCache<SubStatsComponentOffsets>(() => M.Read<SubStatsComponentOffsets>(_statsValue.Value.SubStatsPtr));
             _statDictionary = new FrameCache<Dictionary<GameStat, int>>(ParseStats);
 
             // _humanDictionary = new FrameCache<Dictionary<string,int>>(HumanStats);
         }
 
-        public new long OwnerAddress => StatsComponent.Owner;
-        public StatsComponentOffsets StatsComponent => _cachedValue.Value;
+        public new long OwnerAddress => _statsValue.Value.Owner;
+        public SubStatsComponentOffsets StatsComponent => _substructStatsValue.Value;
 
         //   private CachedValue<Dictionary<string, int>> _humanDictionary;
         //Stats goes as sequence of 2 values, 4 byte each. First goes stat ID then goes stat value
