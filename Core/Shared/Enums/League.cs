@@ -9,6 +9,7 @@ namespace ExileCore.Shared.Enums
         Perandus,
         Delve,
         Legion,
-		Delirium
+		Delirium,
+        Harvest
     }
 }

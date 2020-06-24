@@ -701,6 +701,12 @@ namespace ExileCore.PoEMemory.MemoryObjects
             if (HasComponent<Player>())
                 return EntityType.Player;
 
+            if (Path.StartsWith("Metadata/MiscellaneousObjects/Harvest", StringComparison.Ordinal))
+            {
+                League = LeagueType.Harvest;
+                return EntityType.MiscellaneousObjects;
+            }
+
             if (HasComponent<MinimapIcon>())
             {
                 if (Path.Equals("Metadata/Terrain/Missions/Hideouts/Objects/HideoutCraftingBench", StringComparison.Ordinal))

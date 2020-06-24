@@ -25,6 +25,8 @@ namespace ExileCore.PoEMemory.Elements
         public IList<string> AllStashNames => GetAllStashNames();
         public IList<Inventory> AllInventories => GetAllInventories();
 
+        public IList<Element> TabListButtons => GetTabListButtons();
+
         private Inventory GetVisibleStash()
         {
             return GetStashInventoryByIndex(IndexVisibleStash);
