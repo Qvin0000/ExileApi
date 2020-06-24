@@ -149,6 +149,30 @@ namespace ExileCore.PoEMemory.MemoryObjects
                         }
 
                         break;
+                    case InventoryType.BlightStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<BlightInventoryItem>());
+                        }
+
+                        break;
+                    case InventoryType.DeliriumStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<DeliriumInventoryItem>());
+                        }
+
+                        break;
+                    case InventoryType.MetamorphStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<MetamorphInventoryItem>());
+                        }
+
+                        break;
                 }
 
                 return list;
@@ -228,6 +252,15 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 case 0x23:
                     _cacheInventoryType = InventoryType.DelveStash;
                     break;
+                case 0x50:
+                    _cacheInventoryType = InventoryType.BlightStash;
+                    break;
+                case 0x1c:
+                    _cacheInventoryType = InventoryType.DeliriumStash;
+                    break;
+                case 0xe:
+                    _cacheInventoryType = InventoryType.MetamorphStash;
+                    break;
                 default:
                     _cacheInventoryType = InventoryType.InvalidInventory;
                     break;
@@ -248,6 +281,9 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 case InventoryType.EssenceStash:
                 case InventoryType.FragmentStash:
                 case InventoryType.DelveStash:
+                case InventoryType.BlightStash:
+                case InventoryType.DeliriumStash:
+                case InventoryType.MetamorphStash:
                     return AsObject<Element>().Parent;
                 case InventoryType.DivinationStash:
                     return GetObject<Element>(M.Read<long>(Address + OffsetBuffers + 0x24, 0x08));
