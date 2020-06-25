@@ -68,8 +68,11 @@ namespace ExileCore.PoEMemory
 
                 var key = mem.ReadStringU(node.Key);
 
-                if (dictionary.ContainsKey(key))
-                    Core.Logger.Error($"ReadDictionary error. Already contains key: {key}. Value: {node.Value:X}");
+                if (dictionary.TryGetValue(key, out var existingVal))
+                {
+                    //TODO: Find out what wrong with this
+                    //Core.Logger.Error($"ReadDictionary error. Already contains key: {key} with value :{existingVal.Ptr:X}. Current value: {node.Value:X}");
+                }
                 else
                 {
                     var changeCount = mem.Read<int>(node.Value + 0x38);

@@ -36,7 +36,7 @@ namespace ExileCore.PoEMemory.Components
             var statesCount = size / 8;
             var result = new List<StateMachineState>();
 
-            if (statesCount == 0)
+            if (statesCount <= 0)
                 return result;
 
             if (statesCount > 100)
