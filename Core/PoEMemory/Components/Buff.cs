@@ -32,7 +32,7 @@ namespace ExileCore.PoEMemory.Components
 
         public BuffOffsets BuffOffsets => (BuffOffsets) (_offsets = _offsets ?? M.Read<BuffOffsets>(Address));
         public string Name => _name.Value;
-        public byte Charges => M.Read<byte>(Address + 44);
+        public byte Charges => BuffOffsets.Charges;
 
         //public int SkillId => M.Read<int>(Address + 0x5C); // I think this is part of another structure referenced in a pointer at 0x58
         public float MaxTime => BuffOffsets.MaxTime; // infinity for auras and always on buff
