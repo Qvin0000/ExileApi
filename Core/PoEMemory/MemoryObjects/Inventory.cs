@@ -149,6 +149,14 @@ namespace ExileCore.PoEMemory.MemoryObjects
                         }
 
                         break;
+                    case InventoryType.UniqueStash:
+                        foreach (var item in InvRoot.Children)
+                        {
+                            if (item.ChildCount > 1)
+                                list.Add(item[1].AsObject<NormalInventoryItem>());
+                        }
+
+                        break;
                 }
 
                 return list;
@@ -228,6 +236,9 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 case 0x23:
                     _cacheInventoryType = InventoryType.DelveStash;
                     break;
+                case 0x9:
+                    _cacheInventoryType = InventoryType.UniqueStash;
+                    break;
                 default:
                     _cacheInventoryType = InventoryType.InvalidInventory;
                     break;
@@ -253,6 +264,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
                     return GetObject<Element>(M.Read<long>(Address + OffsetBuffers + 0x24, 0x08));
                 case InventoryType.MapStash:
                     return AsObject<Element>().Parent.AsObject<MapStashTabElement>();
+                case InventoryType.UniqueStash:
+                    return AsObject<Element>().Parent;
                 default:
                     return null;
             }
