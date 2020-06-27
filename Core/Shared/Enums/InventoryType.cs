@@ -14,6 +14,7 @@ namespace ExileCore.Shared.Enums
         DelveStash,
         BlightStash,
         DeliriumStash,
-        MetamorphStash
+        MetamorphStash,
+        UniqueStash,
     }
 }

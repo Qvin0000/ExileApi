@@ -701,7 +701,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
             if (HasComponent<Player>())
                 return EntityType.Player;
 
-            if (Path.StartsWith("Metadata/MiscellaneousObjects/Harvest", StringComparison.Ordinal))
+            if (Path.StartsWith("Metadata/MiscellaneousObjects/Harvest", StringComparison.Ordinal) || Path.StartsWith("Metadata/Terrain/Leagues/Harvest", StringComparison.Ordinal))
             {
                 League = LeagueType.Harvest;
                 return EntityType.MiscellaneousObjects;

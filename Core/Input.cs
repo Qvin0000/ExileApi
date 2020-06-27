@@ -54,10 +54,11 @@ namespace ExileCore
 
         public static bool IsKeyDown(Keys nVirtKey)
         {
-#if DebugKeys
+//#if DebugKeys
             if (!Keys.ContainsKey(nVirtKey))
-                DebugWindow.LogError($"Key '{nVirtKey}' is not registered. Use {nameof(Input)}.{nameof(RegisterKey)}(Settings.MyKey) in Initialize function for registration.", 10);
-#endif
+                RegisterKey(nVirtKey);
+                //DebugWindow.LogError($"Key '{nVirtKey}' is not registered. Use {nameof(Input)}.{nameof(RegisterKey)}(Settings.MyKey) in Initialize function for registration.", 10);
+//#endif
 
             return Keys[nVirtKey];
         }

@@ -35,6 +35,10 @@ namespace ExileCore.PoEMemory.Components
             var size = offsets.StatesValues.Size;
             var statesCount = size / 8;
             var result = new List<StateMachineState>();
+
+            if (statesCount <= 0)
+                return result;
+
             if (statesCount > 100)
             {
                 Logger.Log.Error($"Error reading states in StateMachine component");
