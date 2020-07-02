@@ -25,7 +25,7 @@ namespace GameOffsets
     public struct ServerDataOffsets
     {
         public const int Skip = 0x5000;
-        public const int ATLAS_REGION_UPGRADES = 0x7782;
+        public const int ATLAS_REGION_UPGRADES = 0x7BAA;
 		[FieldOffset(0)] public long MasterAreas;
 		//[FieldOffset(0x7068 - Skip)] public NativePtrArray PassiveSkillIds;
         [FieldOffset(0x72B0 - Skip)] public byte PlayerClass;

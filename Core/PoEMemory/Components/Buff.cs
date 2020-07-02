@@ -40,7 +40,7 @@ namespace ExileCore.PoEMemory.Components
 
         public override string ToString()
         {
-            return $"{Name} - Chargs: {Charges} MaxTime: {MaxTime} Timer: {Timer}";
+            return $"{Name} - Charges: {Charges} MaxTime: {MaxTime} Timer: {Timer}";
         }
     }
 }
