@@ -217,7 +217,6 @@ namespace ExileCore
             IsOpened = _CoreSettings.Enable;
             if (!_CoreSettings.Enable) return;
 
-            ImGui.PushFont(core.Graphics.Font.Atlas);
             ImGui.SetNextWindowSize(new Vector2(800, 600), ImGuiCond.FirstUseEver);
             var pOpen = _CoreSettings.Enable.Value;
             ImGui.Begin("HUD S3ttings", ref pOpen);
@@ -263,7 +262,6 @@ namespace ExileCore
             Selected?.Invoke();
             ImGui.EndChild();
             ImGui.End();
-            ImGui.PopFont();
         }
 
         private void DebugWindowRender()

@@ -42,8 +42,29 @@ namespace ExileCore.PoEMemory
         private static readonly Pattern fileRootPattern =
             new Pattern(new byte[]
                 {
-                    0x65, 0x48, 0x8b, 0x04, 0x25, 0x58, 0x00, 0x00, 0x00, 0x48, 0x8b, 0x08, 0x48, 0x8d, 0x35, 0x09, 0x9b, 0x25, 0x01
-                }, "xxxxx????xxxxxx????", "File Root",
+                    101,
+                    72,
+                    139,
+                    4,
+                    37,
+                    88,
+                    0,
+                    0,
+                    0,
+                    72,
+                    139,
+                    8,
+                    72,
+                    141,
+                    61,
+                    31,
+                    232,
+                    62,
+                    1,
+                    139,
+                    4,
+                    14
+                },  "x?x???????x??x?????x??", "File Root",
                 13930000);
 
         /* Area Change
@@ -106,9 +127,10 @@ namespace ExileCore.PoEMemory
         private static readonly Pattern GameStatePattern = new Pattern(
             new byte[]
             {
-                0x48, 0x83, 0xec, 0x50, 0x48, 0xc7, 0x44, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x89, 0x9c, 0x24, 0x00, 0x00, 0x00, 0x00, 0x48,
-                0x8b, 0xf9, 0x33, 0xed, 0x48, 0x39, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0f, 0x85, 0x00, 0x00, 0x00, 0x00
-            }, "xxxxxxxx?????xxxx????xxxxxxx????xxx????", "Game State", 1240000);
+                72, 137, 76, 36, 8, 85, 86, 87, 72, 131, 236, 80, 72, 199, 68, 36, 32, 254, byte.MaxValue,
+                byte.MaxValue, byte.MaxValue, 72, 137, 156, 36, 128, 0, 0, 0, 72, 139, 249, 51, 237, 72, 57, 45,
+                byte.MaxValue, 100, 9, 2
+            }, "?x???????x???xx???????x???????x?x??x?????", "Game State", 0);
 
         /*
         PathOfExile_x64.exe+118FD9 - 4C 8B 35 48255B01     - mov r14,[PathOfExile_x64.exe+16CB528] { [C6151734A0] }<<here
@@ -129,7 +151,7 @@ namespace ExileCore.PoEMemory
         public Dictionary<OffsetsName, long> DoPatternScans(IMemory m)
         {
             var array = m.FindPatterns( /*basePtrPattern,*/
-                fileRootPattern, areaChangePattern, /* isLoadingScreenPattern,*/ GameStatePattern);
+                fileRootPattern, /*areaChangePattern,*/ /* isLoadingScreenPattern,*/ GameStatePattern);
 
             var result = new Dictionary<OffsetsName, long>();
 
@@ -149,8 +171,8 @@ namespace ExileCore.PoEMemory
 
             //   System.Console.WriteLine("FileRoot Pointer: " + (FileRoot + m.AddressOfProcess).ToString("x8"));
 
-            AreaChangeCount = m.Read<int>(baseAddress + array[index] + 6) + array[index] + 10;
-            index++;
+            AreaChangeCount = 0x1FA45B8; /*= m.Read<int>(baseAddress + array[index] + 6) + array[index] + 10;
+            index++;*/
 
             // System.Console.WriteLine("AreaChangeCount: " + m.ReadInt(AreaChangeCount + m.AddressOfProcess).ToString());
 
@@ -158,7 +180,7 @@ namespace ExileCore.PoEMemory
             //index++;
             // System.Console.WriteLine("Is Loading Screen Offset:" + (isLoadingScreenOffset + m.AddressOfProcess).ToString("x8"));
 
-            GameStateOffset = m.Read<int>(baseAddress + array[index] + 29) + array[index] + 33;
+            GameStateOffset = m.Read<int>(baseAddress + array[index] + 37) + array[index] + 37+4;
 
             //  System.Console.WriteLine("Game State Offset:" + (GameStateOffset + m.AddressOfProcess).ToString("x8"));
 

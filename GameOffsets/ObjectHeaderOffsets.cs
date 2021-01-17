@@ -7,7 +7,7 @@ namespace GameOffsets
     public struct ObjectHeaderOffsets
     {
         [FieldOffset(0x0)] public long MainObject;
-        [FieldOffset(0x40)] public NativePtrArray ComponentList;
+        [FieldOffset(0x28)] public NativePtrArray ComponentList;
 
         public override string ToString()
         {
