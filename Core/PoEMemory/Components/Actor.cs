@@ -7,28 +7,27 @@ using SharpDX;
 
 namespace ExileCore.PoEMemory.Components
 {
-    public class Actor : Component
-    {
-        private readonly FrameCache<ActorComponentOffsets> cacheValue;
+	public class Actor : Component
+	{
+		private readonly FrameCache<ActorComponentOffsets> cacheValue;
 
-        public Actor()
-        {
-            cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
-        }
+		public Actor()
+		{
+			cacheValue = new FrameCache<ActorComponentOffsets>(() => M.Read<ActorComponentOffsets>(Address));
+		}
 
-        private ActorComponentOffsets Struct => cacheValue.Value;
-        /// <summary>
-        /// Standing still = 2048 =bit 11 set
-        /// running = 2178 = bit 11 & 7
-        /// Maybe Bit-field : Bit 7 set = running
-        /// </summary>
-        public short ActionId => Address != 0 ? Struct.ActionId : (short) 0;
-        public ActionFlags Action => Address != 0 ? (ActionFlags) Struct.ActionId : ActionFlags.None;
-        public bool isMoving => (Action & ActionFlags.Moving) > 0;
-        public bool isAttacking => (Action & ActionFlags.UsingAbility) > 0;
-        public int AnimationId => Address != 0 ? Struct.AnimationId : 0;
-        public AnimationE Animation => Address != 0 ? (AnimationE) Struct.AnimationId : AnimationE.Idle;
-        /*public bool HasMinion(Entity entity) {
+		private ActorComponentOffsets Struct => cacheValue.Value;
+		/// <summary>
+		/// Standing still = 2048 =bit 11 set
+		/// running = 2178 = bit 11 & 7
+		/// Maybe Bit-field : Bit 7 set = running
+		/// </summary>
+		public short ActionId => Address != 0 ? Struct.ActionId : (short)0;
+		public ActionFlags Action => Address != 0 ? (ActionFlags)Struct.ActionId : ActionFlags.None;
+		public bool isAttacking => (Action & ActionFlags.UsingAbility) > 0;
+		public int AnimationId => Address != 0 ? Struct.AnimationId : 0;
+		public AnimationE Animation => Address != 0 ? (AnimationE)Struct.AnimationId : AnimationE.Idle;
+		/*public bool HasMinion(Entity entity) {
             if (Address == 0) return false;
 
             var num = Struct.HasMinionArray.First;
@@ -42,14 +41,24 @@ namespace ExileCore.PoEMemory.Components
             return false;
         }*/
 
-        //public float TimeSinseLastMove => -M.Read<float>(Address + 0x110);
-        //public float TimeSinseLastAction => -M.Read<float>(Address + 0x114);
-        /// <summary>
-        /// Currently performed action information.
-        /// WARNING: This memory location changes a lot,
-        /// put try catch if you are accessing this variable and the fields in it.
-        /// </summary>
+		//public float TimeSinseLastMove => -M.Read<float>(Address + 0x110);
+		//public float TimeSinseLastAction => -M.Read<float>(Address + 0x114);
+		/// <summary>
+		/// Currently performed action information.
+		/// WARNING: This memory location changes a lot,
+		/// put try catch if you are accessing this variable and the fields in it.
+		/// </summary>
         public ActionWrapper CurrentAction => Struct.ActionPtr > 0 ? GetObject<ActionWrapper>(Struct.ActionPtr) : null;
+        public bool isMoving
+        {
+            get
+            {
+                if ((Action & ActionFlags.Moving) > 0) return true;
+                if (CurrentAction == null) return false;
+                if (CurrentAction.Skill.Name == "Cyclone") return true;
+                return false;
+            }
+        }
 
         // e.g minions, mines
         public long DeployedObjectsCount => Struct.DeployedObjectArray.Size / 8;
@@ -98,7 +107,7 @@ namespace ExileCore.PoEMemory.Components
             }
         }
 
-        /*public List<ActorVaalSkill> ActorVaalSkills
+        public List<ActorVaalSkill> ActorVaalSkills
         {
             get
             {
@@ -110,14 +119,14 @@ namespace ExileCore.PoEMemory.Components
                 var result = new List<ActorVaalSkill>();
                 for (var addr = skillsStartPointer; addr < skillsEndPointer; addr += ACTOR_VAAL_SKILLS_SIZE)
                 {
-                    result.Add(ReadObject<ActorVaalSkill>(addr));
+                    result.Add(GetObject<ActorVaalSkill>(addr));
                     if (stuckCounter++ > 50)
                         return new List<ActorVaalSkill>();
                 }
 
                 return result;
             }
-        }*/
+        }
 
         public class ActionWrapper : RemoteMemoryObject
         {

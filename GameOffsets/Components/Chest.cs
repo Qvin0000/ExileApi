@@ -26,9 +26,9 @@ namespace GameOffsets.Components
 
         //// Chest.dat data in here. it's also present @ 0x88.
         [FieldOffset(0x0058)] public long ChestInternalPtr;
-        [FieldOffset(0x0078)] public bool IsOpened;
-        [FieldOffset(0x0079)] public bool IsLocked;
-        [FieldOffset(0x007C)] public byte Quality;
+        [FieldOffset(0x178)] public bool IsOpened;
+        [FieldOffset(0x179)] public bool IsLocked;
+        [FieldOffset(0x17C)] public byte Quality;
 
         //// 0x90, 0x98 ptrs are only available for strongboxes.
         //// However, they disappear when we open the strongbox.

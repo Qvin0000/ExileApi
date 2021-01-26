@@ -5,7 +5,7 @@ namespace GameOffsets
     [StructLayout(LayoutKind.Explicit, Pack = 1)]
     public struct PathEntityOffsets
     {
-        [FieldOffset(0x10)] public StringPtr Path;
+        [FieldOffset(0x08)] public StringPtr Path;
         [FieldOffset(0x20)] public long Length;
 
         /*public  string ToString(IMemory mem) { 

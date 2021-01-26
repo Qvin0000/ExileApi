@@ -75,10 +75,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
         {
             get
             {
-                var statPtrStart = M.Read<long>(Address + 0x4B4);
-                var statPtrEnd = M.Read<long>(Address + 0x4BC);
+                var portalPtrStart = M.Read<long>(Address + 0x598);
+                var portalPtrEnd = M.Read<long>(Address + 0x5A0);
 
-                return M.ReadStructsArray<PortalObject>(statPtrStart, statPtrEnd, PortalObject.StructSize, TheGame);
+                return M.ReadStructsArray<PortalObject>(portalPtrStart, portalPtrEnd, PortalObject.StructSize, TheGame);
             }
         }
 

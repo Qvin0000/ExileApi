@@ -42,11 +42,11 @@ namespace ExileCore.PoEMemory.FilesInMemory
                 Key = RemoteMemoryObject.Cache.StringCache.Read($"{nameof(StatsDat)}{addr + 0}",
                     () => m.ReadStringU(m.Read<long>(addr + 0), 255));
 
-                Unknown4 = m.Read<byte>(addr + 0x8) != 0;
-                Unknown5 = m.Read<byte>(addr + 0x9) != 0;
-                Unknown6 = m.Read<byte>(addr + 0xA) != 0;
+				Flag0 = m.Read<byte>(addr + 0x8) != 0;
+				IsLocal = m.Read<byte>(addr + 0x9) != 0;
+				IsWeaponLocal = m.Read<byte>(addr + 0xA) != 0;
                 Type = Key.Contains("%") ? StatType.Percents : (StatType) m.Read<int>(addr + 0xB);
-                UnknownB = m.Read<byte>(addr + 0xF) != 0;
+				Flag3 = m.Read<byte>(addr + 0xF) != 0;
 
                 UserFriendlyName =
                     RemoteMemoryObject.Cache.StringCache.Read($"{nameof(StatsDat)}{addr + 0x10}",
@@ -58,10 +58,10 @@ namespace ExileCore.PoEMemory.FilesInMemory
             public string Key { get; }
             public long Address { get; }
             public StatType Type { get; }
-            public bool Unknown4 { get; }
-            public bool Unknown5 { get; }
-            public bool Unknown6 { get; }
-            public bool UnknownB { get; }
+            public bool Flag0 { get; }
+            public bool IsLocal { get; }
+            public bool IsWeaponLocal { get; }
+            public bool Flag3 { get; }
             public string UserFriendlyName { get; }
 
             // more fields can be added (see in visualGGPK)

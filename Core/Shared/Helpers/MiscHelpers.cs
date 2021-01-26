@@ -60,6 +60,22 @@ namespace ExileCore.Shared.Helpers
                 .Take((int) str.Size * 2).ToArray());
         }
 
+        public static string ToString(this NativeUtf8Text str, IMemory m)
+        {
+            if (str.LengthWithNullTerminator > 15)
+            {
+                if (str.Length < 256)
+                    return m.ReadString(str.Buffer, (int) str.Length * 2);
+
+                return m.ReadString(str.Buffer);
+            }
+
+            var resultString = Encoding.UTF8.GetString(BitConverter.GetBytes(str.Buffer)
+                .Concat(BitConverter.GetBytes(str.Reserved8Bytes))
+                .Take((int) str.Length).ToArray());
+            return resultString;
+        }
+
         public static string ToString(this PathEntityOffsets str, IMemory mem)
         {
             return mem.ReadStringU(str.Path.Ptr, (int) str.Length * 2);

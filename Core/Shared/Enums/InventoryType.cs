@@ -11,6 +11,10 @@ namespace ExileCore.Shared.Enums
         DivinationStash,
         MapStash,
         FragmentStash,
-        DelveStash
+        DelveStash,
+        BlightStash,
+        DeliriumStash,
+        MetamorphStash,
+        UniqueStash,
     }
 }

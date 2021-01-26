@@ -12,7 +12,7 @@ namespace GameOffsets.Components
         // Same as Positioned Component CurrentWorldPosition,
         // but this one contains Z axis; Z axis is where the HealthBar is.
         // If you want to use ground Z axis, swap current one with TerrainHeight.
-        [FieldOffset(0x0078)] public Vector3 CurrentWorldPosition;
+        [FieldOffset(0x80)] public Vector3 CurrentWorldPosition;
 
         // Changing this value will move the in-game healthbar up/down.
         // Not sure if it's really X,Y,Z or something else. They all move

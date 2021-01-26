@@ -370,7 +370,7 @@ namespace ExileCore.PoEMemory.MemoryObjects
                 if (_componentLookup != null)
                     return _componentLookup.Value;
 
-                return (long) (_componentLookup = M.Read<long>(Address + 0x8, 0x38, 0x30));
+                return (long) (_componentLookup = M.Read<long>(Address + 0x8, 0x30, 0x30));
             }
         }
 
@@ -686,8 +686,10 @@ namespace ExileCore.PoEMemory.MemoryObjects
             {
                 if (Path.StartsWith("Metadata/Monsters/LegionLeague/", StringComparison.Ordinal))
                     League = LeagueType.Legion;
-
-                return EntityType.Monster;
+				if (Path.StartsWith("Metadata/Monsters/LeagueAffliction/", StringComparison.Ordinal))
+					League = LeagueType.Delirium;
+	
+				return EntityType.Monster;
             }
 
             if (HasComponent<Shrine>())
@@ -698,6 +700,12 @@ namespace ExileCore.PoEMemory.MemoryObjects
 
             if (HasComponent<Player>())
                 return EntityType.Player;
+
+            if (Path.StartsWith("Metadata/MiscellaneousObjects/Harvest", StringComparison.Ordinal) || Path.StartsWith("Metadata/Terrain/Leagues/Harvest", StringComparison.Ordinal))
+            {
+                League = LeagueType.Harvest;
+                return EntityType.MiscellaneousObjects;
+            }
 
             if (HasComponent<MinimapIcon>())
             {

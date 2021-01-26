@@ -42,9 +42,9 @@ namespace ExileCore.PoEMemory
         private static readonly Pattern fileRootPattern =
             new Pattern(new byte[]
                 {
-                    0x65, 0x48, 0x8b, 0x04, 0x25, 0x58, 0x00, 0x00, 0x00, 0x48, 0x8b, 0x08, 0x48, 0x8d, 0x35, 0x09, 0x9b, 0x25, 0x01
-                }, "xxxxx????xxxxxx????", "File Root",
-                13930000);
+                    0x48, 0x8D, 0x2D , 0x00 , 0x00, 0x00, 0x00 , 0x41 , 0x8B , 0x00 , 0x00 , 0x39
+				}, "xxx????xx??x", "File Root",
+                000000);
 
         /* Area Change
         00007FF63317CE40 | 48 83 EC 58                    | sub rsp,58                                      |
@@ -68,25 +68,8 @@ namespace ExileCore.PoEMemory
             new Pattern(
                 new byte[]
                 {
-                    0x0f, 0xc1, 0x41, 0x44,
-                    0x8b, 0x05, 0x16, 0x67, 0x56, 0x01,
-                    0x89, 0x41, 0x40,
-                    0x44, 0x8b, 0x7c, 0x24, 0x54,
-                    0x49, 0x8b, 0x7d, 0x08,
-                    0x48, 0x8b, 0xdf,
-                    0x48, 0x89, 0x5d, 0x10,
-                    0x48, 0x85, 0xff,
-                    0x74, 0x1c,
-                    0xb8, 0x01, 0x00, 0x00, 0x00,
-                    0xf0,
-                    0x0f, 0xc1, 0x47, 0x44,
-                    0x8b, 0x05, 0xee, 0x66, 0x56, 0x01,
-                    0x89, 0x47, 0x40,
-                    0x48, 0x8b, 0x5d, 0x10,
-                    0x44, 0x8b, 0x7c, 0x24, 0x54,
-                    0x48, 0x85, 0xff,
-                    0x74, 0x15
-                }, "xx??x?????x???x????x???x??x???x?x??????xxx??x?????x???x???x????x?x?", "Area change", 9430000);
+                    0xE8, 0x00, 0x00, 0x00, 0x00, 0xE8, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x05
+				}, "x????x????xx", "Area change", 9430000);
 
         /*
         PathOfExile_x64.exe+853E28 - 48 89 05 E9ABC400     - mov [PathOfExile_x64.exe+149EA18],rax { [00000000] }
@@ -107,8 +90,8 @@ namespace ExileCore.PoEMemory
             new byte[]
             {
                 0x48, 0x83, 0xec, 0x50, 0x48, 0xc7, 0x44, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x48, 0x89, 0x9c, 0x24, 0x00, 0x00, 0x00, 0x00, 0x48,
-                0x8b, 0xf9, 0x33, 0xed, 0x48, 0x39, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0f, 0x85, 0x00, 0x00, 0x00, 0x00
-            }, "xxxxxxxx?????xxxx????xxxxxxx????xxx????", "Game State", 1240000);
+                0x8b, 0xf9, 0x33, 0xed, 0x48, 0x39
+            }, "xxxxxxxx?????xxxx????xxxxxxx", "Game State", 1240000);
 
         /*
         PathOfExile_x64.exe+118FD9 - 4C 8B 35 48255B01     - mov r14,[PathOfExile_x64.exe+16CB528] { [C6151734A0] }<<here
@@ -144,12 +127,12 @@ namespace ExileCore.PoEMemory
             //  long InGameState = m.Read<long>(Base + BaseAddress, 0x8, 0xF8, 0x38);
             //  System.Console.WriteLine("InGameState: " + InGameState.ToString("x8"));
 
-            FileRoot = m.Read<int>(baseAddress + array[index] + 15) + array[index] + 19;
+            FileRoot = m.Read<int>(baseAddress + array[index] + 0x3) + array[index] + 0x7;
             index++;
 
             //   System.Console.WriteLine("FileRoot Pointer: " + (FileRoot + m.AddressOfProcess).ToString("x8"));
 
-            AreaChangeCount = m.Read<int>(baseAddress + array[index] + 6) + array[index] + 10;
+            AreaChangeCount = m.Read<int>(baseAddress + array[index] + 0xC) + array[index] + 0x10;
             index++;
 
             // System.Console.WriteLine("AreaChangeCount: " + m.ReadInt(AreaChangeCount + m.AddressOfProcess).ToString());

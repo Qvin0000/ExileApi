@@ -67,12 +67,12 @@ namespace ExileCore.PoEMemory.MemoryObjects
         #region PlayerData
 
         public ushort LastActionId => ServerDataStruct.LastActionId;
-        public int CharacterLevel => ServerDataStruct.CharacterLevel;
-        public int PassiveRefundPointsLeft => ServerDataStruct.PassiveRefundPointsLeft;
-        public int FreePassiveSkillPointsLeft => ServerDataStruct.FreePassiveSkillPointsLeft;
-        public int QuestPassiveSkillPoints => ServerDataStruct.QuestPassiveSkillPoints;
-        public int TotalAscendencyPoints => ServerDataStruct.TotalAscendencyPoints;
-        public int SpentAscendencyPoints => ServerDataStruct.SpentAscendencyPoints;
+        //public int CharacterLevel => ServerDataStruct.CharacterLevel;
+        //public int PassiveRefundPointsLeft => ServerDataStruct.PassiveRefundPointsLeft;
+        //public int FreePassiveSkillPointsLeft => ServerDataStruct.FreePassiveSkillPointsLeft;
+        //public int QuestPassiveSkillPoints => ServerDataStruct.QuestPassiveSkillPoints;
+        //public int TotalAscendencyPoints => ServerDataStruct.TotalAscendencyPoints;
+        //public int SpentAscendencyPoints => ServerDataStruct.SpentAscendencyPoints;
         public PartyAllocation PartyAllocationType => (PartyAllocation) ServerDataStruct.PartyAllocationType;
         public string League => ServerDataStruct.League.ToString(M);
         public PartyStatus PartyStatusType => (PartyStatus) this.ServerDataStruct.PartyStatusType;
@@ -117,8 +117,8 @@ namespace ExileCore.PoEMemory.MemoryObjects
             {
                 if (Address == 0) 
                     return null;
-                var fisrPtr = ServerDataStruct.PassiveSkillIds.First;
-                var endPtr = ServerDataStruct.PassiveSkillIds.Last;
+                var fisrPtr = 0;//ServerDataStruct.PassiveSkillIds.First;
+                var endPtr = 0;// ServerDataStruct.PassiveSkillIds.Last;
                 var totalStats = (int) (endPtr - fisrPtr);
                 var bytes = M.ReadMem(fisrPtr, totalStats);
                 var res = new List<ushort>();

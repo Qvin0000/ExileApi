@@ -14,9 +14,10 @@ namespace GameOffsets.Native
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct NativeUnicodeText
+    public struct NativeUtf8Text
     {
         public long Buffer;
+
         //// There is an optimization in POE (or the framework in which POE is created in), where
         //// if a UnicodeText.LengthWithNullTerminator is less than or equal to 8
         //// then the string is stored locally (without a pointer).
@@ -24,9 +25,10 @@ namespace GameOffsets.Native
         //// We have a Reserved8Bytes over here which is then used to store the string.
         public long Reserved8Bytes;
 
-	////  Length or LengthWithNullTerminator have to be multiplied by 2 for UTF-16 format.
+        ////  Length or LengthWithNullTerminator have to be multiplied by 2 for UTF-16 format.
         public long Length;
+
         //// https://www.fileformat.info/info/unicode/char/0000/index.htm
         public long LengthWithNullTerminator;
-  }
+    }
 }

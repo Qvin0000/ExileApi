@@ -497,6 +497,7 @@ namespace ExileCore
                 .ToList();
 
             clients.AddRange(Process.GetProcessesByName(Offsets.Korean.ExeName).Select(p => (p, Offsets.Korean)));
+            clients.AddRange(Process.GetProcessesByName(Offsets.Steam.ExeName).Select(p => (p, Offsets.Steam)));
             var ixChosen = clients.Count > 1 ? ChooseSingleProcess(clients) : 0;
 
             if (clients.Count > 0)

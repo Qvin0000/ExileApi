@@ -1,0 +1,100 @@
+[submodule "Plugins/Source/HealthBars"]
+	path = Plugins/Source/HealthBars
+	url = https://github.com/TehCheat/HealthBars
+	branch = master
+[submodule "Plugins/Source/IconsBuilder"]
+	path = Plugins/Source/IconsBuilder
+	url = https://github.com/TehCheat/IconsBuilder
+	branch = master
+[submodule "Plugins/Source/FullRareSetManager"]
+	path = Plugins/Source/FullRareSetManager
+	url = https://github.com/TehCheat/FullRareSetManager
+	branch = master
+[submodule "Plugins/Source/MineDetonator"]
+	path = Plugins/Source/MineDetonator
+	url = https://github.com/TehCheat/MineDetonator
+	branch = master
+[submodule "Plugins/Source/MapsExchange"]
+	path = Plugins/Source/MapsExchange
+	url = https://github.com/TehCheat/MapsExchange
+	branch = master
+[submodule "Plugins/Source/BuffUtil"]
+	path = Plugins/Source/BuffUtil
+	url = https://github.com/TehCheat/BuffUtil
+	branch = master
+[submodule "Plugins/Source/XpBar"]
+	path = Plugins/Source/XpBar
+	url = https://github.com/TehCheat/XpBar
+	branch = master
+[submodule "Plugins/Source/DevTree"]
+	path = Plugins/Source/DevTree
+	url = https://github.com/TehCheat/DevTree
+	branch = master
+[submodule "Plugins/Source/AdvancedUberLabLayout"]
+	path = Plugins/Source/AdvancedUberLabLayout
+	url = https://github.com/TehCheat/AdvancedUberLabLayout
+	branch = master
+[submodule "Plugins/Source/AdvancedTooltip"]
+	path = Plugins/Source/AdvancedTooltip
+	url = https://github.com/TehCheat/AdvancedTooltip
+	branch = master
+[submodule "Plugins/Source/BasicFlaskRoutine"]
+	path = Plugins/Source/BasicFlaskRoutine
+	url = https://github.com/TehCheat/BasicFlaskRoutine
+	branch = master
+[submodule "Plugins/Source/AutoOpen"]
+	path = Plugins/Source/AutoOpen
+	url = https://github.com/ravand1990/AutoOpen
+	branch = master
+[submodule "Plugins/Source/DPSMeter"]
+	path = Plugins/Source/DPSMeter
+	url = https://github.com/TehCheat/DPSMeter
+	branch = master
+[submodule "Plugins/Source/EliteBar"]
+	path = Plugins/Source/EliteBar
+	url = https://github.com/TehCheat/EliteBar
+	branch = master
+[submodule "Plugins/Source/ItemAlert"]
+	path = Plugins/Source/ItemAlert
+	url = https://github.com/TehCheat/ItemAlert
+	branch = master
+[submodule "Plugins/Source/KillCounter"]
+	path = Plugins/Source/KillCounter
+	url = https://github.com/TehCheat/KillCounter
+	branch = master
+[submodule "Plugins/Source/MinimapIcons"]
+	path = Plugins/Source/MinimapIcons
+	url = https://github.com/TehCheat/MinimapIcons
+	branch = master
+[submodule "Plugins/Source/MiscInformation"]
+	path = Plugins/Source/MiscInformation
+	url = https://github.com/TehCheat/MiscInformation
+	branch = master
+[submodule "Plugins/Source/PassiveSkillTreePlanter"]
+	path = Plugins/Source/PassiveSkillTreePlanter
+	url = https://github.com/TehCheat/PassiveSkillTreePlanter
+	branch = master
+[submodule "Plugins/Source/Pickit"]
+	path = Plugins/Source/Pickit
+	url = https://github.com/TehCheat/Pickit
+	branch = master
+[submodule "Plugins/Source/PreloadAlert"]
+	path = Plugins/Source/PreloadAlert
+	url = https://github.com/TehCheat/PreloadAlert
+	branch = master
+[submodule "Plugins/Source/SkillDPS"]
+	path = Plugins/Source/SkillDPS
+	url = https://github.com/TehCheat/SkillDPS
+	branch = master
+[submodule "Plugins/Source/Stashie"]
+	path = Plugins/Source/Stashie
+	url = https://github.com/TehCheat/Stashie
+	branch = master
+[submodule "Plugins/Source/AutoQuit"]
+	path = Plugins/Source/AutoQuit
+	url = https://github.com/TehCheat/AutoQuit
+	branch = master
+[submodule "Plugins/Source/DelveWalls"]
+	path = Plugins/Source/DelveWalls
+	url = https://github.com/TehCheat/DelveWalls
+	branch = master

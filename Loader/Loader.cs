@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Serilog;
 using SharpDX;
@@ -37,6 +38,7 @@ namespace Loader
                 }
 
                 LoadLogger();
+                SetupExceptionHandling();
                 LogStartMessage();
                 LoadCoreType();
                 LoadPerformanceTimerType();
@@ -57,6 +59,23 @@ namespace Loader
             {
                 _form?.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Setups the exception handling.
+        /// </summary>
+        private void SetupExceptionHandling()
+        {
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+                LogUnhandledException((Exception)e.ExceptionObject, "AppDomain.CurrentDomain.UnhandledException");
+
+            TaskScheduler.UnobservedTaskException += (s, e) =>
+                LogUnhandledException(e.Exception, "TaskScheduler.UnobservedTaskException");
+        }
+
+        private void LogUnhandledException(Exception exception, string source)
+        {
+            _logger.Error($"Unhandled exception ({source}) in program: {exception}");
         }
 
         private void LoadCoreDll()
